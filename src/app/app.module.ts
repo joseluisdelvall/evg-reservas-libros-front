@@ -7,6 +7,7 @@ import { HeaderComponent } from './components/header/header.component';
 import { ReservasComponent } from './components/reservas/reservas.component';
 import { PedidosComponent } from './components/pedidos/pedidos.component';
 import { LoginComponent } from './components/login/login.component';
+import { CrudComponent } from './components/gestion/crud/crud.component';
 
 @NgModule({
   declarations: [
@@ -14,7 +15,8 @@ import { LoginComponent } from './components/login/login.component';
     HeaderComponent,
     ReservasComponent,
     PedidosComponent,
-    LoginComponent
+    LoginComponent,
+    CrudComponent
   ],
   imports: [
     BrowserModule,

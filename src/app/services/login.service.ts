@@ -10,6 +10,7 @@ export class LoginService {
 
   constructor() { }
 
+  // Solo lo uso en el login para redirigir a reservas si esta logeado
   isLoggedIn(): boolean {
     return true;
   }
