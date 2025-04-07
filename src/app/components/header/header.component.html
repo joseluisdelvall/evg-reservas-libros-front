@@ -1,7 +1,7 @@
 <nav class="navbar navbar-expand-lg navbar-light bg-light">
     <div class="container-fluid">
         <a class="navbar-brand" href="#">
-            <img src="assets/img/icon.svg" alt="" width="30" height="24" class="d-inline-block align-text-top">
+            <img src="assets/img/icon.svg" alt="" width="30" height="27" class="d-inline-block align-text-top">
             Reservas Libros
         </a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
@@ -10,20 +10,18 @@
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
             <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                 <li class="nav-item">
-                    <a class="nav-link" href="#">Reservas</a>
+                    <a class="nav-link" routerLink="/reservas">Reservas</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="#">Pedidos</a>
+                    <a class="nav-link" routerLink="/pedidos">Pedidos</a>
                 </li>
                 <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    <a class="nav-link dropdown-toggle" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                         Gestión
                     </a>
                     <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                        <li><a class="dropdown-item" href="#">Libros</a></li>
-                        <li><a class="dropdown-item" href="#">Editoriales</a></li>
-                        <!-- <li><hr class="dropdown-divider"></li>
-                        <li><a class="dropdown-item" href="#">Something else here</a></li> -->
+                        <li><a class="dropdown-item" routerLink="/libros">Libros</a></li>
+                        <li><a class="dropdown-item" routerLink="/editoriales">Editoriales</a></li>
                     </ul>
                 </li>
             </ul>
