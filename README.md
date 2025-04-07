@@ -17,3 +17,7 @@ To set up the project locally, follow these steps:
     ```bash
     npm install
     ```
+3. **Install AngularCLI**
+   ```bash
+   npm install -g @angular/cli@14
+   ```
