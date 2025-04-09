@@ -1,6 +1,7 @@
 import { Component, OnChanges, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { ModalOptions } from '../../shared/modal-content/models/modal-options';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-crud',
@@ -13,7 +14,9 @@ export class CrudComponent implements OnInit {
   // nuevoModalOptions
   nuevoModalOptions!: ModalOptions;
 
-  constructor(private route: ActivatedRoute) { }
+  constructor(private route: ActivatedRoute,
+    private toastr: ToastrService
+  ) { }
 
   ngOnInit(): void {
     // Subscribe to the route parameters
@@ -25,5 +28,9 @@ export class CrudComponent implements OnInit {
         this.modo = null; // Handle invalid mode if necessary
       }
     });
+  }
+
+  modal(): void {
+    this.toastr.success('Bienvenido a la sección de gestión', 'Gestión');
   }
 }
