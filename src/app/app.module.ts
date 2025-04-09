@@ -27,7 +27,7 @@ import { ModalPeriodoReservasComponent } from './components/reservas/modales/mod
     AsideComponent,
     ModalContentComponent,
     ModalNuevoComponent,
-    ModalPeriodoReservasComponent
+    ModalPeriodoReservasComponent,
     ModalNuevoComponent,
     ModalEditarComponent
   ],
