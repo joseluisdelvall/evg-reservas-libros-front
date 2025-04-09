@@ -9,7 +9,6 @@ import { PedidosComponent } from './components/pedidos/pedidos.component';
 import { LoginComponent } from './components/login/login.component';
 import { CrudComponent } from './components/gestion/crud/crud.component';
 import { AsideComponent } from './components/general/aside/aside.component';
-import { GestionReservasComponent } from './components/reservas/components/modales/gestion-reservas/gestion-reservas.component';
 import { ModalContentComponent } from './components/shared/modal-content/modal-content.component';
 
 @NgModule({
@@ -21,7 +20,6 @@ import { ModalContentComponent } from './components/shared/modal-content/modal-c
     LoginComponent,
     CrudComponent,
     AsideComponent,
-    GestionReservasComponent,
     ModalContentComponent
   ],
   imports: [
