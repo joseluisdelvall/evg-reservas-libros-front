@@ -6,7 +6,7 @@
             <h2 class="mb-0">{{ modo | titlecase }}</h2>
             <div class="d-flex justify-content-end align-items-center gap-2 mb-2">
                 <i class="fas fa-search" style="font-size: 24px; color: blue;"></i>
-                <button class="btn btn-primary btn-sm" data-bs-toggle="modal" [attr.data-bs-target]="'#nuevo' + modo" (click)="modal()">
+                <button class="btn btn-primary btn-sm" data-bs-toggle="modal" [attr.data-bs-target]="'#nuevo' + modo">
                     + Añadir {{ modo === 'libros' ? 'libro' : 'editorial' }}
                 </button>
             </div>
