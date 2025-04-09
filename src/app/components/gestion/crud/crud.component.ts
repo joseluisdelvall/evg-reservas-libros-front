@@ -1,5 +1,7 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnChanges, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
+import { ModalOptions } from '../../shared/modal-content/models/modal-options';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-crud',
@@ -9,7 +11,12 @@ import { ActivatedRoute } from '@angular/router';
 export class CrudComponent implements OnInit {
   modo: 'libros' | 'editoriales' | null = null;
 
-  constructor(private route: ActivatedRoute) { }
+  // nuevoModalOptions
+  nuevoModalOptions!: ModalOptions;
+
+  constructor(private route: ActivatedRoute,
+    private toastr: ToastrService
+  ) { }
 
   ngOnInit(): void {
     // Subscribe to the route parameters

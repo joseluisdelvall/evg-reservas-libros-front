@@ -2,7 +2,7 @@ export interface ModalOptions {
 
     title: string;
     modalId: string;
-    size?: 'sm' | 'lg' | 'xl';
+    size?: 'sm' | 'md' | 'lg' | 'xl';
     okButton?: {
         text: string;
         class?: string;

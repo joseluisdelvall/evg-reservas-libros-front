@@ -1,0 +1,50 @@
+<app-modal-content [options]="nuevoModalOptions">
+    <form *ngIf="modo === 'libros'; else nuevaEditorialModal">
+        <div class="form-group my-2">
+            <label for="bookName" class="fw-bold">Nombre</label>
+            <input type="text" id="bookName" class="form-control" placeholder="Ingrese el nombre del libro">
+        </div>
+        <div class="form-group my-2">
+            <label for="isbn" class="fw-bold">ISBN</label>
+            <input type="text" id="isbn" class="form-control" placeholder="Ingrese el ISBN">
+        </div>
+        <div class="row my-2">
+            <div class="col-lg-8 col-12">
+                <label for="editorial" class="fw-bold">Editorial</label>
+                <select id="editorial" class="form-control">
+                    <option value="">Seleccione una editorial</option>
+                    <option value="Anaya">Anaya</option>
+                    <option value="Edelvives">Edelvives</option>
+                    <option value="SM">SM</option>
+                    <option value="Arán">Arán</option>
+                    <option value="Santillana">Santillana</option>
+                    <option value="Vicens Vives">Vicens Vives</option>
+                    <option value="Oxford Educación">Oxford Educación</option>
+                    <option value="Casals">Casals</option>
+                    <option value="Teide">Teide</option>
+                </select>
+            </div>
+    
+            <div class="col-lg-4 col-12">
+                <label for="price" class="fw-bold">Precio</label>
+                <input type="number" id="price" class="form-control" placeholder="Ingrese el precio" step="0.01" min="1">
+            </div>
+        </div>
+    </form>
+    <ng-template #nuevaEditorialModal>
+        <form>
+            <div class="form-group my-2">
+                <label for="editorialName" class="fw-bold">Nombre</label>
+                <input type="text" id="editorialName" class="form-control" placeholder="Ingrese el nombre de la editorial">
+            </div>
+            <div class="form-group my-2">
+                <label for="email" class="fw-bold">Correo</label>
+                <input type="email" id="email" class="form-control" placeholder="Ingrese el correo electrónico">
+            </div>
+            <div class="form-group my-2">
+                <label for="phone" class="fw-bold">Teléfono</label>
+                <input type="text" id="phone" class="form-control" placeholder="Ingrese el teléfono">
+            </div>
+        </form>
+    </ng-template>
+</app-modal-content>
