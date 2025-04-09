@@ -3,11 +3,12 @@ import { BrowserModule } from '@angular/platform-browser';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
-import { HeaderComponent } from './components/header/header.component';
+import { HeaderComponent } from './components/general/header/header.component';
 import { ReservasComponent } from './components/reservas/reservas.component';
 import { PedidosComponent } from './components/pedidos/pedidos.component';
 import { LoginComponent } from './components/login/login.component';
 import { CrudComponent } from './components/gestion/crud/crud.component';
+import { AsideComponent } from './components/general/aside/aside.component';
 
 @NgModule({
   declarations: [
@@ -16,7 +17,8 @@ import { CrudComponent } from './components/gestion/crud/crud.component';
     ReservasComponent,
     PedidosComponent,
     LoginComponent,
-    CrudComponent
+    CrudComponent,
+    AsideComponent
   ],
   imports: [
     BrowserModule,
