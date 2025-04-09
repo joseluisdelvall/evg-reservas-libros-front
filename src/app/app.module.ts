@@ -13,6 +13,7 @@ import { AsideComponent } from './components/general/aside/aside.component';
 import { ModalContentComponent } from './components/shared/modal-content/modal-content.component';
 import { ModalNuevoComponent } from './components/gestion/crud/components/modales/modal-nuevo/modal-nuevo.component';
 import { ToastrModule } from 'ngx-toastr';
+import { ModalPeriodoReservasComponent } from './components/reservas/modales/modal-periodo-reservas/modal-periodo-reservas.component';
 
 @NgModule({
   declarations: [
@@ -24,7 +25,8 @@ import { ToastrModule } from 'ngx-toastr';
     CrudComponent,
     AsideComponent,
     ModalContentComponent,
-    ModalNuevoComponent
+    ModalNuevoComponent,
+    ModalPeriodoReservasComponent
   ],
   imports: [
     BrowserModule,
