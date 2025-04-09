@@ -12,6 +12,7 @@ import { CrudComponent } from './components/gestion/crud/crud.component';
 import { AsideComponent } from './components/general/aside/aside.component';
 import { ModalContentComponent } from './components/shared/modal-content/modal-content.component';
 import { ModalNuevoComponent } from './components/gestion/crud/components/modales/modal-nuevo/modal-nuevo.component';
+import { ModalEditarComponent } from './components/gestion/crud/components/modales/modal-editar/modal-editar.component';
 import { ToastrModule } from 'ngx-toastr';
 
 @NgModule({
@@ -24,7 +25,8 @@ import { ToastrModule } from 'ngx-toastr';
     CrudComponent,
     AsideComponent,
     ModalContentComponent,
-    ModalNuevoComponent
+    ModalNuevoComponent,
+    ModalEditarComponent
   ],
   imports: [
     BrowserModule,

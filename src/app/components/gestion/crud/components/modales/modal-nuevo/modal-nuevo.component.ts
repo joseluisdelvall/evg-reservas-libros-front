@@ -22,7 +22,13 @@ export class ModalNuevoComponent implements OnInit, OnChanges {
       this.nuevoModalOptions = {
         title: 'Añadir ' + (this.modo === 'libros' ? 'libro' : 'editorial'),
         modalId: 'nuevo' + this.modo,
-        size: 'xl'
+        size: 'xl',
+        okButton: {
+          text: 'Aceptar',
+        },
+        cancelButton: {
+          text: 'Cancelar',
+        },
       };
     }
   }
