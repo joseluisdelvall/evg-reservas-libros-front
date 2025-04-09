@@ -1,4 +1,5 @@
 <app-modal-nuevo [modo]="modo"></app-modal-nuevo>
+<app-modal-editar [modo]="modo"></app-modal-editar>
 
 <div class="d-flex">
     <div class="content w-100 p-5">
@@ -27,7 +28,7 @@
                 </thead>
                 <tbody>
                     <tr>
-                        <td class="text-center"><i class="fas fa-edit" style="color: blue;"></i></td>
+                        <td class="text-center"><i class="fas fa-edit" style="color: blue;" data-bs-toggle="modal" [attr.data-bs-target]="'#editar' + modo"></i></td>
                         <td>Lengua Castellana</td>
                         <td>978-0-12-345678-6</td>
                         <td>Anaya</td>
@@ -39,7 +40,7 @@
                         </td>
                     </tr>
                     <tr class="table-primary">
-                        <td class="text-center"><i class="fas fa-edit" style="color: blue;"></i></td>
+                        <td class="text-center"><i class="fas fa-edit" style="color: blue;" data-bs-toggle="modal" [attr.data-bs-target]="'#editar' + modo"></i></td>
                         <td>Lengua Castellana</td>
                         <td>978-1-23-456789-7</td>
                         <td>Edelvives</td>
@@ -51,7 +52,7 @@
                         </td>
                     </tr>
                     <tr>
-                        <td class="text-center"><i class="fas fa-edit" style="color: blue;"></i></td>
+                        <td class="text-center"><i class="fas fa-edit" style="color: blue;" data-bs-toggle="modal" [attr.data-bs-target]="'#editar' + modo"></i></td>
                         <td>Lengua Castellana</td>
                         <td>978-2-98-765432-9</td>
                         <td>Anaya</td>
@@ -63,7 +64,7 @@
                         </td>
                     </tr>
                     <tr class="table-primary">
-                        <td class="text-center"><i class="fas fa-edit" style="color: blue;"></i></td>
+                        <td class="text-center"><i class="fas fa-edit" style="color: blue;" data-bs-toggle="modal" [attr.data-bs-target]="'#editar' + modo"></i></td>
                         <td>Lengua Castellana</td>
                         <td>0-306-40615-2</td>
                         <td>SM</td>
@@ -75,7 +76,7 @@
                         </td>
                     </tr>
                     <tr>
-                        <td class="text-center"><i class="fas fa-edit" style="color: blue;"></i></td>
+                        <td class="text-center"><i class="fas fa-edit" style="color: blue;" data-bs-toggle="modal" [attr.data-bs-target]="'#editar' + modo"></i></td>
                         <td>Lengua Castellana</td>
                         <td>1-234-56789-X</td>
                         <td>Arán</td>
@@ -87,7 +88,7 @@
                         </td>
                     </tr>
                     <tr class="table-primary">
-                        <td class="text-center"><i class="fas fa-edit" style="color: blue;"></i></td>
+                        <td class="text-center"><i class="fas fa-edit" style="color: blue;" data-bs-toggle="modal" [attr.data-bs-target]="'#editar' + modo"></i></td>
                         <td>Matemáticas aplicadas</td>
                         <td>978-2-98-765432-9</td>
                         <td>SM</td>
@@ -99,7 +100,7 @@
                         </td>
                     </tr>
                     <tr>
-                        <td class="text-center"><i class="fas fa-edit" style="color: blue;"></i></td>
+                        <td class="text-center"><i class="fas fa-edit" style="color: blue;" data-bs-toggle="modal" [attr.data-bs-target]="'#editar' + modo"></i></td>
                         <td>Ciencias Sociales</td>
                         <td>978-8-44-868377-6</td>
                         <td>Santillana</td>
@@ -111,7 +112,7 @@
                         </td>
                     </tr>
                     <tr class="table-primary">
-                        <td class="text-center"><i class="fas fa-edit" style="color: blue;"></i></td>
+                        <td class="text-center"><i class="fas fa-edit" style="color: blue;" data-bs-toggle="modal" [attr.data-bs-target]="'#editar' + modo"></i></td>
                         <td>Biología y Geología</td>
                         <td>978-8-46-984252-0</td>
                         <td>Vicens Vives</td>
@@ -123,7 +124,7 @@
                         </td>
                     </tr>
                     <tr>
-                        <td class="text-center"><i class="fas fa-edit" style="color: blue;"></i></td>
+                        <td class="text-center"><i class="fas fa-edit" style="color: blue;" data-bs-toggle="modal" [attr.data-bs-target]="'#editar' + modo"></i></td>
                         <td>Inglés</td>
                         <td>978-84-678-7410-5</td>
                         <td>Oxford Educación</td>
@@ -135,7 +136,7 @@
                         </td>
                     </tr>
                     <tr class="table-primary"> 
-                        <td class="text-center"><i class="fas fa-edit" style="color: blue;"></i></td>
+                        <td class="text-center"><i class="fas fa-edit" style="color: blue;" data-bs-toggle="modal" [attr.data-bs-target]="'#editar' + modo"></i></td>
                         <td>Física y Química</td>
                         <td>978-84-682-1741-6</td>
                         <td>Casals</td>
@@ -147,7 +148,7 @@
                         </td>
                     </tr>
                     <tr>
-                        <td class="text-center"><i class="fas fa-edit" style="color: blue;"></i></td>
+                        <td class="text-center"><i class="fas fa-edit" style="color: blue;" data-bs-toggle="modal" [attr.data-bs-target]="'#editar' + modo"></i></td>
                         <td>Historia del Mundo Contemporáneo</td>
                         <td>978-84-489-5051-1</td>
                         <td>Teide</td>
@@ -176,7 +177,7 @@
                     </thead>
                     <tbody>
                         <tr>
-                            <td class="text-center"><i class="fas fa-edit" style="color: blue;"></i></td>
+                            <td class="text-center"><i class="fas fa-edit" style="color: blue;" data-bs-toggle="modal" [attr.data-bs-target]="'#editar' + modo"></i></td>
                             <td>SM</td>
                             <td>sm_educacion@grupo-sm.com</td>
                             <td>91 422 00 11</td>
@@ -187,7 +188,7 @@
                             </td>
                         </tr>
                         <tr class="table-primary">
-                            <td class="text-center"><i class="fas fa-edit" style="color: blue;"></i></td>
+                            <td class="text-center"><i class="fas fa-edit" style="color: blue;" data-bs-toggle="modal" [attr.data-bs-target]="'#editar' + modo"></i></td>
                             <td>Anaya Educación</td>
                             <td>- - -</td>
                             <td>91 393 91 00</td>
@@ -198,7 +199,7 @@
                             </td>
                         </tr>
                         <tr>
-                            <td class="text-center"><i class="fas fa-edit" style="color: blue;"></i></td>
+                            <td class="text-center"><i class="fas fa-edit" style="color: blue;" data-bs-toggle="modal" [attr.data-bs-target]="'#editar' + modo"></i></td>
                             <td>Santillana</td>
                             <td>contacto@santillana.com</td>
                             <td>- - -</td>
@@ -209,7 +210,7 @@
                             </td>
                         </tr>
                         <tr class="table-primary">
-                            <td class="text-center"><i class="fas fa-edit" style="color: blue;"></i></td>
+                            <td class="text-center"><i class="fas fa-edit" style="color: blue;" data-bs-toggle="modal" [attr.data-bs-target]="'#editar' + modo"></i></td>
                             <td>Vicens Vives</td>
                             <td>info@vicensvives.es</td>
                             <td>93 218 95 66</td>
@@ -220,7 +221,7 @@
                             </td>
                         </tr>
                         <tr>
-                            <td class="text-center"><i class="fas fa-edit" style="color: blue;"></i></td>
+                            <td class="text-center"><i class="fas fa-edit" style="color: blue;" data-bs-toggle="modal" [attr.data-bs-target]="'#editar' + modo"></i></td>
                             <td>Edelvives</td>
                             <td>atencionclientes@edelvives.es</td>
                             <td>- - -</td>
@@ -231,7 +232,7 @@
                             </td>
                         </tr>
                         <tr class="table-primary">
-                            <td class="text-center"><i class="fas fa-edit" style="color: blue;"></i></td>
+                            <td class="text-center"><i class="fas fa-edit" style="color: blue;" data-bs-toggle="modal" [attr.data-bs-target]="'#editar' + modo"></i></td>
                             <td>Bruño</td>
                             <td>- - -</td>
                             <td>91 347 67 00</td>
@@ -242,7 +243,7 @@
                             </td>
                         </tr>
                         <tr>
-                            <td class="text-center"><i class="fas fa-edit" style="color: blue;"></i></td>
+                            <td class="text-center"><i class="fas fa-edit" style="color: blue;" data-bs-toggle="modal" [attr.data-bs-target]="'#editar' + modo"></i></td>
                             <td>Casals</td>
                             <td>info@editorialcasals.com</td>
                             <td>- - -</td>
@@ -253,7 +254,7 @@
                             </td>
                         </tr>
                         <tr class="table-primary">
-                            <td class="text-center"><i class="fas fa-edit" style="color: blue;"></i></td>
+                            <td class="text-center"><i class="fas fa-edit" style="color: blue;" data-bs-toggle="modal" [attr.data-bs-target]="'#editar' + modo"></i></td>
                             <td>Teide</td>
                             <td>info@edicionesteide.es</td>
                             <td>93 432 69 00</td>
@@ -264,7 +265,7 @@
                             </td>
                         </tr>
                         <tr>
-                            <td class="text-center"><i class="fas fa-edit" style="color: blue;"></i></td>
+                            <td class="text-center"><i class="fas fa-edit" style="color: blue;" data-bs-toggle="modal" [attr.data-bs-target]="'#editar' + modo"></i></td>
                             <td>Oxford Educación</td>
                             <td>- - -</td>
                             <td>91 126 38 10</td>
@@ -275,7 +276,7 @@
                             </td>
                         </tr>
                         <tr class="table-primary"> 
-                            <td class="text-center"><i class="fas fa-edit" style="color: blue;"></i></td>
+                            <td class="text-center"><i class="fas fa-edit" style="color: blue;" data-bs-toggle="modal" [attr.data-bs-target]="'#editar' + modo"></i></td>
                             <td>McGraw-Hill</td>
                             <td>clientes@mheducation.com</td>
                             <td>- - -</td>
@@ -286,7 +287,7 @@
                             </td>
                         </tr>
                         <tr>
-                            <td class="text-center"><i class="fas fa-edit" style="color: blue;"></i></td>
+                            <td class="text-center"><i class="fas fa-edit" style="color: blue;" data-bs-toggle="modal" [attr.data-bs-target]="'#editar' + modo"></i></td>
                             <td>Arán</td>
                             <td>- - -</td>
                             <td>91 782 00 30</td>
