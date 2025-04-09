@@ -1,1 +1,20 @@
-<p>reservas works!</p>
+<app-modal-content [options]="modalOptions">
+    <form>
+        <div class="mb-3">
+            <label for="bookTitle" class="form-label">Book Title</label>
+            <input type="text" class="form-control" id="bookTitle" placeholder="Enter book title">
+        </div>
+        <div class="mb-3">
+            <label for="authorName" class="form-label">Author Name</label>
+            <input type="text" class="form-control" id="authorName" placeholder="Enter author name">
+        </div>
+        <div class="mb-3">
+            <label for="reservationDate" class="form-label">Reservation Date</label>
+            <input type="date" class="form-control" id="reservationDate">
+        </div>
+    </form>
+</app-modal-content>
+
+<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#reservasModal">
+    Abrir modal
+</button>
