@@ -10,6 +10,7 @@ import { LoginComponent } from './components/login/login.component';
 import { CrudComponent } from './components/gestion/crud/crud.component';
 import { AsideComponent } from './components/general/aside/aside.component';
 import { ModalContentComponent } from './components/shared/modal-content/modal-content.component';
+import { ModalNuevoComponent } from './components/gestion/crud/components/modales/modal-nuevo/modal-nuevo.component';
 
 @NgModule({
   declarations: [
@@ -20,7 +21,8 @@ import { ModalContentComponent } from './components/shared/modal-content/modal-c
     LoginComponent,
     CrudComponent,
     AsideComponent,
-    ModalContentComponent
+    ModalContentComponent,
+    ModalNuevoComponent
   ],
   imports: [
     BrowserModule,

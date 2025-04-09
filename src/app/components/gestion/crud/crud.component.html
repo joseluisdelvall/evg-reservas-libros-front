@@ -1,17 +1,20 @@
-<!-- Libros -->
-<div class="d-flex">
+<app-modal-nuevo [modo]="modo"></app-modal-nuevo>
 
+<div class="d-flex">
     <div class="content w-100 p-5">
         <div class="d-flex justify-content-between align-items-center">
-            <h2 class="mb-0">Libros</h2>
+            <h2 class="mb-0">{{ modo | titlecase }}</h2>
             <div class="d-flex justify-content-end align-items-center gap-2 mb-2">
                 <i class="fas fa-search" style="font-size: 24px; color: blue;"></i>
-                <button class="btn btn-primary btn-sm">+ Añadir libro</button>
+                <button class="btn btn-primary btn-sm" data-bs-toggle="modal" [attr.data-bs-target]="'#nuevo' + modo">
+                    + Añadir {{ modo === 'libros' ? 'libro' : 'editorial' }}
+                </button>
             </div>
         </div>
 
         <div class="table-container">
-            <table class="table table-bordered table-hover" style="border: 2px solid #6C8EBF;">
+            <!-- Tabla Libros -->
+            <table *ngIf="modo === 'libros'; else editoriales" class="table table-bordered table-hover" style="border: 2px solid #6C8EBF;">
                 <thead>
                     <tr class="table-primary">
                         <th></th>
@@ -158,167 +161,144 @@
                 </tbody>
             </table>
 
-            <!-- Paginación -->
-            <nav>
-                <ul class="pagination justify-content-end">
-                <li class="page-item active"><a class="page-link" href="#">Previous</a></li>
-                <li class="page-item disabled"><a class="page-link" href="#">1</a></li>
-                <li class="page-item"><a class="page-link" href="#">2</a></li>
-                <li class="page-item"><a class="page-link" href="#">3</a></li>
-                <li class="page-item"><a class="page-link" href="#">Next</a></li>
-                </ul>
-            </nav>
-        </div>
-    </div>
-</div>
-
-<!-- Editoriales -->
-
-<div class="d-flex ">
-    <div class="content w-100 p-5">
-        <div class="d-flex justify-content-between align-items-center">
-            <h2 class="mb-0">Editorales</h2>
-            <div class="d-flex justify-content-end align-items-center gap-2 mb-2">
-                <i class="fas fa-search" style="font-size: 24px; color: blue;"></i>
-                <button class="btn btn-primary btn-sm">+ Añadir editorial</button>
-            </div>
-        </div>
-
-        <div class="table-container">
-            <table class="table table-bordered table-hover" style="border: 2px solid #6C8EBF;">
-                <thead>
-                    <tr class="table-primary">
-                        <th></th>
-                        <th class="text-center">Nombre</th>
-                        <th class="text-center">Correo</th>
-                        <th class="text-center">Teléfono</th>
-                        <th class="text-center">Estado</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td class="text-center"><i class="fas fa-edit" style="color: blue;"></i></td>
-                        <td>SM</td>
-                        <td>sm_educacion@grupo-sm.com</td>
-                        <td>91 422 00 11</td>
-                        <td class="text-center">
-                            <svg width="16" height="16">
-                                <circle cx="8" cy="8" r="6" fill="green" />
-                            </svg>
-                        </td>
-                    </tr>
-                    <tr class="table-primary">
-                        <td class="text-center"><i class="fas fa-edit" style="color: blue;"></i></td>
-                        <td>Anaya Educación</td>
-                        <td>- - -</td>
-                        <td>91 393 91 00</td>
-                        <td class="text-center">
-                            <svg width="16" height="16">
-                                <circle cx="8" cy="8" r="6" fill="green" />
-                            </svg>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td class="text-center"><i class="fas fa-edit" style="color: blue;"></i></td>
-                        <td>Santillana</td>
-                        <td>contacto@santillana.com</td>
-                        <td>- - -</td>
-                        <td class="text-center">
-                            <svg width="16" height="16">
-                                <circle cx="8" cy="8" r="6" fill="green" />
-                            </svg>
-                        </td>
-                    </tr>
-                    <tr class="table-primary">
-                        <td class="text-center"><i class="fas fa-edit" style="color: blue;"></i></td>
-                        <td>Vicens Vives</td>
-                        <td>info@vicensvives.es</td>
-                        <td>93 218 95 66</td>
-                        <td class="text-center">
-                            <svg width="16" height="16">
-                                <circle cx="8" cy="8" r="6" fill="green" />
-                            </svg>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td class="text-center"><i class="fas fa-edit" style="color: blue;"></i></td>
-                        <td>Edelvives</td>
-                        <td>atencionclientes@edelvives.es</td>
-                        <td>- - -</td>
-                        <td class="text-center">
-                            <svg width="16" height="16">
-                                <circle cx="8" cy="8" r="6" fill="green" />
-                            </svg>
-                        </td>
-                    </tr>
-                    <tr class="table-primary">
-                        <td class="text-center"><i class="fas fa-edit" style="color: blue;"></i></td>
-                        <td>Bruño</td>
-                        <td>- - -</td>
-                        <td>91 347 67 00</td>
-                        <td class="text-center">
-                            <svg width="16" height="16">
-                            <circle cx="8" cy="8" r="6" fill="red" />
-                            </svg>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td class="text-center"><i class="fas fa-edit" style="color: blue;"></i></td>
-                        <td>Casals</td>
-                        <td>info@editorialcasals.com</td>
-                        <td>- - -</td>
-                        <td class="text-center">
-                            <svg width="16" height="16">
-                            <circle cx="8" cy="8" r="6" fill="red" />
-                            </svg>
-                        </td>
-                    </tr>
-                    <tr class="table-primary">
-                        <td class="text-center"><i class="fas fa-edit" style="color: blue;"></i></td>
-                        <td>Teide</td>
-                        <td>info@edicionesteide.es</td>
-                        <td>93 432 69 00</td>
-                        <td class="text-center">
-                            <svg width="16" height="16">
-                            <circle cx="8" cy="8" r="6" fill="red" />
-                            </svg>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td class="text-center"><i class="fas fa-edit" style="color: blue;"></i></td>
-                        <td>Oxford Educación</td>
-                        <td>- - -</td>
-                        <td>91 126 38 10</td>
-                        <td class="text-center">
-                            <svg width="16" height="16">
-                            <circle cx="8" cy="8" r="6" fill="red" />
-                            </svg>
-                        </td>
-                    </tr>
-                    <tr class="table-primary"> 
-                        <td class="text-center"><i class="fas fa-edit" style="color: blue;"></i></td>
-                        <td>McGraw-Hill</td>
-                        <td>clientes@mheducation.com</td>
-                        <td>- - -</td>
-                        <td class="text-center">
-                            <svg width="16" height="16">
-                            <circle cx="8" cy="8" r="6" fill="red" />
-                            </svg>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td class="text-center"><i class="fas fa-edit" style="color: blue;"></i></td>
-                        <td>Arán</td>
-                        <td>- - -</td>
-                        <td>91 782 00 30</td>
-                        <td class="text-center">
-                            <svg width="16" height="16">
-                            <circle cx="8" cy="8" r="6" fill="red" />
-                            </svg>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
+            <!-- Tabla editoriales -->
+            <ng-template #editoriales>
+            
+                <table class="table table-bordered table-hover" style="border: 2px solid #6C8EBF;">
+                    <thead>
+                        <tr class="table-primary">
+                            <th></th>
+                            <th class="text-center">Nombre</th>
+                            <th class="text-center">Correo</th>
+                            <th class="text-center">Teléfono</th>
+                            <th class="text-center">Estado</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="text-center"><i class="fas fa-edit" style="color: blue;"></i></td>
+                            <td>SM</td>
+                            <td>sm_educacion@grupo-sm.com</td>
+                            <td>91 422 00 11</td>
+                            <td class="text-center">
+                                <svg width="16" height="16">
+                                    <circle cx="8" cy="8" r="6" fill="green" />
+                                </svg>
+                            </td>
+                        </tr>
+                        <tr class="table-primary">
+                            <td class="text-center"><i class="fas fa-edit" style="color: blue;"></i></td>
+                            <td>Anaya Educación</td>
+                            <td>- - -</td>
+                            <td>91 393 91 00</td>
+                            <td class="text-center">
+                                <svg width="16" height="16">
+                                    <circle cx="8" cy="8" r="6" fill="green" />
+                                </svg>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="text-center"><i class="fas fa-edit" style="color: blue;"></i></td>
+                            <td>Santillana</td>
+                            <td>contacto@santillana.com</td>
+                            <td>- - -</td>
+                            <td class="text-center">
+                                <svg width="16" height="16">
+                                    <circle cx="8" cy="8" r="6" fill="green" />
+                                </svg>
+                            </td>
+                        </tr>
+                        <tr class="table-primary">
+                            <td class="text-center"><i class="fas fa-edit" style="color: blue;"></i></td>
+                            <td>Vicens Vives</td>
+                            <td>info@vicensvives.es</td>
+                            <td>93 218 95 66</td>
+                            <td class="text-center">
+                                <svg width="16" height="16">
+                                    <circle cx="8" cy="8" r="6" fill="green" />
+                                </svg>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="text-center"><i class="fas fa-edit" style="color: blue;"></i></td>
+                            <td>Edelvives</td>
+                            <td>atencionclientes@edelvives.es</td>
+                            <td>- - -</td>
+                            <td class="text-center">
+                                <svg width="16" height="16">
+                                    <circle cx="8" cy="8" r="6" fill="green" />
+                                </svg>
+                            </td>
+                        </tr>
+                        <tr class="table-primary">
+                            <td class="text-center"><i class="fas fa-edit" style="color: blue;"></i></td>
+                            <td>Bruño</td>
+                            <td>- - -</td>
+                            <td>91 347 67 00</td>
+                            <td class="text-center">
+                                <svg width="16" height="16">
+                                <circle cx="8" cy="8" r="6" fill="red" />
+                                </svg>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="text-center"><i class="fas fa-edit" style="color: blue;"></i></td>
+                            <td>Casals</td>
+                            <td>info@editorialcasals.com</td>
+                            <td>- - -</td>
+                            <td class="text-center">
+                                <svg width="16" height="16">
+                                <circle cx="8" cy="8" r="6" fill="red" />
+                                </svg>
+                            </td>
+                        </tr>
+                        <tr class="table-primary">
+                            <td class="text-center"><i class="fas fa-edit" style="color: blue;"></i></td>
+                            <td>Teide</td>
+                            <td>info@edicionesteide.es</td>
+                            <td>93 432 69 00</td>
+                            <td class="text-center">
+                                <svg width="16" height="16">
+                                <circle cx="8" cy="8" r="6" fill="red" />
+                                </svg>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="text-center"><i class="fas fa-edit" style="color: blue;"></i></td>
+                            <td>Oxford Educación</td>
+                            <td>- - -</td>
+                            <td>91 126 38 10</td>
+                            <td class="text-center">
+                                <svg width="16" height="16">
+                                <circle cx="8" cy="8" r="6" fill="red" />
+                                </svg>
+                            </td>
+                        </tr>
+                        <tr class="table-primary"> 
+                            <td class="text-center"><i class="fas fa-edit" style="color: blue;"></i></td>
+                            <td>McGraw-Hill</td>
+                            <td>clientes@mheducation.com</td>
+                            <td>- - -</td>
+                            <td class="text-center">
+                                <svg width="16" height="16">
+                                <circle cx="8" cy="8" r="6" fill="red" />
+                                </svg>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="text-center"><i class="fas fa-edit" style="color: blue;"></i></td>
+                            <td>Arán</td>
+                            <td>- - -</td>
+                            <td>91 782 00 30</td>
+                            <td class="text-center">
+                                <svg width="16" height="16">
+                                <circle cx="8" cy="8" r="6" fill="red" />
+                                </svg>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </ng-template>
 
             <!-- Paginación -->
             <nav>
