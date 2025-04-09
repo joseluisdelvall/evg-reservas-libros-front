@@ -12,7 +12,7 @@ export class LoginService {
 
   // Solo lo uso en el login para redirigir a reservas si esta logeado
   isLoggedIn(): boolean {
-    return true;
+    return false;
   }
   
   // Me lo ha dado el chati, mejor lo hacemos con cookies

@@ -9,7 +9,8 @@ export const environment = {
   },
   auth: {
     cookieTokenName: 'RDLEVGTKN',
-  }
+  },
+  pathImg: 'assets/img/'
 };
 
 /*
