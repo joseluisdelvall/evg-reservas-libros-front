@@ -29,8 +29,4 @@ export class CrudComponent implements OnInit {
       }
     });
   }
-
-  modal(): void {
-    this.toastr.success('Bienvenido a la sección de gestión', 'Gestión');
-  }
 }

@@ -14,6 +14,7 @@ import { ModalContentComponent } from './components/shared/modal-content/modal-c
 import { ModalNuevoComponent } from './components/gestion/crud/components/modales/modal-nuevo/modal-nuevo.component';
 import { ModalEditarComponent } from './components/gestion/crud/components/modales/modal-editar/modal-editar.component';
 import { ToastrModule } from 'ngx-toastr';
+import { ModalPeriodoReservasComponent } from './components/reservas/modales/modal-periodo-reservas/modal-periodo-reservas.component';
 
 @NgModule({
   declarations: [
@@ -25,6 +26,8 @@ import { ToastrModule } from 'ngx-toastr';
     CrudComponent,
     AsideComponent,
     ModalContentComponent,
+    ModalNuevoComponent,
+    ModalPeriodoReservasComponent
     ModalNuevoComponent,
     ModalEditarComponent
   ],
