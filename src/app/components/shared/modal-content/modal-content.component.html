@@ -1,17 +1,18 @@
 <div class="modal fade" [id]="options.modalId" tabindex="-1" [attr.aria-labelledby]="options.modalId + 'Label'" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable" [ngClass]="'modal-' + (options.size ? options.size : 'xl')">
         <div class="modal-content">
-            <div class="modal-header">
+            <div class="modal-header bg-blue-primary">
                 <h5 class="modal-title" [id]="options.modalId + 'Label'">{{ options.title }}</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
                 <ng-content></ng-content>
+            </div>
             <div class="modal-footer">
-                <button *ngIf="options.cancelButton" type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                <button *ngIf="options.cancelButton" type="button" class="{{options.cancelButton.class ? options.cancelButton.class : 'btn btn-cancel'}}" data-bs-dismiss="modal">
                     {{options.cancelButton.text}}
                 </button>
-                <button *ngIf="options.okButton || (!options.cancelButton && !options.okButton)" type="button" class="btn btn-primary" data-bs-dismiss="modal">
+                <button *ngIf="options.okButton || (!options.cancelButton && !options.okButton)" type="button" class="{{options.okButton!.class ? options.okButton!.class : 'btn btn-accept'}}" data-bs-dismiss="modal">
                     {{options.okButton ? options.okButton.text : 'Guardar'}}
                 </button>
             </div>

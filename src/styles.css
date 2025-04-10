@@ -1,1 +1,32 @@
 /* You can add global styles to this file, and also import other style files */
+:root {
+    --primary-color: #cfe2ff;
+    --primary-color-dark: #b8d4ff;
+    --primary-color-dark-hover: #abcdff;
+    --primary-color-light: #e8e8e8;
+    --primary-color-light-hover: #d9dde6;
+}
+
+.bg-blue-primary {
+    background-color: var(--primary-color) !important;
+}
+
+.btn-accept {
+    background-color: var(--primary-color-dark) !important;
+    color: #000 !important;
+}
+
+.btn-accept:hover {
+    background-color: var(--primary-color-dark-hover) !important;
+    color: #000 !important;
+}
+
+.btn-cancel {
+    background-color: var(--primary-color-light) !important;
+    color: #000 !important;
+}
+
+.btn-cancel:hover {
+    background-color: var(--primary-color-light-hover) !important;
+    color: #000 !important;
+}
