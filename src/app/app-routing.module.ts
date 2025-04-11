@@ -4,9 +4,13 @@ import { LoginComponent } from './components/login/login.component';
 import { ReservasComponent } from './components/reservas/reservas.component';
 import { PedidosComponent } from './components/pedidos/pedidos.component';
 import { CrudComponent } from './components/gestion/crud/crud.component';
+import { FormReservaComponent } from './components/form-reserva/form-reserva.component';
 
 const routes: Routes = [
-  // Default route
+  // Default route ESTO HAY QUE CAMBIARLO, HAY QUE HACER OTRO ROUTING DE /ADMIN
+  // Rutas "externas"
+  { path: 'form-reserva', component: FormReservaComponent},
+  // Rutas "privadas"
   { path: 'login', component: LoginComponent },
   { path: 'reservas', component: ReservasComponent },
   { path: 'pedidos', component: PedidosComponent },
