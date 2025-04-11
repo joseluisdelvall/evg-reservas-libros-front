@@ -16,6 +16,7 @@ import { ModalEditarComponent } from './components/gestion/crud/components/modal
 import { ToastrModule } from 'ngx-toastr';
 import { ModalPeriodoReservasComponent } from './components/reservas/modales/modal-periodo-reservas/modal-periodo-reservas.component';
 import { ModalFiltroComponent } from './components/gestion/crud/components/modales/modal-filtro/modal-filtro.component';
+import { FormReservaComponent } from './components/form-reserva/form-reserva.component';
 
 @NgModule({
   declarations: [
@@ -31,7 +32,8 @@ import { ModalFiltroComponent } from './components/gestion/crud/components/modal
     ModalPeriodoReservasComponent,
     ModalNuevoComponent,
     ModalEditarComponent,
-    ModalFiltroComponent
+    ModalFiltroComponent,
+    FormReservaComponent
   ],
   imports: [
     BrowserModule,
