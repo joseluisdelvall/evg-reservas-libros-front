@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { ModalOptions } from 'src/app/components/shared/modal-content/models/modal-options';
+import { ModalOptions } from 'src/app/admin/components/shared/modal-content/models/modal-options';
 
 @Component({
   selector: 'app-modal-periodo-reservas',
