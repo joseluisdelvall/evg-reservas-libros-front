@@ -14,7 +14,6 @@ const routes: Routes = [
     component: AdminLayoutComponent,
     // Las siguientes rutas se cargarán DENTRO del <router-outlet> de AdminLayoutComponent
     children: [
-      { path: '', component: AdminComponent },
       { path: 'login', component: LoginComponent },
       { path: 'reservas', component: ReservasComponent },
       { path: 'pedidos', component: PedidosComponent },
