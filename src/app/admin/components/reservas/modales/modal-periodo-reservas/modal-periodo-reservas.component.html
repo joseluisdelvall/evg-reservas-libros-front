@@ -1,12 +1,32 @@
 <app-modal-content [options]="modalGestionReservasOption">
-    <form>
-        <div class="mb-3">
-            <label for="fechaInicio" class="form-label">Fecha de Inicio</label>
-            <input type="date" id="fechaInicio" name="fechaInicio" class="form-control" required>
-        </div>
-        <div class="mb-3">
-            <label for="fechaFin" class="form-label">Fecha de Fin</label>
-            <input type="date" id="fechaFin" name="fechaFin" class="form-control" required>
+    <form [formGroup]="periodoForm" class="p-3">
+        <div class="row">
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label for="fechaInicio">Fecha de Inicio</label>
+                    <input type="date" 
+                           class="form-control" 
+                           id="fechaInicio" 
+                           formControlName="fechaInicio"
+                           [class.is-invalid]="periodoForm.get('fechaInicio')?.invalid && periodoForm.get('fechaInicio')?.touched">
+                    <div class="invalid-feedback" *ngIf="periodoForm.get('fechaInicio')?.invalid && periodoForm.get('fechaInicio')?.touched">
+                        La fecha de inicio es requerida
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label for="fechaFin">Fecha de Fin</label>
+                    <input type="date" 
+                           class="form-control" 
+                           id="fechaFin" 
+                           formControlName="fechaFin"
+                           [class.is-invalid]="periodoForm.get('fechaFin')?.invalid && periodoForm.get('fechaFin')?.touched">
+                    <div class="invalid-feedback" *ngIf="periodoForm.get('fechaFin')?.invalid && periodoForm.get('fechaFin')?.touched">
+                        La fecha de fin es requerida
+                    </div>
+                </div>
+            </div>
         </div>
     </form>
 </app-modal-content>
