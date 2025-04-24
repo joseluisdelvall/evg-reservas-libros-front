@@ -1,4 +1,6 @@
 import { Component, OnInit } from '@angular/core';
+import { FormBuilder, FormControl, Validators } from '@angular/forms';
+import { FormGroup } from '@angular/forms';
 import { ModalOptions } from 'src/app/admin/components/shared/modal-content/models/modal-options';
 
 @Component({
@@ -9,10 +11,12 @@ import { ModalOptions } from 'src/app/admin/components/shared/modal-content/mode
 export class ModalPeriodoReservasComponent implements OnInit {
 
   modalGestionReservasOption!: ModalOptions;
-
-  constructor() { }
+  form!: FormGroup;
+  constructor(private formBuilder: FormBuilder) { }
 
   ngOnInit(): void {
+
+    this.crearFormulario();
 
     this.modalGestionReservasOption = {
       title: 'Modificar el período de reservas',
@@ -25,6 +29,14 @@ export class ModalPeriodoReservasComponent implements OnInit {
         text: 'Cancelar'
       }
     };
+
+    
   }
 
+  crearFormulario() {
+    this.form = this.formBuilder.group({
+      fechaInicio: ['', Validators.required],
+      fechaFin: ['', Validators.required]
+    }); 
+  }
 }
