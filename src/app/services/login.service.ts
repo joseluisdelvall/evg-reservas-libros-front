@@ -11,10 +11,20 @@ export class LoginService {
   // Evento para notificar cambios en el estado de autenticación
   authStatusChange = new EventEmitter<boolean>();
 
-  constructor() { }
+  constructor() {
+    // Iniciar sesión automáticamente en modo desarrollo
+    if (!environment.production) {
+      this.devBypassLogin();
+    }
+  }
 
   // Comprobar si hay un token válido almacenado
   isLoggedIn(): boolean {
+    // En modo desarrollo siempre devolver true
+    if (!environment.production) {
+      return true;
+    }
+    
     const token = this.getToken();
     if (!token) {
       return false;
@@ -39,6 +49,17 @@ export class LoginService {
       console.error('Error decodificando el token JWT:', error);
       this.logout();
       return false;
+    }
+  }
+  
+  // Método para bypass en desarrollo
+  devBypassLogin(): void {
+    if (!environment.production) {
+      // Token JWT falso para desarrollo (estructura básica)
+      const fakeToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkRldmVsb3BlciIsImVtYWlsIjoiZGV2QGV4YW1wbGUuY29tIiwicm9sIjoiYWRtaW4iLCJleHAiOjE5OTE3MDQyMTF9.fake-signature';
+      
+      // Guardar token falso
+      this.login(fakeToken);
     }
   }
   
