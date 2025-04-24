@@ -7,10 +7,19 @@
                         <h2 class="mb-5">Bienvenido a Reservas de Libros</h2>
                         <img [src]="enviroment.pathImg + 'logotipo.png'" alt="Logo" class="img-fluid mb-4" style="max-width: 200px;">
                         
-                        <button class="btn btn-lg btn-block w-100 mb-3" style="background-color: #fff; color: #444; border: 1px solid #ddd;">
-                            <img [src]="enviroment.pathImg + 'google.png'" alt="Google" class="me-3 w-auto"  style="height: 30px;">
-                            Iniciar sesión con Google
-                        </button>
+                        <div *ngIf="isLoading" class="d-flex justify-content-center mb-3">
+                            <div class="spinner-border text-primary" role="status">
+                                <span class="visually-hidden">Cargando...</span>
+                            </div>
+                        </div>
+
+                        <div *ngIf="errorMessage" class="alert alert-danger mb-4" role="alert">
+                            {{ errorMessage }}
+                        </div>
+                        
+                        <!-- Contenedor simplificado para la inicialización JavaScript -->
+                        <div class="g_id_signin d-flex justify-content-center mt-4"></div>
+                        
                     </div>
                 </div>
             </div>
