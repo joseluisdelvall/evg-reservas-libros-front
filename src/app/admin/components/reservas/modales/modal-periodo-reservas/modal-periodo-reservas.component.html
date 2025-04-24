@@ -1,30 +1,22 @@
 <app-modal-content [options]="modalGestionReservasOption">
-    <form [formGroup]="periodoForm" class="p-3">
+    <form [formGroup]="form" class="px-3">
         <div class="row">
-            <div class="col-md-6">
+            <div class="col-12 py-2">
                 <div class="form-group">
                     <label for="fechaInicio">Fecha de Inicio</label>
-                    <input type="date" 
-                           class="form-control" 
-                           id="fechaInicio" 
-                           formControlName="fechaInicio"
-                           [class.is-invalid]="periodoForm.get('fechaInicio')?.invalid && periodoForm.get('fechaInicio')?.touched">
-                    <div class="invalid-feedback" *ngIf="periodoForm.get('fechaInicio')?.invalid && periodoForm.get('fechaInicio')?.touched">
-                        La fecha de inicio es requerida
-                    </div>
+                    <input type="date" class="form-control"
+                        id="fechaInicio"
+                        formControlName="fechaInicio"
+                    >
                 </div>
             </div>
-            <div class="col-md-6">
+            <div class="col-12 py-2">
                 <div class="form-group">
                     <label for="fechaFin">Fecha de Fin</label>
-                    <input type="date" 
-                           class="form-control" 
-                           id="fechaFin" 
-                           formControlName="fechaFin"
-                           [class.is-invalid]="periodoForm.get('fechaFin')?.invalid && periodoForm.get('fechaFin')?.touched">
-                    <div class="invalid-feedback" *ngIf="periodoForm.get('fechaFin')?.invalid && periodoForm.get('fechaFin')?.touched">
-                        La fecha de fin es requerida
-                    </div>
+                    <input type="date" class="form-control"
+                        id="fechaFin"
+                        formControlName="fechaFin"
+                    >
                 </div>
             </div>
         </div>
