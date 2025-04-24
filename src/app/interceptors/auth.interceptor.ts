@@ -10,6 +10,7 @@ import { Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { LoginService } from '../services/login.service';
 import { Router } from '@angular/router';
+import { environment } from 'src/environments/environment';
 
 @Injectable()
 export class AuthInterceptor implements HttpInterceptor {
@@ -37,8 +38,10 @@ export class AuthInterceptor implements HttpInterceptor {
     // Manejo de errores de autenticación (401 Unauthorized)
     return next.handle(request).pipe(
       catchError((error: HttpErrorResponse) => {
-        if (error.status === 401) {
+        // En entorno de desarrollo, ignoramos los errores de autenticación
+        if (error.status === 401 && environment.production) {
           // Token expirado o inválido, cerrar sesión y redirigir a login
+          // Solo en producción
           this.loginService.logout();
           this.router.navigate(['/login']);
         }
