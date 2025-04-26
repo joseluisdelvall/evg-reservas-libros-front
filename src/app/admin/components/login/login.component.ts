@@ -74,7 +74,7 @@ export class LoginComponent implements OnInit, AfterViewInit {
           
           // Redirigir a la página de reservas
           this.ngZone.run(() => {
-            this.router.navigate(['/reservas']);
+            this.router.navigate(['admin/reservas']);
           });
         } else {
           this.errorMessage = response.message || 'Error de inicio de sesión';
