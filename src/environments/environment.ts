@@ -5,8 +5,8 @@
 export const environment = {
   production: false,
   api: {
-    baseUrl: 'http://localhost/evg-reservas-libros-back/src',
-    loginUrl: 'http://localhost/evg-reservas-libros-back/src/login.php',
+    baseUrl: 'http://localhost:8080/evg-reservas-libros-back/api',
+    loginUrl: 'http://localhost:8080/evg-reservas-libros-back/src/login.php',
   },
   auth: {
     cookieTokenName: 'RDLEVGTKN',

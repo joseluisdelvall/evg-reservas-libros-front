@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormControl, Validators } from '@angular/forms';
 import { FormGroup } from '@angular/forms';
 import { ModalOptions } from 'src/app/admin/components/shared/modal-content/models/modal-options';
+import { PeriodoReservasService, PeriodoReservasResponse } from 'src/app/services/periodo-reservas.service';
 
 @Component({
   selector: 'app-modal-periodo-reservas',
@@ -12,10 +13,12 @@ export class ModalPeriodoReservasComponent implements OnInit {
 
   modalGestionReservasOption!: ModalOptions;
   form!: FormGroup;
-  constructor(private formBuilder: FormBuilder) { }
+  
+  constructor(private formBuilder: FormBuilder,
+    private periodoReservasService: PeriodoReservasService
+  ) { }
 
   ngOnInit(): void {
-
     this.crearFormulario();
 
     this.modalGestionReservasOption = {
@@ -30,7 +33,7 @@ export class ModalPeriodoReservasComponent implements OnInit {
       }
     };
 
-    
+    this.obtenerPeriodoReservas();
   }
 
   crearFormulario() {
@@ -38,5 +41,16 @@ export class ModalPeriodoReservasComponent implements OnInit {
       fechaInicio: ['', Validators.required],
       fechaFin: ['', Validators.required]
     }); 
+  }
+
+  obtenerPeriodoReservas() {
+    this.periodoReservasService.getPeriodoReservas().subscribe((response: PeriodoReservasResponse) => {
+      if (response.status === 'success') {
+        this.form.patchValue({
+          fechaInicio: response.data.fechaInicio,
+          fechaFin: response.data.fechaFin
+        });
+      }
+    });
   }
 }
