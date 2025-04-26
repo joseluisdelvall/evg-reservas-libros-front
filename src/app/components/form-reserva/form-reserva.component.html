@@ -1,1 +1,77 @@
-<p>form-reserva works!</p>
+<div class="p-5 d-flex justify-content-center align-items-center bg-light">
+    <form class="p-4 border rounded shadow-sm bg-white w-100">
+
+        <div class="row mb-3">
+            <div class="col-lg-6 col-12 mb-3 mb-lg-0">
+                <label for="nombreAlumno" class="form-label fw-bold">Nombre del Alumno*</label>
+                <input type="text" id="nombreAlumno" class="form-control" placeholder="Ingrese el nombre del alumno">
+            </div>
+            <div class="col-lg-6 col-12">
+                <label for="apellidosAlumno" class="form-label fw-bold">Apellidos del Alumno*</label>
+                <input type="text" id="apellidosAlumno" class="form-control" placeholder="Ingrese los apellidos del alumno">
+            </div>
+        </div>
+
+        <div class="row mb-3">
+            <div class="col-lg-6 col-12 mb-3 mb-lg-0">
+                <label for="nombreTutor" class="form-label fw-bold">Padre / Madre / Tutor Legal</label>
+                <input type="text" id="nombreTutor" class="form-control" placeholder="Ingrese el nombre del tutor legal">
+            </div>
+            <div class="col-lg-6 col-12">
+                <label for="apellidosTutor" class="form-label fw-bold">Apellidos del Tutor Legal</label>
+                <input type="text" id="apellidosTutor" class="form-control" placeholder="Ingrese los apellidos del tutor legal">
+            </div>
+        </div>
+
+        <div class="row mb-3">
+            <div class="col-lg-6 col-12 mb-3 mb-lg-0">
+                <label for="dni" class="form-label fw-bold">DNI*</label>
+                <input type="text" id="dni" class="form-control" placeholder="Ingrese el DNI">
+            </div>
+            <div class="col-lg-6 col-12">
+                <label for="correo" class="form-label fw-bold">Correo*</label>
+                <input type="text" id="correo" class="form-control" placeholder="Ingrese el correo electrónico">
+            </div>
+        </div>
+
+        <div class="row mb-3">
+            <div class="col-lg-6 col-12 mb-3 mb-lg-0">
+                <label for="telefono" class="form-label fw-bold">Teléfono de contacto*</label>
+                <input type="text" id="telefono" class="form-control" placeholder="Ingrese el teléfono de contacto">
+            </div>
+        </div>
+
+        <div class="col-lg-8 col-12 mb-3">
+            <label for="curso" class="form-label fw-bold">Curso</label>
+            <select id="curso" class="form-select">
+                <option value="">Seleccione un curso</option>
+                <option value="1DAW">1º Desarrollo de Aplicaciones Web</option>
+                <option value="2DAW">2º Desarrollo de Aplicaciones Web</option>
+                <option value="1SMR">1º Sistemas Microinformáticos y Redes</option>
+                <option value="2SMR">2º Sistemas Microinformáticos y Redes</option>
+            </select>
+        </div>
+
+        <div class="col-lg-8 col-12 mb-3">
+            <label for="libro" class="form-label fw-bold">Libro</label>
+            <select id="libro" class="form-select">
+                <option value="">Seleccione los libros a reservar</option>
+                <option value="1DAW">Programación</option>
+                <option value="2DAW">Bases de Datos</option>
+                <option value="1SMR">Formación y Orientación Laboral</option>
+                <option value="2SMR">Lenguaje de marcas</option>
+            </select>
+        </div>
+
+        <div class="row mb-3">
+            <div class="col-lg-8 col-12">
+                <label for="justificante" class="form-label fw-bold">Justificante de Pago*</label>
+                <input type="file" id="justificante" class="form-control">
+            </div>
+        </div>
+
+        <div class="d-flex justify-content-end">
+            <button type="submit" class="btn btn-primary px-4">Enviar</button>
+        </div>
+    </form>
+</div>
