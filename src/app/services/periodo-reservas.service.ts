@@ -8,6 +8,11 @@ export interface PeriodoReservas {
   fechaFin: string;
 }
 
+export interface PeriodoReservasResponse {
+  status: string;
+  data: PeriodoReservas;
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -18,11 +23,11 @@ export class PeriodoReservasService extends BaseService {
     super(http);
   }
 
-  getPeriodoReservas(): Observable<PeriodoReservas> {
-    return this.get<PeriodoReservas>(this.endpoint);
+  getPeriodoReservas(): Observable<PeriodoReservasResponse> {
+    return this.get<PeriodoReservasResponse>(this.endpoint);
   }
 
-  updatePeriodoReservas(periodo: PeriodoReservas): Observable<PeriodoReservas> {
-    return this.put<PeriodoReservas>(this.endpoint, periodo);
+  updatePeriodoReservas(periodo: PeriodoReservas): Observable<PeriodoReservasResponse> {
+    return this.put<PeriodoReservasResponse>(this.endpoint, periodo);
   }
 } 
