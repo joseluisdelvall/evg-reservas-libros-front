@@ -30,135 +30,17 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr>
-                        <td class="text-center"><i class="fas fa-edit" style="color: blue;" data-bs-toggle="modal" [attr.data-bs-target]="'#editar' + modo"></i></td>
-                        <td>Lengua Castellana</td>
-                        <td>978-0-12-345678-6</td>
-                        <td>Anaya</td>
-                        <td>29,99€</td>
+                    <tr *ngFor="let libro of libros">
                         <td class="text-center">
-                            <svg width="16" height="16">
-                                <circle cx="8" cy="8" r="6" fill="green" />
-                            </svg>
+                            <i class="fas fa-edit" style="color: blue;" data-bs-toggle="modal" [attr.data-bs-target]="'#editar' + modo"></i>
                         </td>
-                    </tr>
-                    <tr>
-                        <td class="text-center"><i class="fas fa-edit" style="color: blue;" data-bs-toggle="modal" [attr.data-bs-target]="'#editar' + modo"></i></td>
-                        <td>Lengua Castellana</td>
-                        <td>978-1-23-456789-7</td>
-                        <td>Edelvives</td>
-                        <td>39,99€</td>
+                        <td>{{ libro.nombre }}</td>
+                        <td>{{ libro.isbn }}</td>
+                        <td>{{ libro.editorial }}</td>
+                        <td>{{ libro.precio }}</td>
                         <td class="text-center">
                             <svg width="16" height="16">
-                                <circle cx="8" cy="8" r="6" fill="green" />
-                            </svg>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td class="text-center"><i class="fas fa-edit" style="color: blue;" data-bs-toggle="modal" [attr.data-bs-target]="'#editar' + modo"></i></td>
-                        <td>Lengua Castellana</td>
-                        <td>978-2-98-765432-9</td>
-                        <td>Anaya</td>
-                        <td>19,95€</td>
-                        <td class="text-center">
-                            <svg width="16" height="16">
-                                <circle cx="8" cy="8" r="6" fill="green" />
-                            </svg>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td class="text-center"><i class="fas fa-edit" style="color: blue;" data-bs-toggle="modal" [attr.data-bs-target]="'#editar' + modo"></i></td>
-                        <td>Lengua Castellana</td>
-                        <td>0-306-40615-2</td>
-                        <td>SM</td>
-                        <td>59,99€</td>
-                        <td class="text-center">
-                            <svg width="16" height="16">
-                                <circle cx="8" cy="8" r="6" fill="green" />
-                            </svg>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td class="text-center"><i class="fas fa-edit" style="color: blue;" data-bs-toggle="modal" [attr.data-bs-target]="'#editar' + modo"></i></td>
-                        <td>Lengua Castellana</td>
-                        <td>1-234-56789-X</td>
-                        <td>Arán</td>
-                        <td>45,99€</td>
-                        <td class="text-center">
-                            <svg width="16" height="16">
-                                <circle cx="8" cy="8" r="6" fill="green" />
-                            </svg>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td class="text-center"><i class="fas fa-edit" style="color: blue;" data-bs-toggle="modal" [attr.data-bs-target]="'#editar' + modo"></i></td>
-                        <td>Matemáticas aplicadas</td>
-                        <td>978-2-98-765432-9</td>
-                        <td>SM</td>
-                        <td>35,99€</td>
-                        <td class="text-center">
-                            <svg width="16" height="16">
-                            <circle cx="8" cy="8" r="6" fill="red" />
-                            </svg>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td class="text-center"><i class="fas fa-edit" style="color: blue;" data-bs-toggle="modal" [attr.data-bs-target]="'#editar' + modo"></i></td>
-                        <td>Ciencias Sociales</td>
-                        <td>978-8-44-868377-6</td>
-                        <td>Santillana</td>
-                        <td>38,99€</td>
-                        <td class="text-center">
-                            <svg width="16" height="16">
-                            <circle cx="8" cy="8" r="6" fill="red" />
-                            </svg>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td class="text-center"><i class="fas fa-edit" style="color: blue;" data-bs-toggle="modal" [attr.data-bs-target]="'#editar' + modo"></i></td>
-                        <td>Biología y Geología</td>
-                        <td>978-8-46-984252-0</td>
-                        <td>Vicens Vives</td>
-                        <td>25,49€</td>
-                        <td class="text-center">
-                            <svg width="16" height="16">
-                            <circle cx="8" cy="8" r="6" fill="red" />
-                            </svg>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td class="text-center"><i class="fas fa-edit" style="color: blue;" data-bs-toggle="modal" [attr.data-bs-target]="'#editar' + modo"></i></td>
-                        <td>Inglés</td>
-                        <td>978-84-678-7410-5</td>
-                        <td>Oxford Educación</td>
-                        <td>29,95€</td>
-                        <td class="text-center">
-                            <svg width="16" height="16">
-                            <circle cx="8" cy="8" r="6" fill="red" />
-                            </svg>
-                        </td>
-                    </tr>
-                    <tr> 
-                        <td class="text-center"><i class="fas fa-edit" style="color: blue;" data-bs-toggle="modal" [attr.data-bs-target]="'#editar' + modo"></i></td>
-                        <td>Física y Química</td>
-                        <td>978-84-682-1741-6</td>
-                        <td>Casals</td>
-                        <td>39,99€</td>
-                        <td class="text-center">
-                            <svg width="16" height="16">
-                            <circle cx="8" cy="8" r="6" fill="red" />
-                            </svg>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td class="text-center"><i class="fas fa-edit" style="color: blue;" data-bs-toggle="modal" [attr.data-bs-target]="'#editar' + modo"></i></td>
-                        <td>Historia del Mundo Contemporáneo</td>
-                        <td>978-84-489-5051-1</td>
-                        <td>Teide</td>
-                        <td>29,99€</td>
-                        <td class="text-center">
-                            <svg width="16" height="16">
-                            <circle cx="8" cy="8" r="6" fill="red" />
+                                <circle cx="8" cy="8" r="6" [attr.fill]="libro.estado === 'activo' ? 'green' : 'red'" />
                             </svg>
                         </td>
                     </tr>
