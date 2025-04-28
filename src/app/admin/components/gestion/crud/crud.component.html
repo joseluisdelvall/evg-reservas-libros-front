@@ -36,11 +36,11 @@
                         </td>
                         <td>{{ libro.nombre }}</td>
                         <td>{{ libro.isbn }}</td>
-                        <td>{{ libro.editorial }}</td>
+                        <td>{{ libro.editorial!.nombre }}</td>
                         <td>{{ libro.precio }}</td>
                         <td class="text-center">
                             <svg width="16" height="16">
-                                <circle cx="8" cy="8" r="6" [attr.fill]="libro.estado === 'activo' ? 'green' : 'red'" />
+                                <circle cx="8" cy="8" r="6" [attr.fill]="libro.estado ? 'green' : 'red'" />
                             </svg>
                         </td>
                     </tr>

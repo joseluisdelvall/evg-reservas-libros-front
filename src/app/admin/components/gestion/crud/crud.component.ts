@@ -43,6 +43,7 @@ export class CrudComponent implements OnInit {
       this.crudService.getLibros().subscribe({
         next: (data: Libro[]) => {
           this.libros = data;
+          console.log('Editoriales:', this.libros);
         },
         error: (error) => {
           console.error('Error al cargar los libros:', error);
