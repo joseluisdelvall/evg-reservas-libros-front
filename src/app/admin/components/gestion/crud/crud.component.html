@@ -30,7 +30,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr *ngFor="let libro of libros">
+                    <tr *ngFor="let libro of this.libros">
                         <td class="text-center">
                             <i class="fas fa-edit" style="color: blue;" data-bs-toggle="modal" [attr.data-bs-target]="'#editar' + modo"></i>
                         </td>
@@ -61,124 +61,16 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr>
-                            <td class="text-center"><i class="fas fa-edit" style="color: blue;" data-bs-toggle="modal" [attr.data-bs-target]="'#editar' + modo"></i></td>
-                            <td>SM</td>
-                            <td>sm_educacion@grupo-sm.com</td>
-                            <td>91 422 00 11</td>
+                        <tr *ngFor="let editorial of this.editorialesA">
                             <td class="text-center">
-                                <svg width="16" height="16">
-                                    <circle cx="8" cy="8" r="6" fill="green" />
-                                </svg>
+                                <i class="fas fa-edit" style="color: blue;" data-bs-toggle="modal" [attr.data-bs-target]="'#editar' + modo"></i>
                             </td>
-                        </tr>
-                        <tr>
-                            <td class="text-center"><i class="fas fa-edit" style="color: blue;" data-bs-toggle="modal" [attr.data-bs-target]="'#editar' + modo"></i></td>
-                            <td>Anaya Educación</td>
-                            <td>- - -</td>
-                            <td>91 393 91 00</td>
+                            <td>{{ editorial.nombre }}</td>
+                            <td>{{ editorial.correo }}</td>
+                            <td>{{ editorial.telefono }}</td>
                             <td class="text-center">
                                 <svg width="16" height="16">
-                                    <circle cx="8" cy="8" r="6" fill="green" />
-                                </svg>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td class="text-center"><i class="fas fa-edit" style="color: blue;" data-bs-toggle="modal" [attr.data-bs-target]="'#editar' + modo"></i></td>
-                            <td>Santillana</td>
-                            <td>contacto@santillana.com</td>
-                            <td>- - -</td>
-                            <td class="text-center">
-                                <svg width="16" height="16">
-                                    <circle cx="8" cy="8" r="6" fill="green" />
-                                </svg>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td class="text-center"><i class="fas fa-edit" style="color: blue;" data-bs-toggle="modal" [attr.data-bs-target]="'#editar' + modo"></i></td>
-                            <td>Vicens Vives</td>
-                            <td>info@vicensvives.es</td>
-                            <td>93 218 95 66</td>
-                            <td class="text-center">
-                                <svg width="16" height="16">
-                                    <circle cx="8" cy="8" r="6" fill="green" />
-                                </svg>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td class="text-center"><i class="fas fa-edit" style="color: blue;" data-bs-toggle="modal" [attr.data-bs-target]="'#editar' + modo"></i></td>
-                            <td>Edelvives</td>
-                            <td>atencionclientes@edelvives.es</td>
-                            <td>- - -</td>
-                            <td class="text-center">
-                                <svg width="16" height="16">
-                                    <circle cx="8" cy="8" r="6" fill="green" />
-                                </svg>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td class="text-center"><i class="fas fa-edit" style="color: blue;" data-bs-toggle="modal" [attr.data-bs-target]="'#editar' + modo"></i></td>
-                            <td>Bruño</td>
-                            <td>- - -</td>
-                            <td>91 347 67 00</td>
-                            <td class="text-center">
-                                <svg width="16" height="16">
-                                <circle cx="8" cy="8" r="6" fill="red" />
-                                </svg>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td class="text-center"><i class="fas fa-edit" style="color: blue;" data-bs-toggle="modal" [attr.data-bs-target]="'#editar' + modo"></i></td>
-                            <td>Casals</td>
-                            <td>info@editorialcasals.com</td>
-                            <td>- - -</td>
-                            <td class="text-center">
-                                <svg width="16" height="16">
-                                <circle cx="8" cy="8" r="6" fill="red" />
-                                </svg>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td class="text-center"><i class="fas fa-edit" style="color: blue;" data-bs-toggle="modal" [attr.data-bs-target]="'#editar' + modo"></i></td>
-                            <td>Teide</td>
-                            <td>info@edicionesteide.es</td>
-                            <td>93 432 69 00</td>
-                            <td class="text-center">
-                                <svg width="16" height="16">
-                                <circle cx="8" cy="8" r="6" fill="red" />
-                                </svg>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td class="text-center"><i class="fas fa-edit" style="color: blue;" data-bs-toggle="modal" [attr.data-bs-target]="'#editar' + modo"></i></td>
-                            <td>Oxford Educación</td>
-                            <td>- - -</td>
-                            <td>91 126 38 10</td>
-                            <td class="text-center">
-                                <svg width="16" height="16">
-                                <circle cx="8" cy="8" r="6" fill="red" />
-                                </svg>
-                            </td>
-                        </tr>
-                        <tr> 
-                            <td class="text-center"><i class="fas fa-edit" style="color: blue;" data-bs-toggle="modal" [attr.data-bs-target]="'#editar' + modo"></i></td>
-                            <td>McGraw-Hill</td>
-                            <td>clientes@mheducation.com</td>
-                            <td>- - -</td>
-                            <td class="text-center">
-                                <svg width="16" height="16">
-                                <circle cx="8" cy="8" r="6" fill="red" />
-                                </svg>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td class="text-center"><i class="fas fa-edit" style="color: blue;" data-bs-toggle="modal" [attr.data-bs-target]="'#editar' + modo"></i></td>
-                            <td>Arán</td>
-                            <td>- - -</td>
-                            <td>91 782 00 30</td>
-                            <td class="text-center">
-                                <svg width="16" height="16">
-                                <circle cx="8" cy="8" r="6" fill="red" />
+                                    <circle cx="8" cy="8" r="6" [attr.fill]="editorial.estado === 'activo' ? 'green' : 'red'" />
                                 </svg>
                             </td>
                         </tr>
