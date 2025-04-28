@@ -3,6 +3,8 @@ import { ActivatedRoute } from '@angular/router';
 import { ModalOptions } from '../../shared/modal-content/models/modal-options';
 import { ToastrService } from 'ngx-toastr';
 import { Libro } from 'src/app/models/libro.model';
+import { Editorial } from 'src/app/models/editorial.model';
+import { CrudService } from 'src/app/services/crud.service';
 
 @Component({
   selector: 'app-crud',
@@ -16,7 +18,7 @@ export class CrudComponent implements OnInit {
   nuevoModalOptions!: ModalOptions;
 
   libros: Libro[] = [];
-  editoriales: Editorial[] = [];
+  editorialesA: Editorial[] = [];
 
   constructor(private route: ActivatedRoute,
     private crudService: CrudService,
@@ -38,25 +40,25 @@ export class CrudComponent implements OnInit {
 
   cargarTable(): void {
     if (this.modo === 'libros') {
-      this.crudService.getLibros().subscribe(
-        (data: Libro[]) => {
+      this.crudService.getLibros().subscribe({
+        next: (data: Libro[]) => {
           this.libros = data;
         },
-        error => {
+        error: (error) => {
           console.error('Error al cargar los libros:', error);
           this.toastr.error('Error al cargar los libros', 'Error');
         }
-      );
+      });
     } else if (this.modo === 'editoriales') {
-      this.crudService.getEditoriales().subscribe(
-        (data: Editorial[]) => {
-          this.editoriales = data;
+      this.crudService.getEditoriales().subscribe({
+        next: (data: Editorial[]) => {
+          this.editorialesA = data;
         },
-        error => {
+        error: (error) => {
           console.error('Error al cargar las editoriales:', error);
           this.toastr.error('Error al cargar las editoriales', 'Error');
         }
-      );
+      });
     }
   }
 

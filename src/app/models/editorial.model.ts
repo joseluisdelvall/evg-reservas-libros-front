@@ -7,4 +7,5 @@ export interface Editorial {
     nombre?: string; // Nombre de la editorial
     telefono?: string[]; // Teléfono de contacto
     correo?: string[]; // Correo electrónico de contacto
+    estado?: string; // Estado de la editorial (activo o inactivo)
 }
