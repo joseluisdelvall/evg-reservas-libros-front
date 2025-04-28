@@ -7,5 +7,5 @@ export interface Libro {
   precio?: number; // Precio del libro
   stock?: number; // Año de publicación
   editorial?: Editorial; // Editorial del libro
-  estado?: string; // Estado del libro (disponible o no)
+  estado?: boolean; // Estado del libro (disponible o no)
 }

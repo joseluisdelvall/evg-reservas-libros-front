@@ -1,22 +1,22 @@
 import { Injectable } from '@angular/core';
-import { Observable, of } from 'rxjs';
+import { map, Observable, of } from 'rxjs';
 import { Libro } from '../models/libro.model';
 import { Editorial } from '../models/editorial.model';
+import { HttpClient } from '@angular/common/http';
+import { BaseService } from './base.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class CrudService {
+  private endpoint = '/crud';
 
-  constructor() { }
+  constructor(private http: BaseService) {}
 
   getLibros(): Observable<Libro[]> {
-    // Simulate an API call to get libros
-    return of([
-      { id: 1, nombre: 'Libro 1', isbn: '1234567890', precio: 10.99, stock: 5, estado: 'activo' },
-      { id: 2, nombre: 'Libro 2', isbn: '0987654321', precio: 15.99, stock: 3, estado: 'activo' },
-      { id: 3, nombre: 'Libro 3', isbn: '1122334455', precio: 20.99, stock: 8, estado: 'inactivo' }
-    ]);
+    return this.http.get<{ status: string; data: Libro[] }>(this.endpoint + '/libros').pipe(
+      map(response => response.data) // Extraer el array de libros
+    );
   }
 
   getEditoriales(): Observable<Editorial[]> {
