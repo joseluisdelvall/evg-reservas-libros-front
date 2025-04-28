@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { ModalOptions } from './models/modal-options';
 
 @Component({
@@ -9,10 +9,20 @@ import { ModalOptions } from './models/modal-options';
 export class ModalContentComponent implements OnInit {
 
   @Input() options!: ModalOptions;
+  @Output() okButtonClicked = new EventEmitter<void>();
+  @Output() cancelButtonClicked = new EventEmitter<void>();
 
   constructor() { }
 
   ngOnInit(): void {
+  }
+
+  onOkButtonClick(): void {
+    this.okButtonClicked.emit();
+  }
+
+  onCancelButtonClick(): void {
+    this.cancelButtonClicked.emit();
   }
 
 }
