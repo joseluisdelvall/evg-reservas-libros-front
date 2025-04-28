@@ -27,10 +27,8 @@ export class CrudService {
 
   getEditoriales(): Observable<Editorial[]> {
 
-    return of([
-      { id: 1, nombre: 'Editorial 1', telefono: ['123456789', '987654321'], estado: 'activo' },
-      { id: 2, nombre: 'Editorial 2', correo: ['correo@ejemplo.com'], estado: 'activo' },
-      { id: 3, nombre: 'Editorial 3', telefono: [], estado: 'inactivo' }
-    ]);
+    return this.http.get<{ status: string; data: Editorial[] }>(this.endpoint + '/editoriales').pipe(
+      map(response => response.data) // Extraer el array de libros
+    );
   }
 }

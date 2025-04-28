@@ -70,7 +70,7 @@
                             <td>{{ editorial.telefono }}</td>
                             <td class="text-center">
                                 <svg width="16" height="16">
-                                    <circle cx="8" cy="8" r="6" [attr.fill]="editorial.estado === 'activo' ? 'green' : 'red'" />
+                                    <circle cx="8" cy="8" r="6" [attr.fill]="editorial.estado ? 'green' : 'red'" />
                                 </svg>
                             </td>
                         </tr>
