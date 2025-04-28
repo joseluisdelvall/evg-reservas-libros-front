@@ -13,11 +13,11 @@ export class CrudService {
 
   constructor(private http: BaseService) {}
 
-  // addLibro(libro: Libro): Observable<Libro> {
-  //   return this.http.post<{ status: string; data: Libro }>(this.endpoint + '/libros', libro).pipe(
-  //     map(response => response.data) // Extraer el libro creado
-  //   );
-  // }
+  addLibro(libro: Libro): Observable<Libro> {
+    return this.http.post<{ status: string; data: Libro }>(this.endpoint + '/libros', libro).pipe(
+      map(response => response.data) // Extraer el libro creado
+    );
+  }
 
   getLibros(): Observable<Libro[]> {
     return this.http.get<{ status: string; data: Libro[] }>(this.endpoint + '/libros').pipe(

@@ -9,10 +9,10 @@
                 <ng-content></ng-content>
             </div>
             <div class="modal-footer">
-                <button *ngIf="options.cancelButton" type="button" class="{{options.cancelButton.class ? options.cancelButton.class : 'btn btn-cancel'}}" data-bs-dismiss="modal">
+                <button *ngIf="options.cancelButton" type="button" (click)="onCancelButtonClick()" class="{{options.cancelButton.class ? options.cancelButton.class : 'btn btn-cancel'}}" data-bs-dismiss="modal">
                     {{options.cancelButton.text}}
                 </button>
-                <button *ngIf="options.okButton || (!options.cancelButton && !options.okButton)" type="button" class="{{options.okButton!.class ? options.okButton!.class : 'btn btn-accept'}}" data-bs-dismiss="modal">
+                <button *ngIf="options.okButton || (!options.cancelButton && !options.okButton)" (click)="onOkButtonClick()" type="button" class="{{options.okButton!.class ? options.okButton!.class : 'btn btn-accept'}}" data-bs-dismiss="modal">
                     {{options.okButton ? options.okButton.text : 'Guardar'}}
                 </button>
             </div>
