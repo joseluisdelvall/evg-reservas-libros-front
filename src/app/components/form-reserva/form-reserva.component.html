@@ -1,77 +1,133 @@
-<div class="p-5 d-flex justify-content-center align-items-center bg-light">
-    <form class="p-4 border rounded shadow-sm bg-white w-100">
+<div class="container py-5">
+  <div class="row align-items-center mb-4">
+    <div class="col-2">
+      <a href="https://fundacionloyola.com/vguadalupe/" class="btn btn-outline-secondary rounded-pill">
+        <i class="fas fa-arrow-left fa-sm me-2"></i> Volver
+      </a>
+    </div>
+    <div class="col-8 text-center">
+      <h2 class="mb-0 text-primary fw-bold">Reserva de Libros EVG</h2>
+    </div>
+  </div>
 
-        <div class="row mb-3">
-            <div class="col-lg-6 col-12 mb-3 mb-lg-0">
-                <label for="nombreAlumno" class="form-label fw-bold">Nombre del Alumno*</label>
-                <input type="text" id="nombreAlumno" class="form-control" placeholder="Ingrese el nombre del alumno">
-            </div>
-            <div class="col-lg-6 col-12">
-                <label for="apellidosAlumno" class="form-label fw-bold">Apellidos del Alumno*</label>
-                <input type="text" id="apellidosAlumno" class="form-control" placeholder="Ingrese los apellidos del alumno">
-            </div>
+  <div class="row justify-content-center">
+    <div class="col-lg-3 col-md-8 col-12 mb-4">
+      <div class="card border-0 shadow-lg">
+        <div class="card-body p-4">
+          <h6 class="card-title fw-bold text-secondary mb-3"><i class="fas fa-info-circle me-2"></i> Información Importante</h6>
+          <ul class="list-unstyled small text-muted">
+            <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i> Por favor, completa todos los campos obligatorios (*).</li>
+        <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i> Revisa cuidadosamente los datos del alumno antes de enviar.</li>
+        <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i> El campo de tutor es opcional, solo si es necesario.</li>
+        <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i> Asegúrate de que el DNI y el correo electrónico sean correctos para futuras comunicaciones.</li>
+        <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i> Selecciona el curso para ver los libros disponibles.</li>
+        <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i> Puedes seleccionar varios libros para la reserva.</li>
+        <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i> Es necesario adjuntar el justificante de pago para completar la reserva.</li>
+        <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i> Una vez enviada la reserva, recibirá un correo de confirmación.</li>
+          </ul>
         </div>
+      </div>
+    </div>
 
-        <div class="row mb-3">
-            <div class="col-lg-6 col-12 mb-3 mb-lg-0">
-                <label for="nombreTutor" class="form-label fw-bold">Padre / Madre / Tutor Legal</label>
-                <input type="text" id="nombreTutor" class="form-control" placeholder="Ingrese el nombre del tutor legal">
-            </div>
-            <div class="col-lg-6 col-12">
-                <label for="apellidosTutor" class="form-label fw-bold">Apellidos del Tutor Legal</label>
-                <input type="text" id="apellidosTutor" class="form-control" placeholder="Ingrese los apellidos del tutor legal">
-            </div>
-        </div>
+    <div class="col-lg-9 col-md-8 col-12">
+      <div class="card border-0 shadow-lg">
+        <div class="card-body p-4">
+          <form [formGroup]="reservaForm" (ngSubmit)="onSubmit()">
 
-        <div class="row mb-3">
-            <div class="col-lg-6 col-12 mb-3 mb-lg-0">
-                <label for="dni" class="form-label fw-bold">DNI*</label>
-                <input type="text" id="dni" class="form-control" placeholder="Ingrese el DNI">
+            <h6 class="mb-3 text-muted">Datos del Alumno</h6>
+            <div class="row mb-3">
+              <div class="col-md-6 mb-3 mb-md-0">
+                <label for="nombreAlumno" class="form-label fw-semibold small text-muted">Nombre del Alumno*</label>
+                <input type="text" id="nombreAlumno" class="form-control form-control-sm" formControlName="nombreAlumno" placeholder="Ingrese el nombre">
+                <div *ngIf="isInvalid('nombreAlumno')" class="text-danger small">{{ getError('nombreAlumno') }}</div>
+              </div>
+              <div class="col-md-6">
+                <label for="apellidosAlumno" class="form-label fw-semibold small text-muted">Apellidos del Alumno*</label>
+                <input type="text" id="apellidosAlumno" class="form-control form-control-sm" formControlName="apellidosAlumno" placeholder="Ingrese los apellidos">
+                <div *ngIf="isInvalid('apellidosAlumno')" class="text-danger small">{{ getError('apellidosAlumno') }}</div>
+              </div>
             </div>
-            <div class="col-lg-6 col-12">
-                <label for="correo" class="form-label fw-bold">Correo*</label>
-                <input type="text" id="correo" class="form-control" placeholder="Ingrese el correo electrónico">
+
+            <h6 class="mb-3 mt-4 text-muted">Información del Tutor (Opcional)</h6>
+            <div class="row mb-3">
+              <div class="col-md-6 mb-3 mb-md-0">
+                <label for="nombreTutor" class="form-label fw-semibold small text-muted">Padre / Madre / Tutor Legal</label>
+                <input type="text" id="nombreTutor" class="form-control form-control-sm" formControlName="nombreTutor" placeholder="Ingrese el nombre del tutor">
+              </div>
+              <div class="col-md-6">
+                <label for="apellidosTutor" class="form-label fw-semibold small text-muted">Apellidos del Tutor Legal</label>
+                <input type="text" id="apellidosTutor" class="form-control form-control-sm" formControlName="apellidosTutor" placeholder="Ingrese los apellidos del tutor">
+              </div>
             </div>
-        </div>
 
-        <div class="row mb-3">
-            <div class="col-lg-6 col-12 mb-3 mb-lg-0">
-                <label for="telefono" class="form-label fw-bold">Teléfono de contacto*</label>
-                <input type="text" id="telefono" class="form-control" placeholder="Ingrese el teléfono de contacto">
+            <h6 class="mb-3 mt-4 text-muted">Datos de Contacto</h6>
+            <div class="row mb-3">
+              <div class="col-md-6 mb-3 mb-md-0">
+                <label for="dni" class="form-label fw-semibold small text-muted">DNI*</label>
+                <input type="text" id="dni" class="form-control form-control-sm" formControlName="dni" placeholder="Ingrese el DNI">
+                <div *ngIf="isInvalid('dni')" class="text-danger small">{{ getError('dni') }}</div>
+              </div>
+              <div class="col-md-6">
+                <label for="correo" class="form-label fw-semibold small text-muted">Correo Electrónico*</label>
+                <input type="email" id="correo" class="form-control form-control-sm" formControlName="correo" placeholder="Ingrese el correo electrónico">
+                <div *ngIf="isInvalid('correo')" class="text-danger small">{{ getError('correo') }}</div>
+              </div>
             </div>
-        </div>
 
-        <div class="col-lg-8 col-12 mb-3">
-            <label for="curso" class="form-label fw-bold">Curso</label>
-            <select id="curso" class="form-select">
-                <option value="">Seleccione un curso</option>
-                <option value="1DAW">1º Desarrollo de Aplicaciones Web</option>
-                <option value="2DAW">2º Desarrollo de Aplicaciones Web</option>
-                <option value="1SMR">1º Sistemas Microinformáticos y Redes</option>
-                <option value="2SMR">2º Sistemas Microinformáticos y Redes</option>
-            </select>
-        </div>
-
-        <div class="col-lg-8 col-12 mb-3">
-            <label for="libro" class="form-label fw-bold">Libro</label>
-            <select id="libro" class="form-select">
-                <option value="">Seleccione los libros a reservar</option>
-                <option value="1DAW">Programación</option>
-                <option value="2DAW">Bases de Datos</option>
-                <option value="1SMR">Formación y Orientación Laboral</option>
-                <option value="2SMR">Lenguaje de marcas</option>
-            </select>
-        </div>
-
-        <div class="row mb-3">
-            <div class="col-lg-8 col-12">
-                <label for="justificante" class="form-label fw-bold">Justificante de Pago*</label>
-                <input type="file" id="justificante" class="form-control">
+            <div class="mb-3">
+              <label for="telefono" class="form-label fw-semibold small text-muted">Teléfono de Contacto*</label>
+              <input type="tel" id="telefono" class="form-control form-control-sm" formControlName="telefono" placeholder="Ingrese el teléfono">
+              <div *ngIf="isInvalid('telefono')" class="text-danger small">{{ getError('telefono') }}</div>
             </div>
-        </div>
 
-        <div class="d-flex justify-content-end">
-            <button type="submit" class="btn btn-primary px-4">Enviar</button>
+            <h6 class="mb-3 mt-4 text-muted">Selección de Libros</h6>
+            <div class="mb-3">
+              <label for="curso" class="form-label fw-semibold small text-muted">Curso</label>
+              <ng-select
+                [items]="cursos"
+                formControlName="curso"
+                id="curso"
+                [multiple]="false"
+                [closeOnSelect]="true"
+                [searchable]="true"
+                placeholder="Seleccione un curso"
+                class="ng-select-sm">
+              </ng-select>
+              <div *ngIf="isInvalid('curso')" class="text-danger small">{{ getError('curso') }}</div>
+            </div>
+
+            <div class="mb-3" *ngIf="mostrarLibros">
+              <label for="libro" class="form-label fw-semibold small text-muted">Libro(s)</label>
+              <ng-select
+                [items]="libros"
+                formControlName="libro"
+                id="libro"
+                [multiple]="true"
+                [closeOnSelect]="false"
+                [searchable]="true"
+                placeholder="Seleccione los libros"
+                [disabled]="!mostrarLibros"
+                class="ng-select-sm">
+              </ng-select>
+              <div *ngIf="isInvalid('libro')" class="text-danger small">{{ getError('libro') }}</div>
+            </div>
+
+            <h6 class="mb-3 mt-4 text-muted">Justificante de Pago</h6>
+            <div class="mb-3">
+              <label for="justificante" class="form-label fw-semibold small text-muted">Subir Justificante*</label>
+              <input type="file" id="justificante" class="form-control form-control-sm" (change)="onFileChange($event)">
+              <div *ngIf="isInvalid('justificante')" class="text-danger small">{{ getError('justificante') }}</div>
+            </div>
+
+            <div class="d-flex justify-content-end mt-4">
+              <button type="submit" class="btn btn-primary rounded-pill px-4 py-2" [disabled]="reservaForm.invalid || loading">
+                <i class="fas fa-paper-plane me-2"></i> {{ loading ? 'Enviando...' : 'Realizar Reserva' }}
+              </button>
+            </div>
+
+          </form>
         </div>
-    </form>
+      </div>
+    </div>
+  </div>
 </div>
