@@ -64,13 +64,15 @@ export class LoginComponent implements OnInit, AfterViewInit {
         if (response.success) {
           // Guardar información del usuario ANTES del token
           // para que esté disponible cuando se emita el evento de cambio de estado
+          console.log('User data:', response.user);
           this.authService.setUserData(response.user);
           
           // Guardar el token JWT en localStorage y emitir evento de cambio de estado
+          console.log('Token:', response.token);
           this.loginService.login(response.token);
           
           // Emitir evento de actualización de datos de usuario
-          this.authService.notifyUserDataChange(response.user);
+          //this.authService.notifyUserDataChange(response.user);
           
           // Redirigir a la página de reservas
           this.ngZone.run(() => {
