@@ -33,7 +33,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
     // Suscribirse a cambios en los datos de usuario
     this.userDataSubscription = this.authService.userDataChange.subscribe((userData) => {
       if (userData) {
-        this.userName = userData.name || 'Usuario';
+        this.userName = userData.nombre || 'Usuario';
         console.log('Nombre de usuario actualizado en el header:', this.userName);
       }
     });
@@ -54,7 +54,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
     
     if (this.isLoggedIn) {
       const userData = this.authService.getUserData();
-      this.userName = userData ? userData.name : 'Usuario';
+      this.userName = userData ? userData.nombre : 'Usuario';
     }
   }
 
