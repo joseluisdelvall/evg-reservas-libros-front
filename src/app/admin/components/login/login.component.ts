@@ -66,6 +66,7 @@ export class LoginComponent implements OnInit, AfterViewInit {
           // para que esté disponible cuando se emita el evento de cambio de estado
           console.log('User data:', response.user);
           this.authService.setUserData(response.user);
+          this.authService.notifyUserDataChange(response.user);
           
           // Guardar el token JWT en localStorage y emitir evento de cambio de estado
           console.log('Token:', response.token);
