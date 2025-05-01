@@ -2,6 +2,8 @@ import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChange
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ModalOptions } from 'src/app/admin/components/shared/modal-content/models/modal-options';
 import { CrudService } from 'src/app/services/crud.service';
+import { Libro } from 'src/app/models/libro.model';
+import { Editorial } from 'src/app/models/editorial.model';
 
 @Component({
   selector: 'app-modal-nuevo',
@@ -18,12 +20,15 @@ export class ModalNuevoComponent implements OnInit, OnChanges {
 
   formL!: FormGroup;
   formE!: FormGroup;
+  editoriales: Editorial[] = [];
 
   constructor(private formBuilder: FormBuilder,
     private crudService: CrudService
   ) { }
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    this.cargarEditoriales();
+  }
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['modo'] && changes['modo'].currentValue) {
@@ -51,14 +56,13 @@ export class ModalNuevoComponent implements OnInit, OnChanges {
 }
 
   crearFormularios() {
-    // Aquí puedes inicializar los formularios según el modo
     if (this.modo === 'libros') {
       this.formL = this.formBuilder.group({
-            nombre: ['', Validators.required],
-            isbn: ['', Validators.required],
-            editorial: ['', Validators.required],
-            precio: [null, [Validators.required, Validators.min(1)]]
-        }); 
+        nombre: ['', Validators.required],
+        isbn: ['', Validators.required],
+        editorial: [null, Validators.required],
+        precio: [null, [Validators.required, Validators.min(1)]]
+      });
     } else if (this.modo === 'editoriales') {
       this.formE = this.formBuilder.group({
             nombre: ['', Validators.required],
@@ -68,13 +72,45 @@ export class ModalNuevoComponent implements OnInit, OnChanges {
     }
   }
 
+  cargarEditoriales(): void {
+    this.crudService.getEditoriales().subscribe({
+      next: (data: Editorial[]) => {
+        this.editoriales = data;
+      },
+      error: (error) => {
+        console.error('Error al cargar las editoriales:', error);
+      }
+    });
+  }
+
   onSubmit(): void {
-    
     if (this.modo === 'libros') {
+      console.log('Estado del formulario antes de validar:', this.formL);
+      console.log('Valor del control editorial:', this.formL.get('editorial')?.value);
+      console.log('Tipo del valor editorial:', typeof this.formL.get('editorial')?.value);
+
       if (this.formL.valid) {
-        // Aquí puedes manejar el envío del formulario de libros
-        
-        console.log('Formulario de libros enviado:', this.formL.value);
+        const libroData: Libro = {
+          nombre: this.formL.value.nombre,
+          isbn: this.formL.value.isbn,
+          editorial: {
+            idEditorial: this.formL.value.editorial
+          } as Editorial,
+          precio: this.formL.value.precio
+        };
+
+        console.log('Datos del libro a añadir:', libroData);
+
+        this.crudService.addLibro(libroData).subscribe(
+          (response) => {
+            console.log('Libro añadido:', response);
+            this.entidadCreada.emit();
+            this.resetFormularios();
+          },
+          (error) => {
+            console.error('Error al añadir el libro:', error);
+          }
+        );
       } else {
         console.log('Formulario de libros inválido', this.formL.errors);
       }
@@ -95,6 +131,12 @@ export class ModalNuevoComponent implements OnInit, OnChanges {
         console.log('Formulario de editoriales inválido', this.formE.errors);
       }
     }
+  }
+
+  onEditorialChange(event: any): void {
+    console.log('Evento de cambio en editorial:', event);
+    console.log('Valor seleccionado:', event.target.value);
+    console.log('Estado del control editorial:', this.formL.get('editorial'));
   }
 
 }
