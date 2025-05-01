@@ -32,7 +32,7 @@
             </div>
             <ng-template #loggedInTemplate>
                 <div class="d-flex align-items-center">
-                    <p class="mb-0">Hola, {{ userName }}!</p>
+                    <p class="mb-0">Hola, {{ this.userName }}!</p>
                     <button class="btn btn-outline-danger ms-2 p-1 px-2" type="button" (click)="logout()">
                         <i class="fas fa-sign-out-alt"></i>
                     </button>
