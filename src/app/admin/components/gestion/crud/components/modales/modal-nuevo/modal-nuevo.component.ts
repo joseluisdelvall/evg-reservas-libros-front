@@ -1,6 +1,7 @@
-import { Component, Input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
+import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ModalOptions } from 'src/app/admin/components/shared/modal-content/models/modal-options';
+import { CrudService } from 'src/app/services/crud.service';
 
 @Component({
   selector: 'app-modal-nuevo',
@@ -10,6 +11,7 @@ import { ModalOptions } from 'src/app/admin/components/shared/modal-content/mode
 export class ModalNuevoComponent implements OnInit, OnChanges {
 
   @Input() modo: 'libros' | 'editoriales' | null = null;
+  @Output() entidadCreada = new EventEmitter<any>(); // Emitir el evento cuando se crea una entidad
 
   // nuevoModalOptions
   nuevoModalOptions!: ModalOptions;
@@ -17,7 +19,9 @@ export class ModalNuevoComponent implements OnInit, OnChanges {
   formL!: FormGroup;
   formE!: FormGroup;
 
-  constructor(private formBuilder: FormBuilder) { }
+  constructor(private formBuilder: FormBuilder,
+    private crudService: CrudService
+  ) { }
 
   ngOnInit(): void {}
 
@@ -37,6 +41,14 @@ export class ModalNuevoComponent implements OnInit, OnChanges {
       };
     }
   }
+
+  resetFormularios(): void {
+    if (this.modo === 'libros' && this.formL) {
+        this.formL.reset();
+    } else if (this.modo === 'editoriales' && this.formE) {
+        this.formE.reset();
+    }
+}
 
   crearFormularios() {
     // Aquí puedes inicializar los formularios según el modo
@@ -70,6 +82,14 @@ export class ModalNuevoComponent implements OnInit, OnChanges {
 
       if (this.formE.valid) {
 
+        this.crudService.addEditorial(this.formE.value).subscribe(
+          (response) => {
+            console.log('Editorial añadida:', response);
+            this.entidadCreada.emit(); // Emitir el evento con la nueva editorial
+            this.resetFormularios();
+            // Aquí puedes manejar la respuesta después de añadir la editorial
+          }
+        );
         console.log('Formulario de editoriales enviado:', this.formE.value);
       } else {
         console.log('Formulario de editoriales inválido', this.formE.errors);

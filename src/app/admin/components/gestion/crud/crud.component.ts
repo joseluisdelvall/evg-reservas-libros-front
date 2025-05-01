@@ -63,4 +63,9 @@ export class CrudComponent implements OnInit {
     }
   }
 
+  reloadTable(): void {
+    this.cargarTable();
+    console.log(this.editorialesA);
+  }
+
 }
