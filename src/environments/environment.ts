@@ -3,10 +3,10 @@
 // The list of file replacements can be found in `angular.json`.
 
 export const environment = {
-  production: false,
+  production: true,
   api: {
     baseUrl: 'http://localhost/evg-reservas-libros-back/api',
-    loginUrl: 'http://localhost/evg-reservas-libros-back/src/login.php',
+    loginUrl: 'http://localhost/evg-reservas-libros-back/api/login',
   },
   auth: {
     cookieTokenName: 'RDLEVGTKN',
