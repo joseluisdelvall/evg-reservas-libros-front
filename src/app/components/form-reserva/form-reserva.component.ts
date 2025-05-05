@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { IDropdownSettings } from 'ng-multiselect-dropdown';
 
 @Component({
   selector: 'app-form-reserva',
@@ -83,7 +84,7 @@ export class FormReservaComponent implements OnInit {
       return `Debe tener al menos ${requiredLength} caracteres.`;
     }
     return '';
-  }  
+  }
 
   onSubmit() {
     if (this.reservaForm.valid) {
