@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { CursoService, Curso } from '../../services/curso.service';
+import { CursoService } from '../../services/curso.service';
+import { Curso } from '../../models/curso.model';
 
 @Component({
   selector: 'app-form-reserva',
