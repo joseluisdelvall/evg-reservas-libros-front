@@ -11,6 +11,7 @@ import { ModalPeriodoReservasComponent } from './admin/components/reservas/modal
 import { AuthInterceptor } from './interceptors/auth.interceptor';
 import { ReactiveFormsModule } from '@angular/forms';
 import { NgSelectModule } from '@ng-select/ng-select';
+
 @NgModule({
   declarations: [
     AppComponent,
