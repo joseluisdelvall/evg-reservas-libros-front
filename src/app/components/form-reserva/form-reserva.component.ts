@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { IDropdownSettings } from 'ng-multiselect-dropdown';
+import { CursoService, Curso } from '../../services/curso.service';
 
 @Component({
   selector: 'app-form-reserva',
@@ -9,22 +9,37 @@ import { IDropdownSettings } from 'ng-multiselect-dropdown';
 })
 export class FormReservaComponent implements OnInit {
   reservaForm!: FormGroup;
-  cursos: string[] = [];
+  cursos: Curso[] = [];
   libros: string[] = [];
   librosPorCurso: { [key: string]: string[] } = {
-    '1DAW': ['Programación', 'Bases de Datos', 'Lenguaje de Marcas'],
-    '2DAW': ['Desarrollo Web en Entorno Servidor', 'Desarrollo Web en Entorno Cliente', 'Despliegue de Aplicaciones Web'],
-    '1SMR': ['Montaje y Mantenimiento de Equipos', 'Sistemas Operativos Monopuesto', 'Redes Locales'],
-    '2SMR': ['Sistemas Operativos en Red', 'Servicios de Red e Internet', 'Seguridad Informática'],
+    '11': ['Programación', 'Bases de Datos', 'Lenguaje de Marcas'],
+    '12': ['Desarrollo Web en Entorno Servidor', 'Desarrollo Web en Entorno Cliente', 'Despliegue de Aplicaciones Web'],
+    '13': ['Montaje y Mantenimiento de Equipos', 'Sistemas Operativos Monopuesto', 'Redes Locales'],
+    '14': ['Sistemas Operativos en Red', 'Servicios de Red e Internet', 'Seguridad Informática'],
   };
   mostrarLibros = false;
   loading = false;
 
-  constructor(private fb: FormBuilder) {}
+  constructor(
+    private fb: FormBuilder,
+    private cursoService: CursoService
+  ) {}
 
   ngOnInit(): void {
     this.initForm();
+    this.loadCursos();
     this.listenCursoChanges();
+  }
+
+  loadCursos() {
+    this.cursoService.getCursos().subscribe({
+      next: (data) => {
+        this.cursos = data;
+      },
+      error: (error) => {
+        console.error('Error al cargar los cursos:', error);
+      }
+    });
   }
 
   initForm() {
@@ -40,14 +55,15 @@ export class FormReservaComponent implements OnInit {
       libro: [{ value: '', disabled: true }, Validators.required],
       justificante: ['', Validators.required]
     });
-  
-    this.cursos = Object.keys(this.librosPorCurso);
   }  
 
   listenCursoChanges() {
     this.reservaForm.get('curso')?.valueChanges.subscribe(curso => {
       const libroControl = this.reservaForm.get('libro');
-      this.libros = this.librosPorCurso[curso] || [];
+      // Si curso es un objeto, obtenemos su id
+      const cursoId = curso && typeof curso === 'object' ? curso.id : curso;
+      this.libros = this.librosPorCurso[cursoId] || [];
+      
       if (this.libros.length > 0) {
         libroControl?.enable();
         libroControl?.setValidators(Validators.required);
