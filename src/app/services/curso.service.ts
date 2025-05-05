@@ -2,19 +2,8 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
-
-export interface Curso {
-    id: string;
-    nombre: string;
-    etapa: string;
-}
-
-export interface CursoResponse {
-    status: string;
-    message: string;
-    data: Curso[];
-}
-
+import { Curso } from '../models/curso.model';
+import { Response } from '../models/response.model';
 @Injectable({
     providedIn: 'root'
 })
@@ -24,7 +13,7 @@ export class CursoService {
     constructor(private http: HttpClient) { }
 
     getCursos(): Observable<Curso[]> {
-    return this.http.get<CursoResponse>(`${this.apiUrl}/cursos`)
+    return this.http.get<Response>(`${this.apiUrl}/cursos`)
         .pipe(
         map(response => response.data)
         );
