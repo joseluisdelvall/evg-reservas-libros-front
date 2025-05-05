@@ -32,9 +32,14 @@ export class CrudService {
   }
 
   getEditoriales(): Observable<Editorial[]> {
-
     return this.http.get<{ status: string; data: Editorial[] }>(this.endpoint + '/editoriales').pipe(
       map(response => response.data) // Extraer el array de libros
+    );
+  }
+
+  getEditorialById(id: string): Observable<Editorial> {
+    return this.http.get<{ status: string; data: Editorial }>(this.endpoint + '/editoriales/' + id).pipe(
+      map(response => response.data)
     );
   }
 }

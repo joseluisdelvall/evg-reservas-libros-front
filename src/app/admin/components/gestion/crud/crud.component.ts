@@ -13,6 +13,7 @@ import { CrudService } from 'src/app/services/crud.service';
 })
 export class CrudComponent implements OnInit {
   modo: 'libros' | 'editoriales' | null = null;
+  editorialSeleccionadaId: string | null = null;
 
   // nuevoModalOptions
   nuevoModalOptions!: ModalOptions;
@@ -61,6 +62,10 @@ export class CrudComponent implements OnInit {
         }
       });
     }
+  }
+
+  seleccionarEditorial(editorial: Editorial): void {
+    this.editorialSeleccionadaId = editorial.idEditorial || null;
   }
 
   reloadTable(): void {
