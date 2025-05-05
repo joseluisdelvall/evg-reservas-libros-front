@@ -1,17 +1,17 @@
-<app-modal-content [options]="nuevoModalOptions">
-    <form *ngIf="modo === 'libros'; else nuevaEditorialModal">
+<app-modal-content [options]="nuevoModalOptions" (okButtonClicked)="onSubmit()">
+    <form *ngIf="modo === 'libros'; else nuevaEditorialModal" [formGroup]="formL">
         <div class="form-group my-2">
             <label for="bookName" class="fw-bold">Nombre</label>
-            <input type="text" id="bookName" class="form-control" placeholder="Ingrese el nombre del libro">
+            <input type="text" id="bookName" class="form-control" placeholder="Ingrese el nombre del libro" formControlName="nombre">
         </div>
         <div class="form-group my-2">
             <label for="isbn" class="fw-bold">ISBN</label>
-            <input type="text" id="isbn" class="form-control" placeholder="Ingrese el ISBN">
+            <input type="text" id="isbn" class="form-control" placeholder="Ingrese el ISBN" formControlName="isbn">
         </div>
         <div class="row my-2">
             <div class="col-lg-8 col-12">
                 <label for="editorial" class="fw-bold">Editorial</label>
-                <select id="editorial" class="form-select">
+                <select id="editorial" class="form-select" formControlName="editorial">
                     <option value="">Seleccione una editorial</option>
                     <option value="Anaya">Anaya</option>
                     <option value="Edelvives">Edelvives</option>
@@ -27,23 +27,23 @@
     
             <div class="col-lg-4 col-12">
                 <label for="price" class="fw-bold">Precio</label>
-                <input type="number" id="price" class="form-control" placeholder="Ingrese el precio" step="0.01" min="1">
+                <input type="number" id="price" class="form-control" placeholder="Ingrese el precio" step="0.01" min="1" formControlName="precio">
             </div>
         </div>
     </form>
     <ng-template #nuevaEditorialModal>
-        <form>
+        <form [formGroup]="formE">
             <div class="form-group my-2">
                 <label for="editorialName" class="fw-bold">Nombre</label>
-                <input type="text" id="editorialName" class="form-control" placeholder="Ingrese el nombre de la editorial">
+                <input type="text" id="editorialName" class="form-control" placeholder="Ingrese el nombre de la editorial" formControlName="nombre">
             </div>
             <div class="form-group my-2">
                 <label for="email" class="fw-bold">Correo</label>
-                <input type="email" id="email" class="form-control" placeholder="Ingrese el correo electrónico">
+                <input type="email" id="email" class="form-control" placeholder="Ingrese el correo electrónico" formControlName="correo">
             </div>
             <div class="form-group my-2">
                 <label for="phone" class="fw-bold">Teléfono</label>
-                <input type="text" id="phone" class="form-control" placeholder="Ingrese el teléfono">
+                <input type="text" id="phone" class="form-control" placeholder="Ingrese el teléfono" formControlName="telefono">
             </div>
         </form>
     </ng-template>

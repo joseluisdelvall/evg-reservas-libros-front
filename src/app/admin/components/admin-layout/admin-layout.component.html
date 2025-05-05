@@ -1,7 +1,7 @@
 <app-header></app-header>
 <div class="container-fluid">
     <div class="row">
-        <div class="col-2 p-0">
+        <div *ngIf="this.isLoggedIn" class="col-2 p-0">
             <app-aside></app-aside>
         </div>
         <div class="col-10 p-0">

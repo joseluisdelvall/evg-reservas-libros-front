@@ -8,11 +8,11 @@ import { environment } from 'src/environments/environment';
   providedIn: 'root'
 })
 export class BaseService {
-  protected baseUrl = environment.api.baseUrl;
+  private baseUrl = environment.api.baseUrl;
 
-  constructor(protected http: HttpClient) { }
+  constructor(private http: HttpClient) { }
 
-  protected get<T>(endpoint: string, params?: HttpParams): Observable<T> {
+  public get<T>(endpoint: string, params?: HttpParams): Observable<T> {
     return this.http.get<T>(`${this.baseUrl}${endpoint}`, {
       headers: this.getHeaders(),
       params
@@ -21,7 +21,7 @@ export class BaseService {
     );
   }
 
-  protected post<T>(endpoint: string, body: any): Observable<T> {
+  public post<T>(endpoint: string, body: any): Observable<T> {
     return this.http.post<T>(`${this.baseUrl}${endpoint}`, body, {
       headers: this.getHeaders()
     }).pipe(
@@ -29,7 +29,7 @@ export class BaseService {
     );
   }
 
-  protected put<T>(endpoint: string, body: any): Observable<T> {
+  public put<T>(endpoint: string, body: any): Observable<T> {
     return this.http.put<T>(`${this.baseUrl}${endpoint}`, body, {
       headers: this.getHeaders()
     }).pipe(
@@ -37,7 +37,7 @@ export class BaseService {
     );
   }
 
-  protected delete<T>(endpoint: string): Observable<T> {
+  public delete<T>(endpoint: string): Observable<T> {
     return this.http.delete<T>(`${this.baseUrl}${endpoint}`, {
       headers: this.getHeaders()
     }).pipe(
@@ -45,7 +45,7 @@ export class BaseService {
     );
   }
 
-  private getHeaders(): HttpHeaders {
+  public getHeaders(): HttpHeaders {
     // Aquí puedes añadir headers comunes como tokens, content-type, etc.
     return new HttpHeaders({
       'Content-Type': 'application/json',
@@ -53,7 +53,7 @@ export class BaseService {
     });
   }
 
-  private handleError(error: any) {
+  public handleError(error: any) {
     // Aquí puedes manejar los errores de forma centralizada
     console.error('An error occurred:', error);
     return throwError(() => error);
