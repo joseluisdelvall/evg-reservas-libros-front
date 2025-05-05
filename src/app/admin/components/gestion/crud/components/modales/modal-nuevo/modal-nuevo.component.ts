@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators, FormArray } from '@angular/forms';
 import { ModalOptions } from 'src/app/admin/components/shared/modal-content/models/modal-options';
 import { CrudService } from 'src/app/services/crud.service';
 import { Libro } from 'src/app/models/libro.model';
@@ -62,14 +62,40 @@ export class ModalNuevoComponent implements OnInit, OnChanges {
         isbn: ['', Validators.required],
         editorial: [null, Validators.required],
         precio: [null, [Validators.required, Validators.min(1)]]
+      }); 
+
+      // Suscribirse a los cambios del formulario para depuración
+      this.formL.valueChanges.subscribe(value => {
+        console.log('Valores del formulario:', value);
+        console.log('Valor del control editorial:', this.formL.get('editorial')?.value);
+        console.log('Estado del control editorial:', this.formL.get('editorial')?.valid);
+        console.log('Errores del control editorial:', this.formL.get('editorial')?.errors);
+        console.log('Estado completo del formulario:', this.formL);
       });
     } else if (this.modo === 'editoriales') {
       this.formE = this.formBuilder.group({
-            nombre: ['', Validators.required],
-            correo: ['', [Validators.required, Validators.email]],
-            telefono: ['', Validators.required]
-          }); 
+        nombre: ['', Validators.required],
+        correos: this.formBuilder.array([
+          this.formBuilder.control('', [Validators.email]),
+          this.formBuilder.control('', [Validators.email]),
+          this.formBuilder.control('', [Validators.email])
+        ]),
+        telefonos: this.formBuilder.array([
+          this.formBuilder.control(''),
+          this.formBuilder.control(''),
+          this.formBuilder.control('')
+        ])
+      }); 
     }
+  }
+
+  // Métodos auxiliares para acceder a los FormArray
+  getCorreosControls() {
+    return (this.formE.get('correos') as FormArray).controls;
+  }
+
+  getTelefonosControls() {
+    return (this.formE.get('telefonos') as FormArray).controls;
   }
 
   cargarEditoriales(): void {
@@ -115,28 +141,30 @@ export class ModalNuevoComponent implements OnInit, OnChanges {
         console.log('Formulario de libros inválido', this.formL.errors);
       }
     } else if (this.modo === 'editoriales') {
-
       if (this.formE.valid) {
+        // Filtrar correos y teléfonos vacíos
+        const correosFiltrados = this.formE.value.correos.filter((correo: string) => correo !== '');
+        const telefonosFiltrados = this.formE.value.telefonos.filter((telefono: string) => telefono !== '');
 
-        this.crudService.addEditorial(this.formE.value).subscribe(
+        const editorialData: Editorial = {
+          nombre: this.formE.value.nombre,
+          correos: correosFiltrados,
+          telefonos: telefonosFiltrados
+        };
+
+        console.log('Datos de la editorial a añadir:', editorialData);
+
+        this.crudService.addEditorial(editorialData).subscribe(
           (response) => {
             console.log('Editorial añadida:', response);
-            this.entidadCreada.emit(); // Emitir el evento con la nueva editorial
+            this.entidadCreada.emit();
             this.resetFormularios();
-            // Aquí puedes manejar la respuesta después de añadir la editorial
           }
         );
-        console.log('Formulario de editoriales enviado:', this.formE.value);
       } else {
         console.log('Formulario de editoriales inválido', this.formE.errors);
       }
     }
   }
-
-  onEditorialChange(event: any): void {
-    console.log('Evento de cambio en editorial:', event);
-    console.log('Valor seleccionado:', event.target.value);
-    console.log('Estado del control editorial:', this.formL.get('editorial'));
-  }
-
+  
 }

@@ -31,13 +31,31 @@
                 <label for="editorialName" class="fw-bold">Nombre</label>
                 <input type="text" id="editorialName" class="form-control" placeholder="Ingrese el nombre de la editorial" formControlName="nombre">
             </div>
+            
+            <!-- Correos electrónicos -->
             <div class="form-group my-2">
-                <label for="email" class="fw-bold">Correo</label>
-                <input type="email" id="email" class="form-control" placeholder="Ingrese el correo electrónico" formControlName="correo">
+                <label class="fw-bold">Correos electrónicos</label>
+                <div formArrayName="correos">
+                    <div *ngFor="let correo of getCorreosControls(); let i = index" class="mb-2">
+                        <div class="input-group">
+                            <span class="input-group-text">Correo {{i+1}}</span>
+                            <input type="email" [formControlName]="i" class="form-control" placeholder="Ingrese el correo electrónico">
+                        </div>
+                    </div>
+                </div>
             </div>
+            
+            <!-- Teléfonos -->
             <div class="form-group my-2">
-                <label for="phone" class="fw-bold">Teléfono</label>
-                <input type="text" id="phone" class="form-control" placeholder="Ingrese el teléfono" formControlName="telefono">
+                <label class="fw-bold">Teléfonos</label>
+                <div formArrayName="telefonos">
+                    <div *ngFor="let telefono of getTelefonosControls(); let i = index" class="mb-2">
+                        <div class="input-group">
+                            <span class="input-group-text">Teléfono {{i+1}}</span>
+                            <input type="text" [formControlName]="i" class="form-control" placeholder="Ingrese el teléfono">
+                        </div>
+                    </div>
+                </div>
             </div>
         </form>
     </ng-template>
