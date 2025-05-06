@@ -41,17 +41,7 @@ export class ModalVerComponent implements OnInit, OnChanges {
   }
 
   cargarDatosEditorial(id: string): void {
-    // Por ahora, hasta que se implemente el servicio, usaremos datos de prueba
-    this.editorial = {
-      idEditorial: id,
-      nombre: 'Editorial de Prueba',
-      correos: ['correo1@editorial.com', 'correo2@editorial.com', 'correo3@editorial.com'],
-      telefonos: ['912345678', '913456789', '914567890'],
-      estado: '1'
-    };
     
-    // Cuando se implemente el servicio, usaremos:
-    /*
     this.crudService.getEditorialById(id).subscribe({
       next: (editorial: Editorial) => {
         this.editorial = editorial;
@@ -60,6 +50,5 @@ export class ModalVerComponent implements OnInit, OnChanges {
         console.error('Error al cargar los datos de la editorial:', err);
       }
     });
-    */
   }
 }
