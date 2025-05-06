@@ -1,5 +1,5 @@
 <app-modal-nuevo [modo]="modo" (entidadCreada)="reloadTable()"></app-modal-nuevo>
-<app-modal-editar [modo]="modo"></app-modal-editar>
+<app-modal-editar [modo]="modo" [idEntidad]="editorialSeleccionadaId" (entidadActualizada)="reloadTable()"></app-modal-editar>
 <app-modal-filtro [modo]="modo"></app-modal-filtro>
 <app-modal-ver [modo]="modo" [idEntidad]="editorialSeleccionadaId"></app-modal-ver>
 
@@ -63,7 +63,7 @@
                     <tbody>
                         <tr *ngFor="let editorial of this.editorialesA">
                             <td class="text-center">
-                                <i class="fas fa-edit puntero" style="color: blue;" data-bs-toggle="modal" [attr.data-bs-target]="'#editar' + modo"></i>
+                                <i class="fas fa-edit puntero" style="color: blue;" data-bs-toggle="modal" [attr.data-bs-target]="'#editar' + modo" (click)="seleccionarEditorial(editorial)"></i>
                                 <i class="fas fa-eye ms-2 puntero" style="color: rgb(87, 87, 87);" data-bs-toggle="modal" [attr.data-bs-target]="'#ver' + modo" (click)="seleccionarEditorial(editorial)"></i>
                             </td>
                             <td>{{ editorial.nombre }}</td>

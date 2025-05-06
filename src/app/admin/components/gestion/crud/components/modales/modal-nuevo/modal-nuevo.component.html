@@ -38,8 +38,7 @@
                 <div formArrayName="correos">
                     <div *ngFor="let correo of getCorreosControls(); let i = index" class="mb-2">
                         <div class="input-group">
-                            <span class="input-group-text">Correo {{i+1}}</span>
-                            <input type="email" [formControlName]="i" class="form-control" placeholder="Ingrese el correo electrónico">
+                            <input type="email" [formControlName]="i" class="form-control" placeholder="Correo electrónico {{i+1}}">
                         </div>
                     </div>
                 </div>
@@ -51,8 +50,7 @@
                 <div formArrayName="telefonos">
                     <div *ngFor="let telefono of getTelefonosControls(); let i = index" class="mb-2">
                         <div class="input-group">
-                            <span class="input-group-text">Teléfono {{i+1}}</span>
-                            <input type="text" [formControlName]="i" class="form-control" placeholder="Ingrese el teléfono">
+                            <input type="text" [formControlName]="i" class="form-control" placeholder="Teléfono {{i+1}}">
                         </div>
                     </div>
                 </div>

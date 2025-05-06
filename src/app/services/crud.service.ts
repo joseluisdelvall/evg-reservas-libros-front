@@ -25,6 +25,18 @@ export class CrudService {
     );
   }
 
+  getLibroById(id: string): Observable<Libro> {
+    return this.http.get<{ status: string; data: Libro }>(this.endpoint + '/libros/' + id).pipe(
+      map(response => response.data)
+    );
+  }
+
+  updateLibro(id: string, libro: Libro): Observable<Libro> {
+    return this.http.put<{ status: string; data: Libro }>(this.endpoint + '/libros/' + id, libro).pipe(
+      map(response => response.data)
+    );
+  }
+
   addEditorial(editorial: Editorial): Observable<Editorial> {
     return this.http.post<{ status: string; data: Editorial }>(this.endpoint + '/editoriales/add', editorial).pipe(
       map(response => response.data) // Extraer la editorial creada
@@ -39,6 +51,12 @@ export class CrudService {
 
   getEditorialById(id: string): Observable<Editorial> {
     return this.http.get<{ status: string; data: Editorial }>(this.endpoint + '/editoriales/' + id).pipe(
+      map(response => response.data)
+    );
+  }
+
+  updateEditorial(id: string, editorial: Editorial): Observable<Editorial> {
+    return this.http.put<{ status: string; data: Editorial }>(this.endpoint + '/editoriales/' + id, editorial).pipe(
       map(response => response.data)
     );
   }
