@@ -4,6 +4,7 @@ import { ModalOptions } from 'src/app/admin/components/shared/modal-content/mode
 import { CrudService } from 'src/app/services/crud.service';
 import { Editorial } from 'src/app/models/editorial.model';
 import { Libro } from 'src/app/models/libro.model';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-modal-editar',
@@ -32,7 +33,8 @@ export class ModalEditarComponent implements OnInit, OnChanges {
   
   constructor(
     private crudService: CrudService,
-    private fb: FormBuilder
+    private fb: FormBuilder,
+    private toastr: ToastrService
   ) { }
   
   ngOnInit(): void {
@@ -184,33 +186,52 @@ export class ModalEditarComponent implements OnInit, OnChanges {
       
       this.crudService.updateEditorial(this.idEntidad, editorialActualizada).subscribe({
         next: () => {
-          console.log('Editorial actualizada correctamente');
+          this.toastr.success('Editorial actualizada correctamente', 'Éxito');
           this.entidadActualizada.emit();
         },
         error: (err: unknown) => {
           console.error('Error al actualizar la editorial:', err);
+          this.toastr.error('Error al actualizar la editorial', 'Error');
         }
       });
     } else if (this.modo === 'libros' && this.formL.valid && this.idEntidad) {
+      // Formatear el libro exactamente como lo espera el backend
       const libroActualizado = {
-        ...this.libro,
         nombre: this.formL.value.nombre,
         isbn: this.formL.value.isbn,
         editorial: {
           idEditorial: this.formL.value.editorial
-        } as Editorial,
+        },
         precio: this.formL.value.precio
       };
       
+      console.log('Libro a actualizar:', libroActualizado);
+      
       this.crudService.updateLibro(this.idEntidad, libroActualizado).subscribe({
         next: () => {
-          console.log('Libro actualizado correctamente');
+          this.toastr.success('Libro actualizado correctamente', 'Éxito');
           this.entidadActualizada.emit();
         },
         error: (err: unknown) => {
           console.error('Error al actualizar el libro:', err);
+          this.toastr.error('Error al actualizar el libro', 'Error');
         }
       });
+    } else {
+      // Si el formulario no es válido, marcar todos los campos como tocados para mostrar errores
+      if (this.modo === 'libros') {
+        Object.keys(this.formL.controls).forEach(key => {
+          const control = this.formL.get(key);
+          control?.markAsTouched();
+        });
+        this.toastr.warning('Por favor complete todos los campos requeridos', 'Validación');
+      } else if (this.modo === 'editoriales') {
+        Object.keys(this.formE.controls).forEach(key => {
+          const control = this.formE.get(key);
+          control?.markAsTouched();
+        });
+        this.toastr.warning('Por favor complete todos los campos requeridos', 'Validación');
+      }
     }
   }
 }

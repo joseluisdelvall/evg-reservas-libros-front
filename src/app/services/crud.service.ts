@@ -45,6 +45,8 @@ export class CrudService {
   }
 
   updateLibro(id: string, libro: Libro): Observable<Libro> {
+    console.log(`Sending book update to endpoint: ${this.endpoint}/libros/${id}`);
+    console.log('Book data:', JSON.stringify(libro, null, 2));
     return this.http.put<{ status: string; data: Libro }>(this.endpoint + '/libros/' + id, libro).pipe(
       map(response => response.data)
     );

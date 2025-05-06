@@ -2,6 +2,7 @@ import { Component, Input, OnChanges, OnInit, SimpleChanges, ViewChild, ElementR
 import { ModalOptions } from 'src/app/admin/components/shared/modal-content/models/modal-options';
 import { CrudService } from 'src/app/services/crud.service';
 import { Editorial } from 'src/app/models/editorial.model';
+import { Libro } from 'src/app/models/libro.model';
 import { ToastrService } from 'ngx-toastr';
 import Swal from 'sweetalert2';
 
@@ -20,8 +21,9 @@ export class ModalVerComponent implements OnInit, OnChanges {
   // verModalOptions
   verModalOptions!: ModalOptions;
 
-  // Datos de la editorial
+  // Datos de la editorial y libro
   editorial: Editorial | null = null;
+  libro: Libro | null = null;
   
   constructor(
     private crudService: CrudService,
@@ -50,8 +52,12 @@ export class ModalVerComponent implements OnInit, OnChanges {
       };
     }
 
-    if (changes['idEntidad'] && changes['idEntidad'].currentValue && this.modo === 'editoriales') {
-      this.cargarDatosEditorial(changes['idEntidad'].currentValue);
+    if (changes['idEntidad'] && changes['idEntidad'].currentValue) {
+      if (this.modo === 'editoriales') {
+        this.cargarDatosEditorial(changes['idEntidad'].currentValue);
+      } else if (this.modo === 'libros') {
+        this.cargarDatosLibro(changes['idEntidad'].currentValue);
+      }
     }
   }
 
@@ -65,11 +71,26 @@ export class ModalVerComponent implements OnInit, OnChanges {
       }
     });
   }
+  
+  cargarDatosLibro(id: string): void {
+    this.crudService.getLibroById(id).subscribe({
+      next: (libro: Libro) => {
+        this.libro = libro;
+      },
+      error: (err) => {
+        console.error('Error al cargar los datos del libro:', err);
+      }
+    });
+  }
 
   // Método para recargar los datos cuando el modal se muestra
   recargarDatos(): void {
-    if (this.idEntidad && this.modo === 'editoriales') {
-      this.cargarDatosEditorial(this.idEntidad);
+    if (this.idEntidad) {
+      if (this.modo === 'editoriales') {
+        this.cargarDatosEditorial(this.idEntidad);
+      } else if (this.modo === 'libros') {
+        this.cargarDatosLibro(this.idEntidad);
+      }
     }
   }
 
