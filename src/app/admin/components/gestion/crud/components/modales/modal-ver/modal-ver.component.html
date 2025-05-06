@@ -94,7 +94,7 @@
                     <div class="col-md-4 fw-bold">Estado:</div>
                     <div class="col-md-8">
                         <div class="d-flex align-items-center">
-                            <svg width="16" height="16" class="me-2">
+                            <svg width="16" height="16" class="me-2 puntero" (click)="toggleLibroEstado()">
                                 <circle cx="8" cy="8" r="6" [attr.fill]="libro.estado ? 'green' : 'red'" />
                             </svg>
                             {{ libro.estado ? 'Activo' : 'Inactivo' }}

@@ -129,7 +129,78 @@ export class CrudComponent implements OnInit {
           },
           error: (error) => {
             console.error('Error al cambiar el estado:', error);
-            this.toastr.error('Error al cambiar el estado', 'Error');
+            let errorMsg = 'Error al cambiar el estado';
+            
+            // Extraer mensaje de error más específico si está disponible
+            if (error.error && error.error.message) {
+              errorMsg = error.error.message;
+            } else if (error.message) {
+              errorMsg = error.message;
+            }
+            
+            this.toastr.error(errorMsg, 'Error');
+            
+            // Recargar datos para asegurar que tenemos el estado correcto
+            this.cargarTable();
+          }
+        });
+      }
+    });
+  }
+
+  toggleLibroEstado(libro: Libro, event: Event): void {
+    event.stopPropagation(); // Previene que se activen otros eventos de clic
+    
+    if (libro.id === undefined) {
+      this.toastr.error('No se pudo cambiar el estado: ID no encontrado', 'Error');
+      return;
+    }
+    
+    // Determinar el nuevo estado (inverso al actual)
+    const nuevoEstado = !libro.estado;
+    const libroId = libro.id; // Store the ID so TypeScript knows it's not undefined in the closure
+    
+    // Mostrar confirmación con SweetAlert2
+    Swal.fire({
+      title: 'Confirmar cambio de estado',
+      html: `¿Estás seguro de cambiar el estado de <strong>${libro.nombre}</strong> a <strong>${nuevoEstado ? 'ACTIVO' : 'INACTIVO'}</strong>?`,
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Sí, cambiar',
+      cancelButtonText: 'Cancelar'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        // Realizar el cambio solo si se confirma
+        this.crudService.toggleLibroEstado(libroId.toString()).subscribe({
+          next: (libroActualizado) => {
+            // Actualizar el libro en la lista local
+            const index = this.libros.findIndex(l => l.id === libroId);
+            if (index !== -1) {
+              this.libros[index] = libroActualizado;
+            }
+            
+            this.toastr.success(
+              `Estado cambiado a ${libroActualizado.estado ? 'Activo' : 'Inactivo'}`, 
+              'Éxito'
+            );
+          },
+          error: (error) => {
+            console.error('Error al cambiar el estado:', error);
+            let errorMsg = 'Error al cambiar el estado';
+            
+            // Extraer mensaje de error más específico si está disponible
+            if (error.error && error.error.message) {
+              errorMsg = error.error.message;
+            } else if (error.message) {
+              errorMsg = error.message;
+            }
+            
+            this.toastr.error(errorMsg, 'Error');
+            
+            // Recargar datos para asegurar que tenemos el estado correcto
+            this.cargarTable();
           }
         });
       }

@@ -94,7 +94,7 @@ export class ModalVerComponent implements OnInit, OnChanges {
     }
   }
 
-  // Método para cambiar el estado desde el modal de visualización
+  // Método para cambiar el estado de una editorial desde el modal de visualización
   toggleEstado(): void {
     if (!this.editorial || !this.editorial.idEditorial) {
       return;
@@ -131,7 +131,76 @@ export class ModalVerComponent implements OnInit, OnChanges {
           },
           error: (error) => {
             console.error('Error al cambiar el estado:', error);
-            this.toastr.error('Error al cambiar el estado', 'Error');
+            let errorMsg = 'Error al cambiar el estado';
+            
+            // Extraer mensaje de error más específico si está disponible
+            if (error.error && error.error.message) {
+              errorMsg = error.error.message;
+            } else if (error.message) {
+              errorMsg = error.message;
+            }
+            
+            this.toastr.error(errorMsg, 'Error');
+            
+            // Recargar datos para asegurar que tenemos el estado correcto
+            this.recargarDatos();
+          }
+        });
+      }
+    });
+  }
+
+  // Método para cambiar el estado de un libro desde el modal de visualización
+  toggleLibroEstado(): void {
+    if (!this.libro || this.libro.id === undefined) {
+      return;
+    }
+
+    // Determinar el nuevo estado (inverso al actual)
+    const nuevoEstado = !this.libro.estado;
+    const libroId = this.libro.id;
+    
+    // Mostrar confirmación con SweetAlert2
+    Swal.fire({
+      title: 'Confirmar cambio de estado',
+      html: `¿Estás seguro de cambiar el estado de <strong>${this.libro.nombre}</strong> a <strong>${nuevoEstado ? 'ACTIVO' : 'INACTIVO'}</strong>?`,
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Sí, cambiar',
+      cancelButtonText: 'Cancelar'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        // Realizar el cambio solo si se confirma
+        this.crudService.toggleLibroEstado(libroId.toString()).subscribe({
+          next: (libroActualizado) => {
+            // Actualizar el libro en la vista
+            this.libro = libroActualizado;
+            
+            // Emitir evento para actualizar la tabla
+            this.estadoActualizado.emit();
+            
+            this.toastr.success(
+              `Estado cambiado a ${libroActualizado.estado ? 'Activo' : 'Inactivo'}`, 
+              'Éxito'
+            );
+          },
+          error: (error) => {
+            console.error('Error al cambiar el estado:', error);
+            let errorMsg = 'Error al cambiar el estado';
+            
+            // Extraer mensaje de error más específico si está disponible
+            if (error.error && error.error.message) {
+              errorMsg = error.error.message;
+            } else if (error.message) {
+              errorMsg = error.message;
+            }
+            
+            this.toastr.error(errorMsg, 'Error');
+            
+            // Recargar datos para asegurar que tenemos el estado correcto
+            this.recargarDatos();
           }
         });
       }
