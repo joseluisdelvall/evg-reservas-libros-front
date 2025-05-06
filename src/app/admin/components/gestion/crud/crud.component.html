@@ -41,7 +41,7 @@
                         <td>{{ libro.editorial!.nombre }}</td>
                         <td>{{ libro.precio }}</td>
                         <td class="text-center">
-                            <svg width="16" height="16">
+                            <svg width="16" height="16" class="puntero" (click)="toggleLibroEstado(libro, $event)">
                                 <circle cx="8" cy="8" r="6" [attr.fill]="libro.estado ? 'green' : 'red'" />
                             </svg>
                         </td>
