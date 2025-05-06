@@ -21,13 +21,26 @@ export class CrudService {
 
   getLibros(): Observable<Libro[]> {
     return this.http.get<{ status: string; data: Libro[] }>(this.endpoint + '/libros').pipe(
-      map(response => response.data) // Extraer el array de libros
+      map(response => {
+        // Convertir estado a boolean si es necesario
+        return response.data.map(libro => ({
+          ...libro,
+          estado: typeof libro.estado === 'string' ? libro.estado === '1' : libro.estado
+        }));
+      })
     );
   }
 
   getLibroById(id: string): Observable<Libro> {
     return this.http.get<{ status: string; data: Libro }>(this.endpoint + '/libros/' + id).pipe(
-      map(response => response.data)
+      map(response => {
+        // Convertir estado a boolean si es necesario
+        const libro = response.data;
+        return {
+          ...libro,
+          estado: typeof libro.estado === 'string' ? libro.estado === '1' : libro.estado
+        };
+      })
     );
   }
 
@@ -45,19 +58,46 @@ export class CrudService {
 
   getEditoriales(): Observable<Editorial[]> {
     return this.http.get<{ status: string; data: Editorial[] }>(this.endpoint + '/editoriales').pipe(
-      map(response => response.data) // Extraer el array de libros
+      map(response => {
+        // Convertir estado a boolean si es necesario
+        return response.data.map(editorial => ({
+          ...editorial,
+          estado: typeof editorial.estado === 'string' ? editorial.estado === '1' : editorial.estado
+        }));
+      })
     );
   }
 
   getEditorialById(id: string): Observable<Editorial> {
     return this.http.get<{ status: string; data: Editorial }>(this.endpoint + '/editoriales/' + id).pipe(
-      map(response => response.data)
+      map(response => {
+        // Convertir estado a boolean si es necesario
+        const editorial = response.data;
+        return {
+          ...editorial,
+          estado: typeof editorial.estado === 'string' ? editorial.estado === '1' : editorial.estado
+        };
+      })
     );
   }
 
   updateEditorial(id: string, editorial: Editorial): Observable<Editorial> {
     return this.http.put<{ status: string; data: Editorial }>(this.endpoint + '/editoriales/' + id, editorial).pipe(
       map(response => response.data)
+    );
+  }
+
+  // Método para cambiar el estado de una editorial
+  toggleEditorialEstado(id: string): Observable<Editorial> {
+    return this.http.put<{ status: string; data: Editorial }>(this.endpoint + '/editoriales/' + id + '/estado', {}).pipe(
+      map(response => {
+        // Convertir estado a boolean si es necesario
+        const editorial = response.data;
+        return {
+          ...editorial,
+          estado: typeof editorial.estado === 'string' ? editorial.estado === '1' : editorial.estado
+        };
+      })
     );
   }
 }

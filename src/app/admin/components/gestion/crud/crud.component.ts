@@ -5,6 +5,7 @@ import { ToastrService } from 'ngx-toastr';
 import { Libro } from 'src/app/models/libro.model';
 import { Editorial } from 'src/app/models/editorial.model';
 import { CrudService } from 'src/app/services/crud.service';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-crud',
@@ -55,6 +56,7 @@ export class CrudComponent implements OnInit {
       this.crudService.getEditoriales().subscribe({
         next: (data: Editorial[]) => {
           this.editorialesA = data;
+          console.log('Editoriales:', this.editorialesA);
         },
         error: (error) => {
           console.error('Error al cargar las editoriales:', error);
@@ -73,4 +75,49 @@ export class CrudComponent implements OnInit {
     console.log(this.editorialesA);
   }
 
+  toggleEditorialEstado(editorial: Editorial, event: Event): void {
+    event.stopPropagation(); // Previene que se activen otros eventos de clic
+    
+    if (!editorial.idEditorial) {
+      this.toastr.error('No se pudo cambiar el estado: ID no encontrado', 'Error');
+      return;
+    }
+    
+    // Determinar el nuevo estado (inverso al actual)
+    const nuevoEstado = !editorial.estado;
+    
+    // Mostrar confirmación con SweetAlert2
+    Swal.fire({
+      title: 'Confirmar cambio de estado',
+      html: `¿Estás seguro de cambiar el estado de <strong>${editorial.nombre}</strong> a <strong>${nuevoEstado ? 'ACTIVO' : 'INACTIVO'}</strong>?`,
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Sí, cambiar',
+      cancelButtonText: 'Cancelar'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        // Realizar el cambio solo si se confirma
+        this.crudService.toggleEditorialEstado(editorial.idEditorial!).subscribe({
+          next: (editorialActualizada) => {
+            // Actualizar la editorial en la lista local
+            const index = this.editorialesA.findIndex(e => e.idEditorial === editorial.idEditorial);
+            if (index !== -1) {
+              this.editorialesA[index] = editorialActualizada;
+            }
+            
+            this.toastr.success(
+              `Estado cambiado a ${editorialActualizada.estado ? 'Activo' : 'Inactivo'}`, 
+              'Éxito'
+            );
+          },
+          error: (error) => {
+            console.error('Error al cambiar el estado:', error);
+            this.toastr.error('Error al cambiar el estado', 'Error');
+          }
+        });
+      }
+    });
+  }
 }

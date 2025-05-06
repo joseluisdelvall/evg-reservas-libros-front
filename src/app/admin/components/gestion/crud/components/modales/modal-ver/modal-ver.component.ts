@@ -1,7 +1,9 @@
-import { Component, Input, OnChanges, OnInit, SimpleChanges, ViewChild, ElementRef } from '@angular/core';
+import { Component, Input, OnChanges, OnInit, SimpleChanges, ViewChild, ElementRef, Output, EventEmitter } from '@angular/core';
 import { ModalOptions } from 'src/app/admin/components/shared/modal-content/models/modal-options';
 import { CrudService } from 'src/app/services/crud.service';
 import { Editorial } from 'src/app/models/editorial.model';
+import { ToastrService } from 'ngx-toastr';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-modal-ver',
@@ -13,6 +15,7 @@ export class ModalVerComponent implements OnInit, OnChanges {
   @Input() modo: 'libros' | 'editoriales' | null = null;
   @Input() idEntidad: string | null = null;
   @ViewChild('modalContent') modalContent!: ElementRef;
+  @Output() estadoActualizado = new EventEmitter<void>();
   
   // verModalOptions
   verModalOptions!: ModalOptions;
@@ -20,7 +23,10 @@ export class ModalVerComponent implements OnInit, OnChanges {
   // Datos de la editorial
   editorial: Editorial | null = null;
   
-  constructor(private crudService: CrudService) { }
+  constructor(
+    private crudService: CrudService,
+    private toastr: ToastrService
+  ) { }
   
   ngOnInit(): void {
     // Escuchar el evento de apertura del modal
@@ -65,5 +71,49 @@ export class ModalVerComponent implements OnInit, OnChanges {
     if (this.idEntidad && this.modo === 'editoriales') {
       this.cargarDatosEditorial(this.idEntidad);
     }
+  }
+
+  // Método para cambiar el estado desde el modal de visualización
+  toggleEstado(): void {
+    if (!this.editorial || !this.editorial.idEditorial) {
+      return;
+    }
+
+    // Determinar el nuevo estado (inverso al actual)
+    const nuevoEstado = !this.editorial.estado;
+    
+    // Mostrar confirmación con SweetAlert2
+    Swal.fire({
+      title: 'Confirmar cambio de estado',
+      html: `¿Estás seguro de cambiar el estado de <strong>${this.editorial.nombre}</strong> a <strong>${nuevoEstado ? 'ACTIVO' : 'INACTIVO'}</strong>?`,
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Sí, cambiar',
+      cancelButtonText: 'Cancelar'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        // Realizar el cambio solo si se confirma
+        this.crudService.toggleEditorialEstado(this.editorial!.idEditorial!).subscribe({
+          next: (editorialActualizada) => {
+            // Actualizar la editorial en la vista
+            this.editorial = editorialActualizada;
+            
+            // Emitir evento para actualizar la tabla
+            this.estadoActualizado.emit();
+            
+            this.toastr.success(
+              `Estado cambiado a ${editorialActualizada.estado ? 'Activo' : 'Inactivo'}`, 
+              'Éxito'
+            );
+          },
+          error: (error) => {
+            console.error('Error al cambiar el estado:', error);
+            this.toastr.error('Error al cambiar el estado', 'Error');
+          }
+        });
+      }
+    });
   }
 }

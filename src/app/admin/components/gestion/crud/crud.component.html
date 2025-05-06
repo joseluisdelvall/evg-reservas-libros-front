@@ -1,7 +1,7 @@
 <app-modal-nuevo [modo]="modo" (entidadCreada)="reloadTable()"></app-modal-nuevo>
 <app-modal-editar [modo]="modo" [idEntidad]="editorialSeleccionadaId" (entidadActualizada)="reloadTable()"></app-modal-editar>
 <app-modal-filtro [modo]="modo"></app-modal-filtro>
-<app-modal-ver [modo]="modo" [idEntidad]="editorialSeleccionadaId"></app-modal-ver>
+<app-modal-ver [modo]="modo" [idEntidad]="editorialSeleccionadaId" (estadoActualizado)="reloadTable()"></app-modal-ver>
 
 <div class="d-flex">
     <div class="content w-100 p-5">
@@ -70,7 +70,7 @@
                             <td>{{ editorial.correos?.[0] }}</td>
                             <td>{{ editorial.telefonos?.[0] }}</td>
                             <td class="text-center">
-                                <svg width="16" height="16">
+                                <svg width="16" height="16" class="puntero" (click)="toggleEditorialEstado(editorial, $event)">
                                     <circle cx="8" cy="8" r="6" [attr.fill]="editorial.estado ? 'green' : 'red'" />
                                 </svg>
                             </td>
