@@ -15,6 +15,7 @@ import Swal from 'sweetalert2';
 export class CrudComponent implements OnInit {
   modo: 'libros' | 'editoriales' | null = null;
   editorialSeleccionadaId: string | null = null;
+  libroSeleccionadoId: string | null = null;
 
   // nuevoModalOptions
   nuevoModalOptions!: ModalOptions;
@@ -45,7 +46,7 @@ export class CrudComponent implements OnInit {
       this.crudService.getLibros().subscribe({
         next: (data: Libro[]) => {
           this.libros = data;
-          console.log('Editoriales:', this.libros);
+          console.log('Libros:', this.libros);
         },
         error: (error) => {
           console.error('Error al cargar los libros:', error);
@@ -68,6 +69,20 @@ export class CrudComponent implements OnInit {
 
   seleccionarEditorial(editorial: Editorial): void {
     this.editorialSeleccionadaId = editorial.idEditorial || null;
+  }
+
+  seleccionarLibro(libro: Libro): void {
+    if (libro.id !== undefined) {
+      this.libroSeleccionadoId = libro.id.toString();
+      console.log('Libro seleccionado ID:', this.libroSeleccionadoId);
+    } else {
+      this.libroSeleccionadoId = null;
+      console.error('El libro seleccionado no tiene ID');
+    }
+  }
+
+  getIdEntidadSeleccionada(): string | null {
+    return this.modo === 'libros' ? this.libroSeleccionadoId : this.editorialSeleccionadaId;
   }
 
   reloadTable(): void {

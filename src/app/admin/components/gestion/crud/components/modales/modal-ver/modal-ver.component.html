@@ -68,11 +68,48 @@
         </div>
     </div>
 
+    <div *ngIf="modo === 'libros' && libro">
+        <div class="card mb-4">
+            <div class="card-header bg-blue-primary">
+                <h5 class="mb-0">Información General</h5>
+            </div>
+            <div class="card-body">
+                <div class="row mb-3">
+                    <div class="col-md-4 fw-bold">Nombre:</div>
+                    <div class="col-md-8">{{ libro.nombre }}</div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-md-4 fw-bold">ISBN:</div>
+                    <div class="col-md-8">{{ libro.isbn }}</div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-md-4 fw-bold">Editorial:</div>
+                    <div class="col-md-8">{{ libro.editorial?.nombre }}</div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-md-4 fw-bold">Precio:</div>
+                    <div class="col-md-8">{{ libro.precio }} €</div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-md-4 fw-bold">Estado:</div>
+                    <div class="col-md-8">
+                        <div class="d-flex align-items-center">
+                            <svg width="16" height="16" class="me-2">
+                                <circle cx="8" cy="8" r="6" [attr.fill]="libro.estado ? 'green' : 'red'" />
+                            </svg>
+                            {{ libro.estado ? 'Activo' : 'Inactivo' }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div *ngIf="!editorial && modo === 'editoriales'" class="alert alert-info">
         Cargando información de la editorial...
     </div>
 
-    <div *ngIf="modo === 'libros'" class="alert alert-info">
-        La visualización de detalles de libros se implementará próximamente.
+    <div *ngIf="!libro && modo === 'libros'" class="alert alert-info">
+        Cargando información del libro...
     </div>
 </app-modal-content>
