@@ -3,6 +3,7 @@ import { Router } from '@angular/router';
 import { LoginService } from 'src/app/services/login.service';
 import { environment } from 'src/environments/environment';
 import { AuthService } from 'src/app/services/auth.service';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-login',
@@ -18,7 +19,8 @@ export class LoginComponent implements OnInit, AfterViewInit {
     private loginService: LoginService,
     private authService: AuthService,
     private router: Router,
-    private ngZone: NgZone
+    private ngZone: NgZone,
+    private toastr: ToastrService
   ) { }
 
   ngOnInit(): void {
@@ -72,8 +74,11 @@ export class LoginComponent implements OnInit, AfterViewInit {
           console.log('Token:', response.token);
           this.loginService.login(response.token);
           
-          // Emitir evento de actualización de datos de usuario
-          //this.authService.notifyUserDataChange(response.user);
+          // Toastr success 
+          this.toastr.success('Inicio de sesión exitoso', 'Éxito', {
+            timeOut: 3000,
+            positionClass: 'toast-top-right'
+          });
           
           // Redirigir a la página de reservas
           this.ngZone.run(() => {
@@ -81,6 +86,7 @@ export class LoginComponent implements OnInit, AfterViewInit {
           });
         } else {
           this.errorMessage = response.message || 'Error de inicio de sesión';
+          this.showError(this.errorMessage);
         }
         this.isLoading = false;
       },
@@ -88,13 +94,23 @@ export class LoginComponent implements OnInit, AfterViewInit {
         console.error('Login error:', error);
         
         if (error.error && error.error.error_code === 'unauthorized_email') {
-          this.errorMessage = 'El correo electrónico no está autorizado para acceder al sistema.';
+          this.showError('El correo electrónico no está autorizado para acceder al sistema.');
         } else {
-          this.errorMessage = 'Error al conectar con el servidor. Inténtalo de nuevo.';
+          this.showError('Error al conectar con el servidor. Inténtalo de nuevo.');
         }
         
         this.isLoading = false;
       }
     });
   }
+
+  // Toast Error
+  showError(message: string) {
+    this.toastr.error(message, 'Error', {
+      timeOut: 3000,
+      positionClass: 'toast-top-right'
+    });
+  }
+
 }
+
