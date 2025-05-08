@@ -1,0 +1,115 @@
+<app-modal-content [options]="verModalOptions" #modalContent>
+    <div *ngIf="modo === 'editoriales' && editorial">
+        <div class="card mb-4">
+            <div class="card-header bg-blue-primary">
+                <h5 class="mb-0">Información General</h5>
+            </div>
+            <div class="card-body">
+                <div class="row mb-3">
+                    <div class="col-md-4 fw-bold">Nombre:</div>
+                    <div class="col-md-8">{{ editorial.nombre }}</div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-md-4 fw-bold">Estado:</div>
+                    <div class="col-md-8">
+                        <div class="d-flex align-items-center">
+                            <svg width="16" height="16" class="me-2 puntero" (click)="toggleEstado()">
+                                <circle cx="8" cy="8" r="6" [attr.fill]="editorial.estado ? 'green' : 'red'" />
+                            </svg>
+                            {{ editorial.estado ? 'Activo' : 'Inactivo' }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card mb-4">
+            <div class="card-header bg-blue-primary">
+                <h5 class="mb-0">Correos Electrónicos</h5>
+            </div>
+            <div class="card-body">
+                <ul class="list-group">
+                    <li *ngFor="let correo of editorial.correos; let i = index" class="list-group-item d-flex justify-content-between align-items-center">
+                        <div>
+                            <span class="badge bg-blue-primary me-2 text-black">{{ i + 1 }}</span>
+                            {{ correo ? correo : 'No especificado' }}
+                        </div>
+                        <a *ngIf="correo" [href]="'mailto:' + correo" class="btn btn-sm btn-outline-primary">
+                            <i class="fas fa-envelope"></i>
+                        </a>
+                    </li>
+                    <li *ngIf="!editorial.correos || editorial.correos.length === 0" class="list-group-item text-muted">
+                        No hay correos electrónicos registrados
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header bg-blue-primary">
+                <h5 class="mb-0">Teléfonos</h5>
+            </div>
+            <div class="card-body">
+                <ul class="list-group">
+                    <li *ngFor="let telefono of editorial.telefonos; let i = index" class="list-group-item d-flex justify-content-between align-items-center">
+                        <div>
+                            <span class="badge bg-blue-primary me-2 text-black">{{ i + 1 }}</span>
+                            {{ telefono ? telefono : 'No especificado' }}
+                        </div>
+                        <a *ngIf="telefono" [href]="'tel:' + telefono" class="btn btn-sm btn-outline-primary">
+                            <i class="fas fa-phone"></i>
+                        </a>
+                    </li>
+                    <li *ngIf="!editorial.telefonos || editorial.telefonos.length === 0" class="list-group-item text-muted">
+                        No hay teléfonos registrados
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div *ngIf="modo === 'libros' && libro">
+        <div class="card mb-4">
+            <div class="card-header bg-blue-primary">
+                <h5 class="mb-0">Información General</h5>
+            </div>
+            <div class="card-body">
+                <div class="row mb-3">
+                    <div class="col-md-4 fw-bold">Nombre:</div>
+                    <div class="col-md-8">{{ libro.nombre }}</div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-md-4 fw-bold">ISBN:</div>
+                    <div class="col-md-8">{{ libro.isbn }}</div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-md-4 fw-bold">Editorial:</div>
+                    <div class="col-md-8">{{ libro.editorial?.nombre }}</div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-md-4 fw-bold">Precio:</div>
+                    <div class="col-md-8">{{ libro.precio }} €</div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-md-4 fw-bold">Estado:</div>
+                    <div class="col-md-8">
+                        <div class="d-flex align-items-center">
+                            <svg width="16" height="16" class="me-2 puntero" (click)="toggleLibroEstado()">
+                                <circle cx="8" cy="8" r="6" [attr.fill]="libro.estado ? 'green' : 'red'" />
+                            </svg>
+                            {{ libro.estado ? 'Activo' : 'Inactivo' }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div *ngIf="!editorial && modo === 'editoriales'" class="alert alert-info">
+        Cargando información de la editorial...
+    </div>
+
+    <div *ngIf="!libro && modo === 'libros'" class="alert alert-info">
+        Cargando información del libro...
+    </div>
+</app-modal-content>
