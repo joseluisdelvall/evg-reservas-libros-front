@@ -3,9 +3,9 @@
  */
 
 export interface Editorial {
-    id?: number; // Identificador único de la editorial
-    nombre?: string; // Nombre de la editorial
-    telefono?: string[]; // Teléfono de contacto
-    correo?: string[]; // Correo electrónico de contacto
-    estado?: string; // Estado de la editorial (activo o inactivo)
+    idEditorial: number;
+    nombre: string;
+    correo?: string;
+    telefono?: string;
+    estado?: boolean;
 }
