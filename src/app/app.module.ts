@@ -9,6 +9,9 @@ import { ToastrModule } from 'ngx-toastr';
 import { FormReservaComponent } from './components/form-reserva/form-reserva.component';
 import { ModalPeriodoReservasComponent } from './admin/components/reservas/modales/modal-periodo-reservas/modal-periodo-reservas.component';
 import { AuthInterceptor } from './interceptors/auth.interceptor';
+import { ReactiveFormsModule } from '@angular/forms';
+import { NgSelectModule } from '@ng-select/ng-select';
+
 @NgModule({
   declarations: [
     AppComponent,
@@ -19,6 +22,8 @@ import { AuthInterceptor } from './interceptors/auth.interceptor';
     AppRoutingModule,
     HttpClientModule,
     BrowserAnimationsModule,
+    ReactiveFormsModule,
+    NgSelectModule,
     ToastrModule.forRoot({ // Configuración global opcional de Toastr
       timeOut: 3000,
       positionClass: 'toast-bottom-right'
