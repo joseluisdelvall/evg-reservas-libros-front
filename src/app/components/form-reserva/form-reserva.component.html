@@ -122,11 +122,26 @@
                                 formControlName="libro"
                                 id="libro"
                                 [multiple]="true"
-                                [closeOnSelect]="false"
+                                [closeOnSelect]="true"
                                 [searchable]="true"
+                                bindLabel="nombre"
+                                bindValue="id"
                                 placeholder="Seleccione los libros"
                                 [disabled]="!mostrarLibros"
                                 class="ng-select-sm">
+                                <ng-template ng-label-tmp let-item="item">
+                                    {{ item.nombre }} ({{ item.precio }}€)
+                                </ng-template>
+                                <ng-template ng-option-tmp let-item="item">
+                                    <div>
+                                        <strong>{{ item.nombre }}</strong>
+                                    </div>
+                                    <small>
+                                        <span>ISBN: {{ item.isbn }}</span> |
+                                        <span>Editorial: {{ item.editorial.nombre }}</span> |
+                                        <span><strong>Precio: {{ item.precio }}€</strong></span>
+                                    </small>
+                                </ng-template>
                             </ng-select>
                             <div *ngIf="isInvalid('libro')" class="text-danger small">{{ getError('libro') }}</div>
                         </div>
@@ -138,7 +153,74 @@
                             <div *ngIf="isInvalid('justificante')" class="text-danger small">{{ getError('justificante') }}</div>
                         </div>
 
-                        <div class="d-flex justify-content-end mt-4">
+                        <!-- Mensajes de alerta -->
+                        <div *ngIf="mensajeExito && !reservaCompletada" class="alert alert-success mt-3">
+                            <i class="fas fa-check-circle me-2"></i> {{ mensajeExito }}
+                        </div>
+                        <div *ngIf="mensajeError && !reservaCompletada" class="alert alert-danger mt-3">
+                            <i class="fas fa-exclamation-triangle me-2"></i> {{ mensajeError }}
+                        </div>
+
+                        <!-- Detalles de la reserva completada -->
+                        <div *ngIf="reservaCompletada" class="mt-4 border rounded p-4 bg-light">
+                            <h5 class="text-primary mb-3">Detalles de la Reserva #{{ reservaCompletada.id }}</h5>
+                            
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <p class="mb-1"><strong>Nombre:</strong> {{ reservaCompletada.nombreAlumno || 'No especificado' }} {{ reservaCompletada.apellidosAlumno || '' }}</p>
+                                    <p class="mb-1"><strong>Correo:</strong> {{ reservaCompletada.correo || 'No especificado' }}</p>
+                                    <p class="mb-1"><strong>Fecha:</strong> {{ reservaCompletada.fecha || 'No especificada' }}</p>
+                                </div>
+                                <div class="col-md-6">
+                                    <p class="mb-1"><strong>Estado:</strong> {{ reservaCompletada.verificado ? 'Verificado' : 'Pendiente de verificación' }}</p>
+                                    <p class="mb-1"><strong>Curso:</strong> {{ getCursoNombre(reservaCompletada.curso) }}</p>
+                                </div>
+                            </div>
+                            
+                            <h6 class="text-secondary mb-2">Libros reservados:</h6>
+                            <div class="table-responsive" *ngIf="reservaCompletada.libros && reservaCompletada.libros.length > 0">
+                                <table class="table table-sm table-striped">
+                                    <thead>
+                                        <tr>
+                                            <th>Nombre</th>
+                                            <th>Precio</th>
+                                            <th>Estado</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr *ngFor="let libro of reservaCompletada.libros">
+                                            <td>{{ libro.nombre || 'No especificado' }}</td>
+                                            <td>{{ libro.precio || '0.00' }}€</td>
+                                            <td>{{ libro.estado || 'No especificado' }}</td>
+                                        </tr>
+                                    </tbody>
+                                    <tfoot>
+                                        <tr>
+                                            <th>Total</th>
+                                            <th colspan="2">{{ calcularTotal(reservaCompletada.libros) }}€</th>
+                                        </tr>
+                                    </tfoot>
+                                </table>
+                            </div>
+                            <div *ngIf="!reservaCompletada.libros || reservaCompletada.libros.length === 0" class="alert alert-info">
+                                No hay libros asociados a esta reserva.
+                            </div>
+                            
+                            <div class="text-center mt-3">
+                                <p class="small text-muted" *ngIf="reservaCompletada && reservaCompletada.id < 1000">
+                                    Se ha enviado un correo de confirmación a {{ reservaCompletada.correo || 'tu correo' }}
+                                </p>
+                                <p class="small text-muted text-warning" *ngIf="reservaCompletada && reservaCompletada.id >= 1000">
+                                    <i class="fas fa-exclamation-circle me-1"></i> No se pudo enviar el correo de confirmación. Por favor, guarde el número de reserva.
+                                </p>
+                                <button type="button" class="btn btn-sm btn-outline-primary" (click)="nuevaReserva()">
+                                    <i class="fas fa-plus-circle me-2"></i>Realizar nueva reserva
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <!-- Esta es la sección del botón de envío, que debe estar dentro del formulario -->
+                        <div class="d-flex justify-content-end mt-4" *ngIf="!reservaCompletada">
                             <button type="submit" class="btn btn-primary rounded-pill px-4 py-2" [disabled]="reservaForm.invalid || loading">
                                 <i class="fas fa-paper-plane me-2"></i> {{ loading ? 'Enviando...' : 'Realizar Reserva' }}
                             </button>
