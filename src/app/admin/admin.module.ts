@@ -16,6 +16,7 @@ import { ModalPeriodoReservasComponent } from './components/reservas/modales/mod
 import { ReservasComponent } from './components/reservas/reservas.component';
 import { ModalContentComponent } from './components/shared/modal-content/modal-content.component';
 import { AdminLayoutComponent } from './components/admin-layout/admin-layout.component';
+import { ModalVerComponent } from './components/gestion/crud/components/modales/modal-ver/modal-ver.component';
 
 
 @NgModule({
@@ -34,7 +35,8 @@ import { AdminLayoutComponent } from './components/admin-layout/admin-layout.com
     ModalNuevoComponent,
     ModalEditarComponent,
     ModalFiltroComponent,
-    AdminLayoutComponent
+    AdminLayoutComponent,
+    ModalVerComponent
   ],
   imports: [
     CommonModule,

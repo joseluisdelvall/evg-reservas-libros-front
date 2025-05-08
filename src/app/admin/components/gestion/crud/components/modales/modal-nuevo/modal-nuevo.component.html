@@ -12,16 +12,10 @@
             <div class="col-lg-8 col-12">
                 <label for="editorial" class="fw-bold">Editorial</label>
                 <select id="editorial" class="form-select" formControlName="editorial">
-                    <option value="">Seleccione una editorial</option>
-                    <option value="Anaya">Anaya</option>
-                    <option value="Edelvives">Edelvives</option>
-                    <option value="SM">SM</option>
-                    <option value="Arán">Arán</option>
-                    <option value="Santillana">Santillana</option>
-                    <option value="Vicens Vives">Vicens Vives</option>
-                    <option value="Oxford Educación">Oxford Educación</option>
-                    <option value="Casals">Casals</option>
-                    <option value="Teide">Teide</option>
+                    <option [ngValue]="null">Seleccione una editorial</option>
+                    <option *ngFor="let editorial of editoriales" [value]="editorial.idEditorial">
+                        {{ editorial.nombre }}
+                    </option>
                 </select>
             </div>
     
@@ -37,13 +31,29 @@
                 <label for="editorialName" class="fw-bold">Nombre</label>
                 <input type="text" id="editorialName" class="form-control" placeholder="Ingrese el nombre de la editorial" formControlName="nombre">
             </div>
+            
+            <!-- Correos electrónicos -->
             <div class="form-group my-2">
-                <label for="email" class="fw-bold">Correo</label>
-                <input type="email" id="email" class="form-control" placeholder="Ingrese el correo electrónico" formControlName="correo">
+                <label class="fw-bold">Correos electrónicos</label>
+                <div formArrayName="correos">
+                    <div *ngFor="let correo of getCorreosControls(); let i = index" class="mb-2">
+                        <div class="input-group">
+                            <input type="email" [formControlName]="i" class="form-control" placeholder="Correo electrónico {{i+1}}">
+                        </div>
+                    </div>
+                </div>
             </div>
+            
+            <!-- Teléfonos -->
             <div class="form-group my-2">
-                <label for="phone" class="fw-bold">Teléfono</label>
-                <input type="text" id="phone" class="form-control" placeholder="Ingrese el teléfono" formControlName="telefono">
+                <label class="fw-bold">Teléfonos</label>
+                <div formArrayName="telefonos">
+                    <div *ngFor="let telefono of getTelefonosControls(); let i = index" class="mb-2">
+                        <div class="input-group">
+                            <input type="text" [formControlName]="i" class="form-control" placeholder="Teléfono {{i+1}}">
+                        </div>
+                    </div>
+                </div>
             </div>
         </form>
     </ng-template>

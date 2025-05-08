@@ -30,3 +30,7 @@
     background-color: var(--primary-color-light-hover) !important;
     color: #000 !important;
 }
+
+.puntero {
+    cursor: pointer;
+}

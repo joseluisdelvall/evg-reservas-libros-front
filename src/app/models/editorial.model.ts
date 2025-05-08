@@ -1,11 +1,11 @@
 /**
- * Falta poner que la editorial tenga varias direcciones de correo electronico y telefonos
+ * Interfaz para las editoriales con múltiples contactos
  */
 
 export interface Editorial {
-    id?: number; // Identificador único de la editorial
+    idEditorial?: string; // Identificador único de la editorial
     nombre?: string; // Nombre de la editorial
-    telefono?: string[]; // Teléfono de contacto
-    correo?: string[]; // Correo electrónico de contacto
-    estado?: string; // Estado de la editorial (activo o inactivo)
+    telefonos?: string[]; // Múltiples teléfonos de contacto (3)
+    correos?: string[]; // Múltiples correos electrónicos de contacto (3)
+    estado?: boolean; // Estado de la editorial (activo o inactivo)
 }
