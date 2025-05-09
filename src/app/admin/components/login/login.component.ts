@@ -34,7 +34,7 @@ export class LoginComponent implements OnInit, AfterViewInit {
   ngAfterViewInit(): void {
     // @ts-ignore
     google.accounts.id.initialize({
-      client_id: '660176374148-klpm52u3brlqsmpjvqci3ruk5qk1ofnl.apps.googleusercontent.com', // Replace with your client ID
+      client_id: environment.googleClientId,
       callback: this.handleCredentialResponse.bind(this),
       ux_mode: 'popup',
       login_uri: environment.api.loginUrl // Usar la URL completa ya definida
@@ -45,7 +45,7 @@ export class LoginComponent implements OnInit, AfterViewInit {
       { theme: "outline", size: "large" }  // customization attributes
     );
     // @ts-ignore
-    google.accounts.id.prompt(); // also display the One Tap sign-in prompt
+    google.accounts.id.prompt();
   }
 
   handleCredentialResponse(response: any) {
