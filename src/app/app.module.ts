@@ -11,6 +11,7 @@ import { ModalPeriodoReservasComponent } from './admin/components/reservas/modal
 import { AuthInterceptor } from './interceptors/auth.interceptor';
 import { ReactiveFormsModule } from '@angular/forms';
 import { NgSelectModule } from '@ng-select/ng-select';
+import { DataTablesModule } from 'angular-datatables';
 
 @NgModule({
   declarations: [
@@ -27,7 +28,8 @@ import { NgSelectModule } from '@ng-select/ng-select';
     ToastrModule.forRoot({ // Configuración global opcional de Toastr
       timeOut: 3000,
       positionClass: 'toast-bottom-right'
-    })
+    }),
+    DataTablesModule
   ],
   providers: [
     { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true }

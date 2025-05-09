@@ -1,4 +1,4 @@
-import { Component, OnChanges, OnInit } from '@angular/core';
+import { Component, OnChanges, OnInit, OnDestroy } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { ModalOptions } from '../../shared/modal-content/models/modal-options';
 import { ToastrService } from 'ngx-toastr';
@@ -6,16 +6,23 @@ import { Libro } from 'src/app/models/libro.model';
 import { Editorial } from 'src/app/models/editorial.model';
 import { CrudService } from 'src/app/services/crud.service';
 import Swal from 'sweetalert2';
+import { Subject } from 'rxjs';
 
 @Component({
   selector: 'app-crud',
   templateUrl: './crud.component.html',
   styleUrls: ['./crud.component.css']
 })
-export class CrudComponent implements OnInit {
+export class CrudComponent implements OnInit, OnDestroy {
   modo: 'libros' | 'editoriales' | null = null;
   editorialSeleccionadaId: string | null = null;
   libroSeleccionadoId: string | null = null;
+
+  // DataTables
+  dtOptions: DataTables.Settings = {};
+  dtOptionsEditoriales: DataTables.Settings = {};
+  dtTrigger: Subject<any> = new Subject<any>();
+  dtTriggerEditoriales: Subject<any> = new Subject<any>();
 
   // nuevoModalOptions
   nuevoModalOptions!: ModalOptions;
@@ -23,12 +30,38 @@ export class CrudComponent implements OnInit {
   libros: Libro[] = [];
   editorialesA: Editorial[] = [];
 
+  // Variables para controlar si las tablas ya se han renderizado
+  private librosTableInitialized = false;
+  private editorialesTableInitialized = false;
+
   constructor(private route: ActivatedRoute,
     private crudService: CrudService,
     private toastr: ToastrService
   ) { }
 
   ngOnInit(): void {
+    // Configuración de DataTables para libros
+    this.dtOptions = {
+      pagingType: 'full_numbers',
+      pageLength: 10,
+      processing: true,
+      language: {
+        url: '//cdn.datatables.net/plug-ins/1.10.25/i18n/Spanish.json'
+      },
+      responsive: true
+    };
+
+    // Configuración de DataTables para editoriales
+    this.dtOptionsEditoriales = {
+      pagingType: 'full_numbers',
+      pageLength: 10,
+      processing: true,
+      language: {
+        url: '//cdn.datatables.net/plug-ins/1.10.25/i18n/Spanish.json'
+      },
+      responsive: true
+    };
+
     // Subscribe to the route parameters
     this.route.paramMap.subscribe(params => {
       const modoParam = params.get('modo');
@@ -41,12 +74,28 @@ export class CrudComponent implements OnInit {
     });
   }
 
+  ngOnDestroy(): void {
+    // Desuscribirse para evitar pérdidas de memoria
+    this.dtTrigger.unsubscribe();
+    this.dtTriggerEditoriales.unsubscribe();
+  }
+
   cargarTable(): void {
     if (this.modo === 'libros') {
       this.crudService.getLibros().subscribe({
         next: (data: Libro[]) => {
           this.libros = data;
           console.log('Libros:', this.libros);
+          
+          // Renderizar la tabla
+          if (!this.librosTableInitialized) {
+            // Primera carga - inicializar
+            this.librosTableInitialized = true;
+            this.dtTrigger.next(null);
+          } else {
+            // Recargar la tabla existente
+            this.rerenderLibrosTable();
+          }
         },
         error: (error) => {
           console.error('Error al cargar los libros:', error);
@@ -58,6 +107,16 @@ export class CrudComponent implements OnInit {
         next: (data: Editorial[]) => {
           this.editorialesA = data;
           console.log('Editoriales:', this.editorialesA);
+          
+          // Renderizar la tabla
+          if (!this.editorialesTableInitialized) {
+            // Primera carga - inicializar
+            this.editorialesTableInitialized = true;
+            this.dtTriggerEditoriales.next(null);
+          } else {
+            // Recargar la tabla existente
+            this.rerenderEditorialesTable();
+          }
         },
         error: (error) => {
           console.error('Error al cargar las editoriales:', error);
@@ -65,6 +124,27 @@ export class CrudComponent implements OnInit {
         }
       });
     }
+  }
+  
+  // Métodos para recargar las tablas
+  rerenderLibrosTable(): void {
+    // Destruir la tabla actual
+    $('#tablaLibros').DataTable().destroy();
+    
+    // Volver a renderizar
+    setTimeout(() => {
+      this.dtTrigger.next(null);
+    });
+  }
+  
+  rerenderEditorialesTable(): void {
+    // Destruir la tabla actual
+    $('#tablaEditoriales').DataTable().destroy();
+    
+    // Volver a renderizar
+    setTimeout(() => {
+      this.dtTriggerEditoriales.next(null);
+    });
   }
 
   seleccionarEditorial(editorial: Editorial): void {
@@ -84,10 +164,14 @@ export class CrudComponent implements OnInit {
   getIdEntidadSeleccionada(): string | null {
     return this.modo === 'libros' ? this.libroSeleccionadoId : this.editorialSeleccionadaId;
   }
-
   reloadTable(): void {
-    this.cargarTable();
-    console.log(this.editorialesA);
+    if (this.modo === 'libros' && this.librosTableInitialized) {
+      this.rerenderLibrosTable();
+    } else if (this.modo === 'editoriales' && this.editorialesTableInitialized) {
+      this.rerenderEditorialesTable();
+    } else {
+      this.cargarTable();
+    }
   }
 
   toggleEditorialEstado(editorial: Editorial, event: Event): void {
