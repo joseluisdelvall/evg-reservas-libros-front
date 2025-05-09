@@ -11,7 +11,8 @@ export const environment = {
   auth: {
     cookieTokenName: 'RDLEVGTKN',
   },
-  pathImg: 'assets/img/'
+  pathImg: 'assets/img/',
+  googleClientId: '660176374148-klpm52u3brlqsmpjvqci3ruk5qk1ofnl.apps.googleusercontent.com'
 };
 
 /*
