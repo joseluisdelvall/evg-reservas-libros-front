@@ -21,8 +21,6 @@
             <!-- Tabla Libros con DataTable -->
             <table *ngIf="modo === 'libros'; else editoriales" 
                    id="tablaLibros"
-                   datatable [dtOptions]="dtOptions" 
-                   [dtTrigger]="dtTrigger"
                    class="table table-bordered table-hover table-striped" 
                    style="border: 2px solid #6C8EBF;">
                 <thead>
@@ -35,30 +33,12 @@
                         <th class="text-center">Estado</th>
                     </tr>
                 </thead>
-                <tbody>
-                    <tr *ngFor="let libro of this.libros">
-                        <td class="text-center">
-                            <i class="fas fa-edit puntero" style="color: blue;" data-bs-toggle="modal" [attr.data-bs-target]="'#editar' + modo" (click)="seleccionarLibro(libro)"></i>
-                            <i class="fas fa-eye ms-2 puntero" style="color: rgb(87, 87, 87);" data-bs-toggle="modal" [attr.data-bs-target]="'#ver' + modo" (click)="seleccionarLibro(libro)"></i>
-                        </td>
-                        <td>{{ libro.nombre }}</td>
-                        <td>{{ libro.isbn }}</td>
-                        <td>{{ libro.editorial!.nombre }}</td>
-                        <td>{{ libro.precio }}</td>
-                        <td class="text-center">
-                            <svg width="16" height="16" class="puntero" (click)="toggleLibroEstado(libro, $event)">
-                                <circle cx="8" cy="8" r="6" [attr.fill]="libro.estado ? 'green' : 'red'" />
-                            </svg>
-                        </td>
-                    </tr>
-                </tbody>
+                <tbody></tbody>
             </table>
 
             <!-- Tabla editoriales con DataTable -->
             <ng-template #editoriales>
                 <table id="tablaEditoriales"
-                       datatable [dtOptions]="dtOptionsEditoriales"
-                       [dtTrigger]="dtTriggerEditoriales"
                        class="table table-bordered table-hover table-striped" 
                        style="border: 2px solid #6C8EBF;">
                     <thead>
@@ -70,22 +50,7 @@
                             <th class="text-center">Estado</th>
                         </tr>
                     </thead>
-                    <tbody>
-                        <tr *ngFor="let editorial of this.editorialesA">
-                            <td class="text-center">
-                                <i class="fas fa-edit puntero" style="color: blue;" data-bs-toggle="modal" [attr.data-bs-target]="'#editar' + modo" (click)="seleccionarEditorial(editorial)"></i>
-                                <i class="fas fa-eye ms-2 puntero" style="color: rgb(87, 87, 87);" data-bs-toggle="modal" [attr.data-bs-target]="'#ver' + modo" (click)="seleccionarEditorial(editorial)"></i>
-                            </td>
-                            <td>{{ editorial.nombre }}</td>
-                            <td>{{ editorial.correos?.[0] }}</td>
-                            <td>{{ editorial.telefonos?.[0] }}</td>
-                            <td class="text-center">
-                                <svg width="16" height="16" class="puntero" (click)="toggleEditorialEstado(editorial, $event)">
-                                    <circle cx="8" cy="8" r="6" [attr.fill]="editorial.estado ? 'green' : 'red'" />
-                                </svg>
-                            </td>
-                        </tr>
-                    </tbody>
+                    <tbody></tbody>
                 </table>
             </ng-template>
 
