@@ -150,15 +150,7 @@
                         <div class="mb-3">
                             <label for="justificante" class="form-label fw-semibold small text-muted">Subir Justificante*</label>
                             <input type="file" id="justificante" class="form-control form-control-sm" (change)="onFileChange($event)">
-                            <div *ngIf="isInvalid('justificante')" class="text-danger small">{{ getError('justificante') }}</div>
-                        </div>
-
-                        <!-- Mensajes de alerta -->
-                        <div *ngIf="mensajeExito && !reservaCompletada" class="alert alert-success mt-3">
-                            <i class="fas fa-check-circle me-2"></i> {{ mensajeExito }}
-                        </div>
-                        <div *ngIf="mensajeError && !reservaCompletada" class="alert alert-danger mt-3">
-                            <i class="fas fa-exclamation-triangle me-2"></i> {{ mensajeError }}
+                            <div *ngIf="!justificanteFile && reservaForm.get('justificante')?.touched" class="text-danger small">Este campo es obligatorio.</div>
                         </div>
 
                         <!-- Detalles de la reserva completada -->
@@ -221,7 +213,7 @@
                         
                         <!-- Esta es la sección del botón de envío, que debe estar dentro del formulario -->
                         <div class="d-flex justify-content-end mt-4" *ngIf="!reservaCompletada">
-                            <button type="submit" class="btn btn-primary rounded-pill px-4 py-2" [disabled]="reservaForm.invalid || loading">
+                            <button type="submit" class="btn btn-primary rounded-pill px-4 py-2" [disabled]="loading">
                                 <i class="fas fa-paper-plane me-2"></i> {{ loading ? 'Enviando...' : 'Realizar Reserva' }}
                             </button>
                         </div>

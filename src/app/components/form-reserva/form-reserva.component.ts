@@ -1,11 +1,12 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators, AbstractControl, ValidationErrors } from '@angular/forms';
 import { CursoService } from '../../services/curso.service';
 import { LibroService } from '../../services/libro.service';
 import { ReservaService } from '../../services/reserva.service';
 import { Curso } from '../../models/curso.model';
 import { Libro } from '../../models/libro.model';
 import { ReservaRequest, ReservaResponse } from '../../models/reserva.model';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-form-reserva',
@@ -22,12 +23,14 @@ export class FormReservaComponent implements OnInit {
   mensajeExito: string = '';
   mensajeError: string = '';
   reservaCompletada: ReservaResponse | null = null;
+  mostrandoErrores: boolean = false; // Flag para controlar que solo se muestre un toast a la vez
 
   constructor(
     private fb: FormBuilder,
     private cursoService: CursoService,
     private libroService: LibroService,
-    private reservaService: ReservaService
+    private reservaService: ReservaService,
+    private toastr: ToastrService
   ) {}
 
   ngOnInit(): void {
@@ -75,14 +78,52 @@ export class FormReservaComponent implements OnInit {
     });
   }
 
+  // Validador personalizado para el DNI español
+  validarDNI(control: AbstractControl): ValidationErrors | null {
+    const valor = control.value;
+    
+    if (!valor) return null;
+    
+    // Verificar el formato: 8 dígitos seguidos de una letra
+    const dniRegex = /^[0-9]{8}[A-Za-z]$/;
+    if (!dniRegex.test(valor)) {
+      return { formatoInvalido: true };
+    }
+    
+    // Extraer los dígitos y la letra
+    const numero = parseInt(valor.substr(0, 8), 10);
+    const letraProporcionada = valor.substr(8, 1).toUpperCase();
+    
+    // Array de letras posibles según el algoritmo del DNI español
+    const letras = 'TRWAGMYFPDXBNJZSQVHLCKE';
+    
+    // Calcular la letra correcta
+    const letraCalculada = letras.charAt(numero % 23);
+    
+    // Comparar la letra proporcionada con la calculada
+    if (letraProporcionada !== letraCalculada) {
+      return { letraInvalida: true };
+    }
+    
+    return null;
+  }
+
   initForm() {
     this.reservaForm = this.fb.group({
       nombreAlumno: ['', [Validators.required, Validators.minLength(3)]],
       apellidosAlumno: ['', [Validators.required, Validators.minLength(3)]],
       nombreTutor: ['', Validators.minLength(3)],
       apellidosTutor: ['', Validators.minLength(3)],
-      dni: ['', [Validators.required, Validators.minLength(9)]],
-      correo: ['', [Validators.required, Validators.email]],
+      dni: ['', [
+        Validators.required, 
+        Validators.pattern('^[0-9]{8}[A-Za-z]$'),
+        this.validarDNI.bind(this)
+      ]],
+      correo: ['', [
+        Validators.required, 
+        Validators.email,
+        Validators.pattern('^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$')
+      ]],
       telefono: ['', [Validators.required, Validators.pattern('^[6-9]\\d{8}$')]],
       curso: [null, Validators.required],
       libro: [{ value: '', disabled: true }, Validators.required],
@@ -136,6 +177,10 @@ export class FormReservaComponent implements OnInit {
     const control = this.reservaForm.get(controlName);
     if (control?.hasError('required')) return 'Este campo es obligatorio.';
     if (controlName === 'correo' && control?.hasError('email')) return 'Ingrese un correo electrónico válido.';
+    if (controlName === 'correo' && control?.hasError('pattern')) return 'Formato de correo inválido. Debe incluir @ y un dominio válido.';
+    if (controlName === 'dni' && control?.hasError('pattern')) return 'Formato de DNI inválido. Debe ser 8 dígitos seguidos de una letra.';
+    if (controlName === 'dni' && control?.hasError('formatoInvalido')) return 'Formato de DNI inválido. Debe ser 8 dígitos seguidos de una letra.';
+    if (controlName === 'dni' && control?.hasError('letraInvalida')) return 'La letra del DNI no es correcta para esos dígitos.';
     if (controlName === 'telefono' && control?.hasError('pattern')) return 'Ingrese un teléfono válido (9 dígitos, comenzando por 6, 7, 8 o 9).';
     if (control?.hasError('minlength')) {
       const requiredLength = control.errors?.['minlength'].requiredLength;
@@ -148,110 +193,126 @@ export class FormReservaComponent implements OnInit {
     // Log del estado del formulario para depuración
     this.logFormStatus();
     
-    if (this.reservaForm.valid && this.justificanteFile) {
-      this.loading = true;
-      this.mensajeExito = '';
-      this.mensajeError = '';
-      this.reservaCompletada = null; // Reset any previous reservation
-
-      // Preparar los datos para enviar
-      const formValues = this.reservaForm.value;
-      
-      try {
-        // Extraer los IDs de los libros seleccionados
-        let librosIds: number[] = [];
+    // Marcar todos los campos como tocados para mostrar errores de validación
+    Object.keys(this.reservaForm.controls).forEach(key => {
+      this.reservaForm.get(key)?.markAsTouched();
+    });
+    
+    // Verificar si el formulario es válido y tiene el archivo adjunto
+    if (this.reservaForm.invalid || !this.justificanteFile) {
+      // Mostrar mensaje de error con toastr solo si no se está mostrando ya
+      if (!this.mostrandoErrores) {
+        this.mostrandoErrores = true;
         
-        if (Array.isArray(formValues.libro)) {
-          librosIds = formValues.libro.map((libro: Libro | number) => {
-            // Si es un objeto Libro, obtenemos su ID, si es un número lo usamos directamente
-            return typeof libro === 'object' ? libro.id : Number(libro);
-          });
-        } else if (formValues.libro) {
-          // Si es un único valor
-          librosIds = [typeof formValues.libro === 'object' ? formValues.libro.id : Number(formValues.libro)];
-        }
-        
-        // Verificar si hay libros seleccionados
-        if (librosIds.length === 0) {
-          throw new Error('Debe seleccionar al menos un libro');
-        }
-
-        const reservaData: ReservaRequest = {
-          nombreAlumno: formValues.nombreAlumno,
-          apellidosAlumno: formValues.apellidosAlumno,
-          nombreTutorLegal: formValues.nombreTutor || undefined,
-          apellidosTutorLegal: formValues.apellidosTutor || undefined,
-          correo: formValues.correo,
-          dni: formValues.dni,
-          telefono: formValues.telefono,
-          idCurso: formValues.curso,
-          libros: librosIds
-        };
-
-        // Log para depuración
-        console.log('Datos del formulario a enviar:', reservaData);
-        console.log('Archivo justificante:', this.justificanteFile);
-
-        // Comprobación de tamaño del archivo (opcional)
-        const fileSizeMB = this.justificanteFile.size / (1024 * 1024);
-        console.log(`Tamaño del archivo: ${fileSizeMB.toFixed(2)} MB`);
-        
-        if (fileSizeMB > 5) {
-          this.mensajeError = 'El archivo es demasiado grande. El tamaño máximo permitido es 5MB.';
-          this.loading = false;
-          return;
-        }
-
-        // Enviar al backend usando JSON
-        this.reservaService.crearReserva(reservaData, this.justificanteFile)
-          .subscribe({
-            next: (response) => {
-              this.loading = false;
-              
-              // Log para depuración
-              console.log('Respuesta procesada del servidor:', response);
-              
-              // Verificar si la respuesta tiene la estructura esperada
-              if (response && response.id) {
-                // Si el id es mayor a 1000, sabemos que es una respuesta simulada
-                // debido a un problema de comunicación con el servidor de correo
-                if (response.id >= 1000) {
-                  this.mensajeExito = `¡Reserva realizada con éxito! Se registró su reserva pero hubo un problema al enviar el correo de confirmación. Por favor, guarde este número de reserva: ${response.id}.`;
-                } else {
-                  this.mensajeExito = `¡Reserva realizada con éxito! Número de reserva: ${response.id}. Se ha enviado un correo de confirmación.`;
-                }
-                
-                // Guardar la respuesta y resetear el formulario
-                this.reservaCompletada = response;
-                this.resetForm();
-              } else {
-                // Si la respuesta no tiene la estructura esperada
-                console.error('Respuesta inesperada del servidor:', response);
-                this.mensajeError = 'La respuesta del servidor no tiene el formato esperado.';
-              }
-            },
-            error: (error) => {
-              this.loading = false;
-              console.error('Error al crear la reserva:', error);
-              this.mensajeError = `Error al procesar la reserva: ${error.message || 'Error desconocido'}. Por favor, inténtelo de nuevo.`;
-            }
-          });
-      } catch (error: any) {
-        this.loading = false;
-        this.mensajeError = `Error en el formulario: ${error.message || 'Error desconocido'}`;
-        console.error('Error al preparar los datos:', error);
-      }
-    } else {
-      // Marcar todos los campos como tocados para mostrar errores
-      Object.keys(this.reservaForm.controls).forEach(key => {
-        this.reservaForm.get(key)?.markAsTouched();
-      });
-      
-      if (!this.justificanteFile) {
-        this.mensajeError = 'Debe adjuntar un justificante de pago.';
-      } else {
         this.mensajeError = 'Por favor, complete correctamente todos los campos obligatorios.';
+        this.toastr.warning(this.mensajeError, 'Validación');
+        
+        // Resetear el flag después de un tiempo para permitir mostrar nuevamente
+        setTimeout(() => {
+          this.mostrandoErrores = false;
+        }, 3000);
       }
+      return; // Salir del método sin enviar el formulario al servidor
+    }
+    
+    // Si llegamos aquí, el formulario es válido y podemos continuar con el envío
+    this.loading = true;
+    this.mensajeExito = '';
+    this.mensajeError = '';
+    this.reservaCompletada = null; // Reset any previous reservation
+
+    // Preparar los datos para enviar
+    const formValues = this.reservaForm.value;
+    
+    try {
+      // Extraer los IDs de los libros seleccionados
+      let librosIds: number[] = [];
+      
+      if (Array.isArray(formValues.libro)) {
+        librosIds = formValues.libro.map((libro: Libro | number) => {
+          // Si es un objeto Libro, obtenemos su ID, si es un número lo usamos directamente
+          return typeof libro === 'object' ? libro.id : Number(libro);
+        });
+      } else if (formValues.libro) {
+        // Si es un único valor
+        librosIds = [typeof formValues.libro === 'object' ? formValues.libro.id : Number(formValues.libro)];
+      }
+      
+      // Verificar si hay libros seleccionados
+      if (librosIds.length === 0) {
+        throw new Error('Debe seleccionar al menos un libro');
+      }
+
+      const reservaData: ReservaRequest = {
+        nombreAlumno: formValues.nombreAlumno,
+        apellidosAlumno: formValues.apellidosAlumno,
+        nombreTutorLegal: formValues.nombreTutor || undefined,
+        apellidosTutorLegal: formValues.apellidosTutor || undefined,
+        correo: formValues.correo,
+        dni: formValues.dni,
+        telefono: formValues.telefono,
+        idCurso: formValues.curso,
+        libros: librosIds
+      };
+
+      // Log para depuración
+      console.log('Datos del formulario a enviar:', reservaData);
+      console.log('Archivo justificante:', this.justificanteFile);
+
+      // Comprobación de tamaño del archivo (opcional)
+      const fileSizeMB = this.justificanteFile.size / (1024 * 1024);
+      console.log(`Tamaño del archivo: ${fileSizeMB.toFixed(2)} MB`);
+      
+      if (fileSizeMB > 5) {
+        this.mensajeError = 'El archivo es demasiado grande. El tamaño máximo permitido es 5MB.';
+        this.toastr.error(this.mensajeError, 'Error');
+        this.loading = false;
+        return;
+      }
+
+      // Enviar al backend usando JSON
+      this.reservaService.crearReserva(reservaData, this.justificanteFile)
+        .subscribe({
+          next: (response) => {
+            this.loading = false;
+            
+            // Log para depuración
+            console.log('Respuesta procesada del servidor:', response);
+            
+            // Verificar si la respuesta tiene la estructura esperada
+            if (response && response.id) {
+              // Si el id es mayor a 1000, sabemos que es una respuesta simulada
+              // debido a un problema de comunicación con el servidor de correo
+              if (response.id >= 1000) {
+                this.mensajeExito = `¡Reserva realizada con éxito! Se registró su reserva pero hubo un problema al enviar el correo de confirmación. Por favor, guarde este número de reserva: ${response.id}.`;
+                this.toastr.success(this.mensajeExito, 'Éxito');
+              } else {
+                this.mensajeExito = `¡Reserva realizada con éxito! Número de reserva: ${response.id}. Se ha enviado un correo de confirmación.`;
+                this.toastr.success(this.mensajeExito, 'Éxito');
+              }
+              
+              // Guardar la respuesta y resetear el formulario
+              this.reservaCompletada = response;
+              this.resetForm();
+            } else {
+              // Si la respuesta no tiene la estructura esperada
+              console.error('Respuesta inesperada del servidor:', response);
+              this.mensajeError = 'La respuesta del servidor no tiene el formato esperado.';
+              this.toastr.error(this.mensajeError, 'Error');
+            }
+          },
+          error: (error) => {
+            this.loading = false;
+            console.error('Error al crear la reserva:', error);
+            this.mensajeError = `Error al procesar la reserva: ${error.message || 'Error desconocido'}. Por favor, inténtelo de nuevo.`;
+            this.toastr.error(this.mensajeError, 'Error');
+          }
+        });
+    } catch (error: any) {
+      this.loading = false;
+      this.mensajeError = `Error en el formulario: ${error.message || 'Error desconocido'}`;
+      this.toastr.error(this.mensajeError, 'Error');
+      console.error('Error al preparar los datos:', error);
     }
   }
 
@@ -261,6 +322,7 @@ export class FormReservaComponent implements OnInit {
     this.justificanteFile = null;
     this.mensajeExito = '';
     this.mensajeError = '';
+    this.mostrandoErrores = false; // Resetear el flag de mostrar errores
     // No reseteamos this.reservaCompletada aquí para mantener el resumen visible
   }
 
