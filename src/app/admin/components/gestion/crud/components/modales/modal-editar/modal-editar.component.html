@@ -1,55 +1,54 @@
 <app-modal-content [options]="editarModalOptions" (okButtonClicked)="onSubmit()">
     <form *ngIf="modo === 'libros'; else editarEditorialModal" [formGroup]="formL">
         <div class="form-group my-2">
-            <label for="bookName" class="fw-bold">Nombre</label>
+            <label for="bookName" class="fw-bold">Nombre*</label>
             <input type="text" id="bookName" class="form-control" 
-                   [ngClass]="{'is-invalid': formL.get('nombre')?.invalid && formL.get('nombre')?.touched}"
-                   placeholder="Ingrese el nombre del libro" formControlName="nombre">
-            <div *ngIf="formL.get('nombre')?.invalid && formL.get('nombre')?.touched" class="invalid-feedback">
-                El nombre es requerido
-            </div>
+                [ngClass]="{'is-invalid': isInvalid('nombre')}"
+                placeholder="Ingrese el nombre del libro" formControlName="nombre">
+            <div *ngIf="isInvalid('nombre')" class="text-danger small">{{ getError('nombre') }}</div>
         </div>
         <div class="form-group my-2">
-            <label for="isbn" class="fw-bold">ISBN</label>
+            <label for="isbn" class="fw-bold">ISBN*</label>
             <input type="text" id="isbn" class="form-control" 
-                   [ngClass]="{'is-invalid': formL.get('isbn')?.invalid && formL.get('isbn')?.touched}"
-                   placeholder="Ingrese el ISBN" formControlName="isbn">
-            <div *ngIf="formL.get('isbn')?.invalid && formL.get('isbn')?.touched" class="invalid-feedback">
-                El ISBN es requerido
-            </div>
+                [ngClass]="{'is-invalid': isInvalid('isbn')}"
+                placeholder="Ingrese el ISBN" formControlName="isbn">
+            <div *ngIf="isInvalid('isbn')" class="text-danger small">{{ getError('isbn') }}</div>
         </div>
         <div class="row my-2">
             <div class="col-lg-8 col-12">
-                <label for="editorial" class="fw-bold">Editorial</label>
+                <label for="editorial" class="fw-bold">Editorial*</label>
                 <select id="editorial" class="form-select" 
-                        [ngClass]="{'is-invalid': formL.get('editorial')?.invalid && formL.get('editorial')?.touched}"
+                        [ngClass]="{'is-invalid': isInvalid('editorial')}"
                         formControlName="editorial">
                     <option [ngValue]="null">Seleccione una editorial</option>
                     <option *ngFor="let editorial of editoriales" [value]="editorial.idEditorial">
                         {{ editorial.nombre }}
                     </option>
                 </select>
-                <div *ngIf="formL.get('editorial')?.invalid && formL.get('editorial')?.touched" class="invalid-feedback">
-                    Debe seleccionar una editorial
-                </div>
+                <div *ngIf="isInvalid('editorial')" class="text-danger small">{{ getError('editorial') }}</div>
             </div>
         
             <div class="col-lg-4 col-12">
-                <label for="price" class="fw-bold">Precio</label>
+                <label for="price" class="fw-bold">Precio*</label>
                 <input type="number" id="price" class="form-control" 
-                       [ngClass]="{'is-invalid': formL.get('precio')?.invalid && formL.get('precio')?.touched}"
-                       placeholder="Ingrese el precio" step="0.01" min="1" formControlName="precio">
-                <div *ngIf="formL.get('precio')?.invalid && formL.get('precio')?.touched" class="invalid-feedback">
-                    El precio es requerido y debe ser mayor a 0
-                </div>
+                    [ngClass]="{'is-invalid': isInvalid('precio')}"
+                    placeholder="Ingrese el precio" step="0.01" min="1" 
+                    formControlName="precio" 
+                    inputmode="decimal" 
+                    pattern="^[0-9]+(\.[0-9]{1,2})?$"
+                    (keydown)="blockInvalidInput($event)">
+                <div *ngIf="isInvalid('precio')" class="text-danger small">{{ getError('precio') }}</div>
             </div>
         </div>
     </form>
     <ng-template #editarEditorialModal>
         <form [formGroup]="formE">
             <div class="form-group my-2">
-                <label for="editorialName" class="fw-bold">Nombre</label>
-                <input type="text" id="editorialName" class="form-control" placeholder="Ingrese el nombre de la editorial" formControlName="nombre">
+                <label for="editorialName" class="fw-bold">Nombre*</label>
+                <input type="text" id="editorialName" class="form-control" 
+                    [ngClass]="{'is-invalid': isInvalid('nombre')}"
+                    placeholder="Ingrese el nombre de la editorial" formControlName="nombre">
+                <div *ngIf="isInvalid('nombre')" class="text-danger small">{{ getError('nombre') }}</div>
             </div>
             
             <!-- Correos electrónicos -->
@@ -57,13 +56,28 @@
                 <label class="fw-bold">Correos electrónicos</label>
                 <div formGroupName="correosGroup">
                     <div class="mb-2">
-                        <input type="email" formControlName="correo1" class="form-control" placeholder="Correo electrónico 1">
+                        <input type="email" formControlName="correo1" class="form-control" 
+                            [ngClass]="{'is-invalid': isInvalidGroup('correosGroup', 'correo1')}"
+                            placeholder="Correo electrónico 1">
+                        <div *ngIf="isInvalidGroup('correosGroup', 'correo1')" class="text-danger small">
+                            {{ getErrorGroup('correosGroup', 'correo1') }}
+                        </div>
                     </div>
                     <div class="mb-2">
-                        <input type="email" formControlName="correo2" class="form-control" placeholder="Correo electrónico 2">
+                        <input type="email" formControlName="correo2" class="form-control" 
+                            [ngClass]="{'is-invalid': isInvalidGroup('correosGroup', 'correo2')}"
+                            placeholder="Correo electrónico 2">
+                        <div *ngIf="isInvalidGroup('correosGroup', 'correo2')" class="text-danger small">
+                            {{ getErrorGroup('correosGroup', 'correo2') }}
+                        </div>
                     </div>
                     <div class="mb-2">
-                        <input type="email" formControlName="correo3" class="form-control" placeholder="Correo electrónico 3">
+                        <input type="email" formControlName="correo3" class="form-control" 
+                            [ngClass]="{'is-invalid': isInvalidGroup('correosGroup', 'correo3')}"
+                            placeholder="Correo electrónico 3">
+                        <div *ngIf="isInvalidGroup('correosGroup', 'correo3')" class="text-danger small">
+                            {{ getErrorGroup('correosGroup', 'correo3') }}
+                        </div>
                     </div>
                 </div>
             </div>
@@ -73,13 +87,28 @@
                 <label class="fw-bold">Teléfonos</label>
                 <div formGroupName="telefonosGroup">
                     <div class="mb-2">
-                        <input type="text" formControlName="telefono1" class="form-control" placeholder="Teléfono 1">
+                        <input type="text" formControlName="telefono1" class="form-control" 
+                            [ngClass]="{'is-invalid': isInvalidGroup('telefonosGroup', 'telefono1')}"
+                            placeholder="Teléfono 1">
+                        <div *ngIf="isInvalidGroup('telefonosGroup', 'telefono1')" class="text-danger small">
+                            {{ getErrorGroup('telefonosGroup', 'telefono1') }}
+                        </div>
                     </div>
                     <div class="mb-2">
-                        <input type="text" formControlName="telefono2" class="form-control" placeholder="Teléfono 2">
+                        <input type="text" formControlName="telefono2" class="form-control" 
+                            [ngClass]="{'is-invalid': isInvalidGroup('telefonosGroup', 'telefono2')}"
+                            placeholder="Teléfono 2">
+                        <div *ngIf="isInvalidGroup('telefonosGroup', 'telefono2')" class="text-danger small">
+                            {{ getErrorGroup('telefonosGroup', 'telefono2') }}
+                        </div>
                     </div>
                     <div class="mb-2">
-                        <input type="text" formControlName="telefono3" class="form-control" placeholder="Teléfono 3">
+                        <input type="text" formControlName="telefono3" class="form-control" 
+                            [ngClass]="{'is-invalid': isInvalidGroup('telefonosGroup', 'telefono3')}"
+                            placeholder="Teléfono 3">
+                        <div *ngIf="isInvalidGroup('telefonosGroup', 'telefono3')" class="text-danger small">
+                            {{ getErrorGroup('telefonosGroup', 'telefono3') }}
+                        </div>
                     </div>
                 </div>
             </div>
