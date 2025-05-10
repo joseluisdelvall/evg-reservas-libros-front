@@ -19,27 +19,26 @@
 
         <div class="table-container">
             <!-- Tabla Libros con DataTable -->
-            <div *ngIf="modo === 'libros'">
-                <table id="tablaLibros"
-                       class="table table-bordered table-hover table-striped" 
-                       style="border: 2px solid #6C8EBF;">
-                    <thead>
-                        <tr class="table-primary">
-                            <th></th>
-                            <th class="text-center">Nombre</th>
-                            <th class="text-center">ISBN</th>
-                            <th class="text-center">Editorial</th>
-                            <th class="text-center">Precio</th>
-                            <th class="text-center">Estado</th>
-                        </tr>
-                    </thead>
-                    <tbody></tbody>
-                </table>
-            </div>
+            <table datatable [dtOptions]="dtOptions" *ngIf="modo === 'libros'; else editoriales" 
+                   id="tablaLibros"
+                   class="table table-bordered table-hover table-striped" 
+                   style="border: 2px solid #6C8EBF;">
+                <thead>
+                    <tr class="table-primary">
+                        <th></th>
+                        <th class="text-center">Nombre</th>
+                        <th class="text-center">ISBN</th>
+                        <th class="text-center">Editorial</th>
+                        <th class="text-center">Precio</th>
+                        <th class="text-center">Estado</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
 
             <!-- Tabla editoriales con DataTable -->
-            <div *ngIf="modo === 'editoriales'">
-                <table id="tablaEditoriales"
+            <ng-template #editoriales>
+                <table datatable [dtOptions]="dtOptions" id="tablaEditoriales"
                        class="table table-bordered table-hover table-striped" 
                        style="border: 2px solid #6C8EBF;">
                     <thead>
@@ -53,23 +52,9 @@
                     </thead>
                     <tbody></tbody>
                 </table>
-            </div>
+            </ng-template>
 
-            <!-- Mensaje de carga -->
-            <div *ngIf="isLoading" class="alert alert-info">
-                <div class="d-flex align-items-center">
-                    <div class="spinner-border spinner-border-sm me-2" role="status">
-                        <span class="visually-hidden">Cargando...</span>
-                    </div>
-                    Cargando datos...
-                </div>
-            </div>
-
-            <!-- Mensaje de no hay datos -->
-            <div *ngIf="!isLoading && ((modo === 'libros' && libros.length === 0) || (modo === 'editoriales' && editorialesA.length === 0))" 
-                 class="alert alert-warning">
-                No hay datos disponibles
-            </div>
+            <!-- Se elimina la paginación manual ya que DataTables lo hace automáticamente -->
         </div>
     </div>
 </div>
