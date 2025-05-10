@@ -19,6 +19,7 @@ export class CrudComponent implements OnInit, OnDestroy, AfterViewInit {
   modo: 'libros' | 'editoriales' | null = null;
   editorialSeleccionadaId: string | null = null;
   libroSeleccionadoId: string | null = null;
+  isLoading: boolean = false;
 
   // Referencias a las tablas jQuery
   private currentTable: any = null;
@@ -47,6 +48,13 @@ export class CrudComponent implements OnInit, OnDestroy, AfterViewInit {
         }
         
         this.modo = modoParam;
+        // Ocultar la tabla correspondiente antes de cargar
+        if (this.modo === 'libros') {
+          $('#tablaLibros').hide();
+        } else {
+          $('#tablaEditoriales').hide();
+        }
+        
         setTimeout(() => {
           this.cargarTable();
         }, 100);
@@ -78,7 +86,9 @@ export class CrudComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   cargarLibros(): void {
-    // Destruir la tabla actual si existe
+    this.isLoading = true;
+    
+    // Asegurarse de que la tabla anterior se destruya
     if (this.currentTable) {
       this.currentTable.destroy();
       this.currentTable = null;
@@ -87,18 +97,21 @@ export class CrudComponent implements OnInit, OnDestroy, AfterViewInit {
     this.crudService.getLibros().subscribe({
       next: (data: Libro[]) => {
         this.libros = data;
-        console.log('Libros:', this.libros);
         this.inicializarTablaLibros();
+        this.isLoading = false;
       },
       error: (error) => {
         console.error('Error al cargar los libros:', error);
         this.toastr.error('Error al cargar los libros', 'Error');
+        this.isLoading = false;
       }
     });
   }
 
   cargarEditoriales(): void {
-    // Destruir la tabla actual si existe
+    this.isLoading = true;
+    
+    // Asegurarse de que la tabla anterior se destruya
     if (this.currentTable) {
       this.currentTable.destroy();
       this.currentTable = null;
@@ -107,24 +120,20 @@ export class CrudComponent implements OnInit, OnDestroy, AfterViewInit {
     this.crudService.getEditoriales().subscribe({
       next: (data: Editorial[]) => {
         this.editorialesA = data;
-        console.log('Editoriales:', this.editorialesA);
         this.inicializarTablaEditoriales();
+        this.isLoading = false;
       },
       error: (error) => {
         console.error('Error al cargar las editoriales:', error);
         this.toastr.error('Error al cargar las editoriales', 'Error');
+        this.isLoading = false;
       }
     });
   }
 
   inicializarTablaLibros(): void {
-    // Asegurarse de que la tabla anterior se destruya
-    if (this.currentTable) {
-      this.currentTable.destroy();
-      this.currentTable = null;
-    }
+    if (!this.libros.length) return;
 
-    // Inicializar DataTables
     this.currentTable = $('#tablaLibros').DataTable({
       data: this.libros,
       columns: [
@@ -138,19 +147,30 @@ export class CrudComponent implements OnInit, OnDestroy, AfterViewInit {
               </div>
             `;
           },
-          width: '80px'
+          width: '100px'
         },
-        { data: 'nombre' },
-        { data: 'isbn' },
+        { 
+          data: 'nombre',
+          width: '25%'
+        },
+        { 
+          data: 'isbn',
+          width: '15%'
+        },
         { 
           data: 'editorial',
+          width: '20%',
           render: (data: any, type: any, row: Libro) => {
             return row.editorial ? row.editorial.nombre : '';
           }
         },
-        { data: 'precio' },
+        { 
+          data: 'precio',
+          width: '15%'
+        },
         { 
           data: 'estado',
+          width: '100px',
           render: (data: any, type: any, row: Libro) => {
             const color = row.estado ? 'green' : 'red';
             return `
@@ -160,8 +180,7 @@ export class CrudComponent implements OnInit, OnDestroy, AfterViewInit {
                 </svg>
               </div>
             `;
-          },
-          width: '80px'
+          }
         }
       ],
       language: {
@@ -170,9 +189,12 @@ export class CrudComponent implements OnInit, OnDestroy, AfterViewInit {
       responsive: true,
       pagingType: 'full_numbers',
       pageLength: 10,
-      processing: true,
       destroy: true,
+      autoWidth: false,
+      scrollX: true,
       drawCallback: () => {
+        this.currentTable.columns.adjust();
+        
         $('.fa-edit').off('click').on('click', (event: any) => {
           const rowData = this.currentTable.row($(event.currentTarget).closest('tr')).data();
           this.seleccionarLibro(rowData);
@@ -192,13 +214,8 @@ export class CrudComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   inicializarTablaEditoriales(): void {
-    // Asegurarse de que la tabla anterior se destruya
-    if (this.currentTable) {
-      this.currentTable.destroy();
-      this.currentTable = null;
-    }
-    
-    // Inicializar DataTables 
+    if (!this.editorialesA.length) return;
+
     this.currentTable = $('#tablaEditoriales').DataTable({
       data: this.editorialesA,
       columns: [
@@ -212,23 +229,29 @@ export class CrudComponent implements OnInit, OnDestroy, AfterViewInit {
               </div>
             `;
           },
-          width: '80px'
+          width: '100px'
         },
-        { data: 'nombre' },
+        { 
+          data: 'nombre',
+          width: '30%'
+        },
         { 
           data: 'correos',
+          width: '30%',
           render: (data: any, type: any, row: Editorial) => {
             return row.correos && row.correos.length > 0 ? row.correos[0] : '';
           }
         },
         { 
           data: 'telefonos',
+          width: '20%',
           render: (data: any, type: any, row: Editorial) => {
             return row.telefonos && row.telefonos.length > 0 ? row.telefonos[0] : '';
           }
         },
         { 
           data: 'estado',
+          width: '100px',
           render: (data: any, type: any, row: Editorial) => {
             const color = row.estado ? 'green' : 'red';
             return `
@@ -238,8 +261,7 @@ export class CrudComponent implements OnInit, OnDestroy, AfterViewInit {
                 </svg>
               </div>
             `;
-          },
-          width: '80px'
+          }
         }
       ],
       language: {
@@ -248,9 +270,12 @@ export class CrudComponent implements OnInit, OnDestroy, AfterViewInit {
       responsive: true,
       pagingType: 'full_numbers',
       pageLength: 10,
-      processing: true,
       destroy: true,
+      autoWidth: false,
+      scrollX: true,
       drawCallback: () => {
+        this.currentTable.columns.adjust();
+        
         $('.fa-edit').off('click').on('click', (event: any) => {
           const rowData = this.currentTable.row($(event.currentTarget).closest('tr')).data();
           this.seleccionarEditorial(rowData);
