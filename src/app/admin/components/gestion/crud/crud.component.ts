@@ -116,7 +116,7 @@ export class CrudComponent implements OnInit, OnDestroy, AfterViewInit {
         if (this.currentTable) {
           this.currentTable.clear();
           this.currentTable.rows.add(this.libros);
-          this.currentTable.draw();
+          this.currentTable.draw(); // Ensure the table redraws
         } else if (this.modo === 'libros') {
           setTimeout(() => {
             this.inicializarTablaLibros();
@@ -141,7 +141,7 @@ export class CrudComponent implements OnInit, OnDestroy, AfterViewInit {
         if (this.currentTable) {
           this.currentTable.clear();
           this.currentTable.rows.add(this.editorialesA);
-          this.currentTable.draw();
+          this.currentTable.draw(); // Ensure the table redraws
         } else if (this.modo === 'editoriales') {
           setTimeout(() => {
             this.inicializarTablaEditoriales();
@@ -422,17 +422,16 @@ export class CrudComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   toggleEditorialEstado(editorial: Editorial, event: Event): void {
-    event.stopPropagation(); // Previene que se activen otros eventos de clic
-    
+    event.stopPropagation(); // Prevent other click events
+
     if (!editorial.idEditorial) {
       this.toastr.error('No se pudo cambiar el estado: ID no encontrado', 'Error');
       return;
     }
-    
-    // Determinar el nuevo estado (inverso al actual)
+
     const nuevoEstado = !editorial.estado;
-    
-    // Mostrar confirmación con SweetAlert2
+    const editorialId = editorial.idEditorial.toString(); // Ensure ID is a string
+
     Swal.fire({
       title: 'Confirmar cambio de estado',
       html: `¿Estás seguro de cambiar el estado de <strong>${editorial.nombre}</strong> a <strong>${nuevoEstado ? 'ACTIVO' : 'INACTIVO'}</strong>?`,
@@ -444,37 +443,34 @@ export class CrudComponent implements OnInit, OnDestroy, AfterViewInit {
       cancelButtonText: 'Cancelar'
     }).then((result) => {
       if (result.isConfirmed) {
-        // Realizar el cambio solo si se confirma
-        this.crudService.toggleEditorialEstado(editorial.idEditorial!).subscribe({
+        this.crudService.toggleEditorialEstado(editorialId).subscribe({
           next: (editorialActualizada) => {
-            // Actualizar la editorial en la lista local
             const index = this.editorialesA.findIndex(e => e.idEditorial === editorial.idEditorial);
             if (index !== -1) {
               this.editorialesA[index] = editorialActualizada;
             }
-            
+
             this.toastr.success(
-              `Estado cambiado a ${editorialActualizada.estado ? 'Activo' : 'Inactivo'}`, 
+              `Estado cambiado a ${editorialActualizada.estado ? 'Activo' : 'Inactivo'}`,
               'Éxito'
             );
-            
-            // Ocultar el cuerpo de la tabla antes de recargarla
-            $('#tablaEditoriales tbody').hide();
-            
-            // Actualizar la tabla
-            this.cargarEditoriales();
+
+            if (this.currentTable) {
+              this.currentTable.clear();
+              this.currentTable.rows.add(this.editorialesA);
+              this.currentTable.draw();
+            }
           },
           error: (error) => {
             console.error('Error al cambiar el estado:', error);
             let errorMsg = 'Error al cambiar el estado';
-            
-            // Extraer mensaje de error más específico si está disponible
+
             if (error.error && error.error.message) {
               errorMsg = error.error.message;
             } else if (error.message) {
               errorMsg = error.message;
             }
-            
+
             this.toastr.error(errorMsg, 'Error');
           }
         });
@@ -483,18 +479,16 @@ export class CrudComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   toggleLibroEstado(libro: Libro, event: Event): void {
-    event.stopPropagation(); // Previene que se activen otros eventos de clic
-    
+    event.stopPropagation(); // Prevent other click events
+
     if (libro.id === undefined) {
       this.toastr.error('No se pudo cambiar el estado: ID no encontrado', 'Error');
       return;
     }
-    
-    // Determinar el nuevo estado (inverso al actual)
+
     const nuevoEstado = !libro.estado;
-    const libroId = libro.id; // Store the ID so TypeScript knows it's not undefined in the closure
-    
-    // Mostrar confirmación con SweetAlert2
+    const libroId = libro.id;
+
     Swal.fire({
       title: 'Confirmar cambio de estado',
       html: `¿Estás seguro de cambiar el estado de <strong>${libro.nombre}</strong> a <strong>${nuevoEstado ? 'ACTIVO' : 'INACTIVO'}</strong>?`,
@@ -506,37 +500,34 @@ export class CrudComponent implements OnInit, OnDestroy, AfterViewInit {
       cancelButtonText: 'Cancelar'
     }).then((result) => {
       if (result.isConfirmed) {
-        // Realizar el cambio solo si se confirma
         this.crudService.toggleLibroEstado(libroId.toString()).subscribe({
           next: (libroActualizado) => {
-            // Actualizar el libro en la lista local
             const index = this.libros.findIndex(l => l.id === libroId);
             if (index !== -1) {
               this.libros[index] = libroActualizado;
             }
-            
+
             this.toastr.success(
-              `Estado cambiado a ${libroActualizado.estado ? 'Activo' : 'Inactivo'}`, 
+              `Estado cambiado a ${libroActualizado.estado ? 'Activo' : 'Inactivo'}`,
               'Éxito'
             );
-            
-            // Ocultar el cuerpo de la tabla antes de recargarla
-            $('#tablaLibros tbody').hide();
-            
-            // Actualizar la tabla
-            this.cargarLibros();
+
+            if (this.currentTable) {
+              this.currentTable.clear();
+              this.currentTable.rows.add(this.libros);
+              this.currentTable.draw();
+            }
           },
           error: (error) => {
             console.error('Error al cambiar el estado:', error);
             let errorMsg = 'Error al cambiar el estado';
-            
-            // Extraer mensaje de error más específico si está disponible
+
             if (error.error && error.error.message) {
               errorMsg = error.error.message;
             } else if (error.message) {
               errorMsg = error.message;
             }
-            
+
             this.toastr.error(errorMsg, 'Error');
           }
         });
