@@ -18,7 +18,7 @@ import { ReservasComponent } from './components/reservas/reservas.component';
 import { ModalContentComponent } from './components/shared/modal-content/modal-content.component';
 import { AdminLayoutComponent } from './components/admin-layout/admin-layout.component';
 import { ModalVerComponent } from './components/gestion/crud/components/modales/modal-ver/modal-ver.component';
-
+import { LoadingSpinnerComponent } from '../shared/loading-spinner/loading-spinner.component';
 
 @NgModule({
   declarations: [
@@ -37,7 +37,8 @@ import { ModalVerComponent } from './components/gestion/crud/components/modales/
     ModalEditarComponent,
     ModalFiltroComponent,
     AdminLayoutComponent,
-    ModalVerComponent
+    ModalVerComponent,
+    LoadingSpinnerComponent
   ],
   imports: [
     CommonModule,
