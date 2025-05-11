@@ -6,6 +6,7 @@ import { Libro } from 'src/app/models/libro.model';
 import { Editorial } from 'src/app/models/editorial.model';
 import { CrudService } from 'src/app/services/crud.service';
 import Swal from 'sweetalert2';
+import { LoadingSpinnerComponent } from 'src/app/shared/loading-spinner/loading-spinner.component';
 
 // Importación para jQuery y DataTables
 declare var $: any;
@@ -20,6 +21,7 @@ export class CrudComponent implements OnInit, OnDestroy, AfterViewInit {
   editorialSeleccionadaId: string | null = null;
   libroSeleccionadoId: string | null = null;
   isLoading: boolean = false;
+  isLoadingTable: boolean = false;
   dtOptions: any = {};
   // Referencias a las tablas jQuery
   private currentTable: any = null;
@@ -106,45 +108,51 @@ export class CrudComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   cargarLibros(): void {
+    this.isLoadingTable = true; // Show spinner
     this.crudService.getLibros().subscribe({
       next: (data: Libro[]) => {
         this.libros = data;
-        if (this.modo === 'libros') {
-          // Esperar a que Angular actualice la vista antes de inicializar DataTables
+
+        if (this.currentTable) {
+          this.currentTable.clear();
+          this.currentTable.rows.add(this.libros);
+          this.currentTable.draw();
+        } else if (this.modo === 'libros') {
           setTimeout(() => {
             this.inicializarTablaLibros();
-            this.isLoading = false;
           }, 0);
-        } else {
-          this.isLoading = false;
         }
+        this.isLoadingTable = false; // Hide spinner
       },
       error: (error) => {
         console.error('Error al cargar los libros:', error);
         this.toastr.error('Error al cargar los libros', 'Error');
-        this.isLoading = false;
+        this.isLoadingTable = false; // Hide spinner
       }
     });
   }
 
   cargarEditoriales(): void {
+    this.isLoadingTable = true; // Show spinner
     this.crudService.getEditoriales().subscribe({
       next: (data: Editorial[]) => {
         this.editorialesA = data;
-        if (this.modo === 'editoriales') {
-          // Esperar a que Angular actualice la vista antes de inicializar DataTables
+
+        if (this.currentTable) {
+          this.currentTable.clear();
+          this.currentTable.rows.add(this.editorialesA);
+          this.currentTable.draw();
+        } else if (this.modo === 'editoriales') {
           setTimeout(() => {
             this.inicializarTablaEditoriales();
-            this.isLoading = false;
           }, 0);
-        } else {
-          this.isLoading = false;
         }
+        this.isLoadingTable = false; // Hide spinner
       },
       error: (error) => {
         console.error('Error al cargar las editoriales:', error);
         this.toastr.error('Error al cargar las editoriales', 'Error');
-        this.isLoading = false;
+        this.isLoadingTable = false; // Hide spinner
       }
     });
   }
@@ -405,27 +413,10 @@ export class CrudComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   reloadTable(): void {
-    // Destruir la tabla actual antes de recargar los datos
-    if (this.currentTable) {
-      this.currentTable.destroy();
-      this.currentTable = null;
-    }
-    
-    // Ocultar el cuerpo de la tabla correspondiente durante la carga
+    this.isLoadingTable = true; // Show spinner
     if (this.modo === 'libros') {
-      $('#tablaLibros tbody').hide();
-    } else if (this.modo === 'editoriales') {
-      $('#tablaEditoriales tbody').hide();
-    }
-    
-    this.isLoading = true;
-    
-    // Cargar los datos nuevamente
-    if (this.modo === 'libros') {
-      this.libros = []; // Limpiar los datos actuales
       this.cargarLibros();
     } else if (this.modo === 'editoriales') {
-      this.editorialesA = []; // Limpiar los datos actuales
       this.cargarEditoriales();
     }
   }
