@@ -7,6 +7,7 @@ import { Curso } from '../../models/curso.model';
 import { Libro } from '../../models/libro.model';
 import { ReservaRequest, ReservaResponse } from '../../models/reserva.model';
 import { ToastrService } from 'ngx-toastr';
+import { PeriodoReservasService, PeriodoReservas } from '../../services/periodo-reservas.service';
 
 @Component({
   selector: 'app-form-reserva',
@@ -24,19 +25,75 @@ export class FormReservaComponent implements OnInit {
   mensajeError: string = '';
   reservaCompletada: ReservaResponse | null = null;
   mostrandoErrores: boolean = false; // Flag para controlar que solo se muestre un toast a la vez
+  
+  // Nuevas propiedades para el control del periodo de reservas
+  periodoReservas: PeriodoReservas | null = null;
+  periodoReservasActivo: boolean = false;
+  fechaActual: Date = new Date();
+  mensajePeriodo: string = '';
+  verificandoPeriodo: boolean = true; // Nueva variable para controlar la carga inicial
 
   constructor(
     private fb: FormBuilder,
     private cursoService: CursoService,
     private libroService: LibroService,
     private reservaService: ReservaService,
-    private toastr: ToastrService
+    private toastr: ToastrService,
+    private periodoReservasService: PeriodoReservasService
   ) {}
 
   ngOnInit(): void {
     this.initForm();
+    this.verificarPeriodoReservas();
     this.loadCursos();
     this.listenCursoChanges();
+  }
+
+  // Método para verificar si estamos en el periodo de reservas
+  verificarPeriodoReservas() {
+    this.verificandoPeriodo = true; // Indicamos que estamos verificando
+    this.periodoReservasService.getPeriodoReservas().subscribe({
+      next: (response) => {
+        if (response.status === 'success') {
+          this.periodoReservas = response.data;
+          
+          // Convertir fechas del periodo a objetos Date
+          const fechaInicio = new Date(response.data.fechaInicio);
+          const fechaFin = new Date(response.data.fechaFin);
+          
+          // Resetear horas, minutos y segundos para comparar solo fechas
+          this.fechaActual.setHours(0, 0, 0, 0);
+          fechaInicio.setHours(0, 0, 0, 0);
+          fechaFin.setHours(23, 59, 59, 999); // Final del día
+          
+          // Verificar si la fecha actual está dentro del rango
+          this.periodoReservasActivo = 
+            this.fechaActual >= fechaInicio && this.fechaActual <= fechaFin;
+          
+          if (!this.periodoReservasActivo) {
+            // Formatear fechas para el mensaje
+            const formatoFecha = (fecha: Date) => fecha.toLocaleDateString('es-ES');
+            
+            if (this.fechaActual < fechaInicio) {
+              this.mensajePeriodo = `El periodo de reservas comenzará el ${formatoFecha(fechaInicio)}`;
+            } else {
+              this.mensajePeriodo = `El periodo de reservas finalizó el ${formatoFecha(fechaFin)}`;
+            }
+            
+            // Mostrar mensaje con toastr
+            this.toastr.info(this.mensajePeriodo, 'Periodo de Reservas');
+          }
+        }
+        this.verificandoPeriodo = false; // Finalizamos la verificación
+      },
+      error: (error) => {
+        console.error('Error al verificar el periodo de reservas:', error);
+        this.periodoReservasActivo = false; // Por defecto, no permitir reservas en caso de error
+        this.mensajePeriodo = 'No se pudo verificar el periodo de reservas. Por favor, inténtelo más tarde.';
+        this.toastr.error(this.mensajePeriodo, 'Error');
+        this.verificandoPeriodo = false; // Finalizamos la verificación incluso en caso de error
+      }
+    });
   }
 
   loadCursos() {
@@ -190,6 +247,12 @@ export class FormReservaComponent implements OnInit {
   }
 
   onSubmit() {
+    // Si no estamos en periodo de reservas, no permitir el envío
+    if (!this.periodoReservasActivo) {
+      this.toastr.warning(this.mensajePeriodo, 'Periodo de Reservas');
+      return;
+    }
+    
     // Log del estado del formulario para depuración
     this.logFormStatus();
     
