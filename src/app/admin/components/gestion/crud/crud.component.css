@@ -1,3 +1,237 @@
 .table-bordered th, .table-bordered td {
     border: 1.5px solid #6C8EBF;
 }
+
+#searchContainer .dataTables_filter {
+  margin: 0;
+  padding: 0;
+}
+
+#searchContainer .dataTables_filter input {
+  padding: 6px 10px !important;
+  border-radius: 4px !important;
+  border: 1px solid #ced4da !important;
+  font-size: 14px !important;
+  transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out !important;
+}
+
+#searchContainer .dataTables_filter label {
+  font-weight: normal;
+  margin-bottom: 0;
+  display: flex;
+  align-items: center;
+}
+
+/* Para que el label "Buscar:" se oculte si hay poco espacio */
+@media (max-width: 768px) {
+  #searchContainer .dataTables_filter label {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  #searchContainer .dataTables_filter input {
+    margin-top: 4px;
+  }
+}
+
+.custom-search-container {
+  display: flex;
+  align-items: center;
+}
+
+.custom-search-container input {
+  margin-left: 0;
+  padding: 6px 10px;
+  border-radius: 4px;
+  border: 1px solid #ced4da;
+  min-width: 250px;
+  font-size: 14px;
+}
+
+.custom-search-container input:focus {
+  outline: none;
+  box-shadow: 0 0 0 0.2rem rgba(108, 142, 191, 0.25);
+  border-color: #6C8EBF;
+}
+
+.custom-search-container input::placeholder {
+  color: #6c757d;
+  opacity: 0.7;
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.dataTables_filter input:focus {
+  outline: none !important;
+  box-shadow: 0 0 0 0.2rem rgba(108, 142, 191, 0.25) !important;
+  border-color: #6C8EBF !important;
+}
+
+.estado-filter-buttons {
+  display: flex;
+  align-items: center;
+  margin-left: 10px;
+}
+
+.estado-filter-buttons button {
+  font-size: 12px;
+  padding: 4px 10px;
+  border-radius: 20px;
+}
+
+.estado-filter-buttons button:focus {
+  box-shadow: 0 0 0 0.2rem rgba(108, 142, 191, 0.25);
+}
+
+.dataTables_filter {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  margin-bottom: 15px !important;
+}
+
+.dataTables_length {
+  margin-bottom: 15px !important;
+}
+
+.table-container {
+  margin-top: 15px;
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.dataTables_filter input {
+  margin-left: 5px !important;
+}
+
+.filtros-rapidos {
+  padding: 10px 15px;
+  background-color: #f8f9fa;
+  border-radius: 6px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  display: flex;
+  align-items: center;
+}
+
+.filtros-rapidos button {
+  padding: 4px 15px;
+  font-size: 13px;
+  transition: all 0.2s ease;
+}
+
+.filtros-rapidos button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.info-busqueda {
+  padding: 8px 12px;
+  background-color: #f8f9fa;
+  border-radius: 6px;
+  border-left: 3px solid #6C8EBF;
+}
+
+/* Estilos para el contenedor del filtro */
+.filtro-estado-container {
+  padding: 12px 15px;
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+}
+
+/* Estilos para el grupo de switch */
+.filtro-switch-group {
+  display: flex;
+  align-items: center;
+}
+
+.filtro-switch-group span {
+  cursor: pointer;
+  font-size: 14px;
+  color: #6c757d;
+  transition: color 0.2s ease;
+}
+
+.filtro-switch-group span.active {
+  color: #0d6efd;
+  font-weight: 600;
+}
+
+/* Solo para la opción "Solo activos" */
+.filtro-switch-group span:first-child.active {
+  color: #198754;  /* Color verde para activos */
+}
+
+/* Opción "Todos" */
+.filtro-switch-group span:last-child.active {
+  color: #0d6efd;  /* Color azul para todos */
+}
+
+/* Cambiar el color del switch cuando está activo */
+input:checked + .slider {
+  background-color: #198754;  /* Verde para "Solo activos" */
+}
+
+/* Estilos para el switch estilo Apple */
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 40px;
+  height: 22px;
+  margin: 0;
+}
+
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #ccc;
+  transition: .4s;
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 18px;
+  width: 18px;
+  left: 2px;
+  bottom: 2px;
+  background-color: white;
+  transition: .3s;
+}
+
+input:focus + .slider {
+  box-shadow: 0 0 1px #2196F3;
+}
+
+input:checked + .slider:before {
+  transform: translateX(18px);
+}
+
+/* Slider redondeado */
+.slider.round {
+  border-radius: 22px;
+}
+
+.slider.round:before {
+  border-radius: 50%;
+}
