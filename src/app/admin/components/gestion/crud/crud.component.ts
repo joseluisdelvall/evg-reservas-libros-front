@@ -25,6 +25,9 @@ export class CrudComponent implements OnInit, OnDestroy, AfterViewInit {
   dtOptions: any = {};
   // Referencias a las tablas jQuery
   private currentTable: any = null;
+  
+  // Estado del filtro actual
+  filtroEstado: 'todos' | 'activo' | 'inactivo' = 'todos';
 
   // nuevoModalOptions
   nuevoModalOptions!: ModalOptions;
@@ -47,6 +50,12 @@ export class CrudComponent implements OnInit, OnDestroy, AfterViewInit {
         this.libros = [];
         this.editorialesA = [];
         
+        // Limpiar filtros anteriores si existen
+        this.limpiarFiltros();
+        
+        // Añadir función personalizada de búsqueda
+        this.configurarBusquedaPersonalizada();
+        
         // Cargar los nuevos datos
         this.cargarTable();
       } else {
@@ -68,7 +77,13 @@ export class CrudComponent implements OnInit, OnDestroy, AfterViewInit {
           previous: '<i class="fas fa-angle-left"></i>',
           next: '<i class="fas fa-angle-right"></i>',
           last: '<i class="fas fa-angle-double-right"></i>'
-        }
+        },
+        search: 'Buscar:'
+      },
+      search: {
+        smart: true,
+        caseInsensitive: true,
+        regex: false
       }
     };
   }
@@ -94,6 +109,9 @@ export class CrudComponent implements OnInit, OnDestroy, AfterViewInit {
       this.currentTable.destroy();
       this.currentTable = null;
     }
+    
+    // Restablecer el filtro a "todos" al cambiar de vista
+    this.filtroEstado = 'todos';
 
     // Ocultar el cuerpo de la tabla correspondiente durante la carga
     if (this.modo === 'libros') {
@@ -211,11 +229,13 @@ export class CrudComponent implements OnInit, OnDestroy, AfterViewInit {
           width: '100px',
           render: (data: any, type: any, row: Libro) => {
             const color = row.estado ? 'green' : 'red';
+            const estadoTexto = row.estado ? 'activo' : 'inactivo';
             return `
               <div class="text-center">
                 <svg width="16" height="16" class="puntero toggle-estado" data-id="${row.id}">
                   <circle cx="8" cy="8" r="6" fill="${color}" />
                 </svg>
+                <span class="d-none">${estadoTexto}</span>
               </div>
             `;
           }
@@ -238,7 +258,7 @@ export class CrudComponent implements OnInit, OnDestroy, AfterViewInit {
       scrollX: true,
       stateSave: true,
       deferRender: true,
-      dom: '<"top d-flex justify-content-between"lf>rt<"bottom d-flex justify-content-between"ip>',
+      dom: '<"top d-flex justify-content-between mb-3"lf>rt<"bottom d-flex justify-content-between"ip>',
       initComplete: (settings: any, json: any) => {
         this.currentTable.columns.adjust();
         // Mostrar el cuerpo de la tabla cuando esté completamente inicializada
@@ -329,11 +349,13 @@ export class CrudComponent implements OnInit, OnDestroy, AfterViewInit {
           width: '100px',
           render: (data: any, type: any, row: Editorial) => {
             const color = row.estado ? 'green' : 'red';
+            const estadoTexto = row.estado ? 'activo' : 'inactivo';
             return `
               <div class="text-center">
                 <svg width="16" height="16" class="puntero toggle-estado" data-id="${row.idEditorial}">
                   <circle cx="8" cy="8" r="6" fill="${color}" />
                 </svg>
+                <span class="d-none">${estadoTexto}</span>
               </div>
             `;
           }
@@ -356,7 +378,7 @@ export class CrudComponent implements OnInit, OnDestroy, AfterViewInit {
       scrollX: true,
       stateSave: true,
       deferRender: true,
-      dom: '<"top d-flex justify-content-between"lf>rt<"bottom d-flex justify-content-between"ip>',
+      dom: '<"top d-flex justify-content-between mb-3"lf>rt<"bottom d-flex justify-content-between"ip>',
       initComplete: (settings: any, json: any) => {
         this.currentTable.columns.adjust();
         // Mostrar el cuerpo de la tabla cuando esté completamente inicializada
@@ -533,5 +555,100 @@ export class CrudComponent implements OnInit, OnDestroy, AfterViewInit {
         });
       }
     });
+  }
+
+  filtrarPorEstado(estado: 'todos' | 'activo' | 'inactivo'): void {
+    if (!this.currentTable) return;
+    
+    // Limpiar filtros anteriores pero mantener la búsqueda personalizada
+    this.currentTable.search('').columns().search('').draw();
+    
+    // Limpiar filtros de estado previos
+    if ($.fn.dataTable.ext.search.length > 1) {
+      // Mantener solo el primer filtro (búsqueda personalizada)
+      $.fn.dataTable.ext.search.splice(1);
+    }
+    
+    if (estado === 'todos') {
+      // No aplicar filtro, mostrar todos
+      this.currentTable.draw();
+      return;
+    }
+    
+    // Aplicar filtro personalizado
+    $.fn.dataTable.ext.search.push((settings: any, data: any, dataIndex: any) => {
+      const rowData = this.currentTable.row(dataIndex).data();
+      
+      if (estado === 'activo') {
+        return rowData.estado === true;
+      } else if (estado === 'inactivo') {
+        return rowData.estado === false;
+      }
+      
+      return true; // Por defecto mostrar todas las filas
+    });
+    
+    this.currentTable.draw();
+  }
+
+  // Método para limpiar filtros anteriores de DataTables
+  limpiarFiltros(): void {
+    // Eliminar cualquier filtro personalizado específico para estados
+    // pero mantener el filtro de búsqueda personalizada
+    if ($.fn.dataTable.ext.search.length > 1) {
+      // Si hay más de un filtro, dejar solo el primero (búsqueda personalizada)
+      while ($.fn.dataTable.ext.search.length > 1) {
+        $.fn.dataTable.ext.search.pop();
+      }
+    } else if ($.fn.dataTable.ext.search.length === 0) {
+      // Si no hay filtros, no hacer nada
+      return;
+    }
+  }
+
+  // Método para configurar búsqueda personalizada
+  configurarBusquedaPersonalizada(): void {
+    $.fn.dataTable.ext.search.push((settings: any, data: any, dataIndex: any) => {
+      const searchValue = $('.dataTables_filter input').val() as string;
+      
+      // Si no hay texto de búsqueda, mostrar todas las filas
+      if (!searchValue || searchValue.trim().length === 0) {
+        return true;
+      }
+      
+      // Si el valor de búsqueda es exactamente "activo" o "inactivo"
+      if (searchValue.trim().toLowerCase() === 'activo' || searchValue.trim().toLowerCase() === 'inactivo') {
+        const rowData = this.currentTable.row(dataIndex).data();
+        const estadoFila = rowData.estado ? 'activo' : 'inactivo';
+        
+        return estadoFila === searchValue.trim().toLowerCase();
+      }
+      
+      // Para otras búsquedas, usar el comportamiento por defecto
+      return true;
+    });
+  }
+
+  /**
+   * Cambia el estado del filtro y aplica el filtrado correspondiente
+   */
+  cambiarFiltroEstado(estado: 'todos' | 'activo' | 'inactivo'): void {
+    this.filtroEstado = estado;
+    this.filtrarPorEstado(estado);
+  }
+  
+  /**
+   * Maneja el toggle del switch
+   */
+  toggleFiltroEstado(event: any): void {
+    const isChecked = event.target.checked;
+    
+    if (isChecked) {
+      // Si se marca, mostrar todos
+      this.cambiarFiltroEstado('todos');
+    } else {
+      // Si se desmarca, mostrar solo activos
+      this.cambiarFiltroEstado('activo');
+    }
   }
 }

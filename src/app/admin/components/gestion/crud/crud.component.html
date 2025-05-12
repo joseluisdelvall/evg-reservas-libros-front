@@ -25,11 +25,29 @@
     </div>
 
     <div class="table-container">
+      <!-- Switch para filtrar activos/todos -->
+      <div class="filtro-estado-container mb-3 d-flex align-items-center">
+        <span class="me-2">Mostrar:</span>
+        
+        <div class="filtro-switch-group">
+          <span [class.active]="filtroEstado === 'activo'" (click)="cambiarFiltroEstado('activo')">Activos</span>
+          <label class="switch mx-2">
+            <input type="checkbox" [checked]="filtroEstado === 'todos'" (change)="toggleFiltroEstado($event)">
+            <span class="slider round"></span>
+          </label>
+          <span [class.active]="filtroEstado === 'todos'" (click)="cambiarFiltroEstado('todos')">Todos</span>
+        </div>
+        
+        <small class="text-muted ms-auto">
+          <i class="fas fa-info-circle me-1"></i> También puedes escribir <strong>"activo"</strong> o <strong>"inactivo"</strong> en el buscador.
+        </small>
+      </div>
+      
       <!-- Tabla Libros con DataTable -->
       <table datatable [dtOptions]="dtOptions" *ngIf="modo === 'libros'; else editoriales" 
-             id="tablaLibros"
-             class="table table-bordered table-hover table-striped" 
-             style="border: 2px solid #6C8EBF;">
+            id="tablaLibros"
+            class="table table-bordered table-hover table-striped" 
+            style="border: 2px solid #6C8EBF;">
         <thead>
           <tr class="table-primary">
             <th></th>
@@ -46,8 +64,8 @@
       <!-- Tabla editoriales con DataTable -->
       <ng-template #editoriales>
         <table datatable [dtOptions]="dtOptions" id="tablaEditoriales"
-               class="table table-bordered table-hover table-striped" 
-               style="border: 2px solid #6C8EBF;">
+              class="table table-bordered table-hover table-striped" 
+              style="border: 2px solid #6C8EBF;">
           <thead>
             <tr class="table-primary">
               <th></th>
