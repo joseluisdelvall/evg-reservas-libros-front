@@ -4,17 +4,18 @@ import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { Libro } from '../models/libro.model';
 import { Response } from '../models/response.model';
+import { BaseService } from './base.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class LibroService {
-  private apiUrl = 'http://localhost:80/evg-reservas-libros-back/api';
+  private endpoint = '/libros';
 
-  constructor(private http: HttpClient) { }
+  constructor(private http: BaseService) { }
 
   getLibrosByCurso(cursoId: string): Observable<Libro[]> {
-    return this.http.get<Response>(`${this.apiUrl}/libros/curso/${cursoId}`)
+    return this.http.get<Response>(`${this.endpoint}/curso/${cursoId}`)
       .pipe(
         map(response => response.data)
       );
