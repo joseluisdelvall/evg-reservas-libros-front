@@ -5,8 +5,8 @@
 export const environment = {
   production: true,
   api: {
-    baseUrl: 'https://12.2daw.esvirgua.com/evg-reservas-libros-back/api',
-    loginUrl: 'https://12.2daw.esvirgua.com/evg-reservas-libros-back/api/login',
+    baseUrl: 'https://11.proyectos.esvirgua.com/evg-reservas-libros-back-demo/api',
+    loginUrl: 'https://11.proyectos.esvirgua.com/evg-reservas-libros-back-demo/api/login',
   },
   auth: {
     cookieTokenName: 'RDLEVGTKN',
