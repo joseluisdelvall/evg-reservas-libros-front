@@ -18,11 +18,16 @@ jobs:
       - name: Configurar Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: '14'
+          node-version: '16'
           cache: 'npm'
 
+      - name: Verificar versiones
+        run: |
+          node --version
+          npm --version
+
       - name: Instalar dependencias
-        run: npm ci
+        run: npm install
 
       - name: Configurar environment.prod.ts según entorno
         run: |
@@ -32,8 +37,8 @@ jobs:
           export const environment = {
             production: true,
             api: {
-              baseUrl: 'https://11.proyectos.esvirgua.com/evg-reservas-libros-back/api',
-              loginUrl: 'https://11.proyectos.esvirgua.com/evg-reservas-libros-back/api/login',
+              baseUrl: 'https://12.2daw.esvirgua.com/evg-reservas-libros-back/api',
+              loginUrl: 'https://12.2daw.esvirgua.com/evg-reservas-libros-back/api/login',
             },
             auth: {
               cookieTokenName: 'RDLEVGTKN',
@@ -48,8 +53,8 @@ jobs:
           export const environment = {
             production: true,
             api: {
-              baseUrl: 'https://11.proyectos.esvirgua.com/evg-reservas-libros-back-demo/api',
-              loginUrl: 'https://11.proyectos.esvirgua.com/evg-reservas-libros-back-demo/api/login',
+              baseUrl: 'https://12.2daw.esvirgua.com/evg-reservas-libros-back-demo/api',
+              loginUrl: 'https://12.2daw.esvirgua.com/evg-reservas-libros-back-demo/api/login',
             },
             auth: {
               cookieTokenName: 'RDLEVGTKN',
@@ -63,6 +68,9 @@ jobs:
       - name: Modificar app-routing.module.ts para usar HashLocationStrategy
         run: |
           sed -i "s/imports: \[RouterModule.forRoot(routes)\],/imports: \[RouterModule.forRoot(routes, { useHash: true })\],/" src/app/app-routing.module.ts
+
+      - name: Instalar Angular CLI globalmente
+        run: npm install -g @angular/cli
 
       - name: Build Angular
         run: |
