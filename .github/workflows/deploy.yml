@@ -1,0 +1,95 @@
+name: Deploy Frontend via FTP (main & demo)
+
+on:
+  push:
+    branches:
+      - main
+      - demo
+
+jobs:
+  build-and-deploy:
+    name: Build Angular y subir a FTP
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout código
+        uses: actions/checkout@v3
+
+      - name: Configurar Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '14'
+          cache: 'npm'
+
+      - name: Instalar dependencias
+        run: npm ci
+
+      - name: Configurar environment.prod.ts según entorno
+        run: |
+          if [[ "${GITHUB_REF}" == "refs/heads/main" ]]; then
+            echo "Configurando entorno para PRODUCCIÓN"
+            cat > src/environments/environment.prod.ts << EOF
+          export const environment = {
+            production: true,
+            api: {
+              baseUrl: 'https://12.2daw.esvirgua.com/evg-reservas-libros-back/api',
+              loginUrl: 'https://12.2daw.esvirgua.com/evg-reservas-libros-back/api/login',
+            },
+            auth: {
+              cookieTokenName: 'RDLEVGTKN',
+            },
+            pathImg: 'assets/img/',
+            googleClientId: '660176374148-klpm52u3brlqsmpjvqci3ruk5qk1ofnl.apps.googleusercontent.com'
+          };
+          EOF
+          else
+            echo "Configurando entorno para DEMO"
+            cat > src/environments/environment.prod.ts << EOF
+          export const environment = {
+            production: true,
+            api: {
+              baseUrl: 'https://12.2daw.esvirgua.com/evg-reservas-libros-back-demo/api',
+              loginUrl: 'https://12.2daw.esvirgua.com/evg-reservas-libros-back-demo/api/login',
+            },
+            auth: {
+              cookieTokenName: 'RDLEVGTKN',
+            },
+            pathImg: 'assets/img/',
+            googleClientId: '660176374148-klpm52u3brlqsmpjvqci3ruk5qk1ofnl.apps.googleusercontent.com'
+          };
+          EOF
+          fi
+
+      - name: Modificar app-routing.module.ts para usar HashLocationStrategy
+        run: |
+          sed -i "s/imports: \[RouterModule.forRoot(routes)\],/imports: \[RouterModule.forRoot(routes, { useHash: true })\],/" src/app/app-routing.module.ts
+
+      - name: Build Angular
+        run: |
+          if [[ "${GITHUB_REF}" == "refs/heads/main" ]]; then
+            ng build --configuration=production --base-href=/evg-reservas-libros-front/
+          else
+            ng build --configuration=production --base-href=/evg-reservas-libros-front-demo/
+          fi
+
+      - name: Crear archivo .htaccess
+        run: |
+          cat > dist/evg-reservas-libros-front/.htaccess << EOF
+          <IfModule mod_rewrite.c>
+            RewriteEngine On
+            RewriteBase /
+            RewriteRule ^index\.html$ - [L]
+            RewriteCond %{REQUEST_FILENAME} !-f
+            RewriteCond %{REQUEST_FILENAME} !-d
+            RewriteRule . index.html [L]
+          </IfModule>
+          EOF
+
+      - name: FTP Deploy
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.4
+        with:
+          server: ${{ secrets.FTP_SERVER }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          server-dir: ${{ github.ref == 'refs/heads/main' && '/evg-reservas-libros-front/' || '/evg-reservas-libros-front-demo/' }}
+          local-dir: ./dist/evg-reservas-libros-front/
