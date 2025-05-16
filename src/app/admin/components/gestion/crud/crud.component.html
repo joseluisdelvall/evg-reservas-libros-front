@@ -43,8 +43,8 @@
         </small>
       </div>
       
-      <!-- Tabla Libros con DataTable -->
-      <table datatable [dtOptions]="dtOptions" *ngIf="modo === 'libros'; else editoriales" 
+      <!-- Tabla Libros -->
+      <table datatable [dtOptions]="dtOptions" *ngIf="modo === 'libros'" 
             id="tablaLibros"
             class="table table-bordered table-hover table-striped" 
             style="border: 2px solid #6C8EBF;">
@@ -61,23 +61,43 @@
         <tbody></tbody>
       </table>
 
-      <!-- Tabla editoriales con DataTable -->
-      <ng-template #editoriales>
-        <table datatable [dtOptions]="dtOptions" id="tablaEditoriales"
-              class="table table-bordered table-hover table-striped" 
-              style="border: 2px solid #6C8EBF;">
-          <thead>
-            <tr class="table-primary">
-              <th></th>
-              <th class="text-center">Nombre</th>
-              <th class="text-center">Correo</th>
-              <th class="text-center">Teléfono</th>
-              <th class="text-center">Estado</th>
-            </tr>
-          </thead>
-          <tbody></tbody>
-        </table>
-      </ng-template>
+      <!-- Tabla Editoriales -->
+      <table datatable [dtOptions]="dtOptions" *ngIf="modo === 'editoriales'" 
+            id="tablaEditoriales"
+            class="table table-bordered table-hover table-striped" 
+            style="border: 2px solid #6C8EBF;">
+        <thead>
+          <tr class="table-primary">
+            <th></th>
+            <th class="text-center">Nombre</th>
+            <th class="text-center">Correo</th>
+            <th class="text-center">Teléfono</th>
+            <th class="text-center">Estado</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+
+      <!-- Tabla Reservas -->
+      <table datatable [dtOptions]="dtOptions" *ngIf="modo === 'reservas'" 
+        id="tablaReservas"
+        class="table table-bordered table-hover table-striped" 
+        style="border: 2px solid #6C8EBF;">
+        <thead>
+          <tr class="table-primary">
+            <th></th>
+            <th class="text-center"></th>
+            <th class="text-center" title="Nombre del alumno">Nombre</th>
+            <th class="text-center" title="Apellidos del alumno">Apellidos</th>
+            <th class="text-center" title="Correo de contacto">Correo</th>
+            <th class="text-center" title="Fecha de realización">Fecha de Realización</th>
+            <th class="text-center" title="Estado">Verificación</th>
+            <th class="text-center" title="Curso del alumno">Curso</th>
+            <th class="text-center" title="Libros reservados">Libros</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
 
       <!-- Se elimina la paginación manual ya que DataTables lo hace automáticamente -->
     </div>

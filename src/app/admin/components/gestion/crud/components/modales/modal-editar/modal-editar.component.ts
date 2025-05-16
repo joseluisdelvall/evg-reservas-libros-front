@@ -13,7 +13,7 @@ import { ToastrService } from 'ngx-toastr';
 })
 export class ModalEditarComponent implements OnInit, OnChanges {
 
-  @Input() modo: 'libros' | 'editoriales' | null = null;
+  @Input() modo: 'libros' | 'editoriales' | 'reservas' | null = null;
   @Input() idEntidad: string | null = null;
   @Output() entidadActualizada = new EventEmitter<void>();
   

@@ -13,7 +13,7 @@ import Swal from 'sweetalert2';
 })
 export class ModalVerComponent implements OnInit, OnChanges {
 
-  @Input() modo: 'libros' | 'editoriales' | null = null;
+  @Input() modo: 'libros' | 'editoriales' | 'reservas' | null = null;
   @Input() idEntidad: string | null = null;
   @ViewChild('modalContent') modalContent!: ElementRef;
   @Output() estadoActualizado = new EventEmitter<void>();

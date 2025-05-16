@@ -7,6 +7,7 @@ import { Editorial } from 'src/app/models/editorial.model';
 import { CrudService } from 'src/app/services/crud.service';
 import Swal from 'sweetalert2';
 import { LoadingSpinnerComponent } from 'src/app/shared/loading-spinner/loading-spinner.component';
+import { ReservaResponse } from 'src/app/models/reserva.model';
 
 // Importación para jQuery y DataTables
 declare var $: any;
@@ -17,7 +18,7 @@ declare var $: any;
   styleUrls: ['./crud.component.css']
 })
 export class CrudComponent implements OnInit, OnDestroy, AfterViewInit {
-  modo: 'libros' | 'editoriales' | null = null;
+  modo: 'libros' | 'editoriales' | 'reservas' | null = null;
   editorialSeleccionadaId: string | null = null;
   libroSeleccionadoId: string | null = null;
   isLoading: boolean = false;
@@ -34,6 +35,7 @@ export class CrudComponent implements OnInit, OnDestroy, AfterViewInit {
 
   libros: Libro[] = [];
   editorialesA: Editorial[] = [];
+  reservas: ReservaResponse[] = [];
 
   constructor(
     private route: ActivatedRoute,
@@ -360,6 +362,142 @@ export class CrudComponent implements OnInit, OnDestroy, AfterViewInit {
             `;
           }
         }
+      ],
+      language: {
+        url: '//cdn.datatables.net/plug-ins/1.10.25/i18n/Spanish.json',
+        paginate: {
+          first: '<i class="fas fa-angle-double-left"></i>',
+          previous: '<i class="fas fa-angle-left"></i>',
+          next: '<i class="fas fa-angle-right"></i>',
+          last: '<i class="fas fa-angle-double-right"></i>'
+        }
+      },
+      pagingType: 'simple_numbers',
+      pageLength: 10,
+      processing: true,
+      destroy: true,
+      autoWidth: false,
+      scrollX: true,
+      stateSave: true,
+      deferRender: true,
+      dom: '<"top d-flex justify-content-between mb-3"lf>rt<"bottom d-flex justify-content-between"ip>',
+      initComplete: (settings: any, json: any) => {
+        this.currentTable.columns.adjust();
+        // Mostrar el cuerpo de la tabla cuando esté completamente inicializada
+        $('#tablaEditoriales tbody').show();
+        
+        // Añadir clases para mejorar el estilo
+        $('.dataTables_paginate').addClass('pagination-container');
+        $('.dataTables_length, .dataTables_filter').addClass('dt-custom-control');
+        $('.paginate_button').addClass('btn btn-sm');
+        $('.paginate_button.current').addClass('btn-primary');
+        $('.paginate_button:not(.current)').addClass('btn-outline-primary');
+      },
+      drawCallback: () => {
+        this.currentTable.columns.adjust();
+        
+        // Actualizar las clases al redibujar
+        $('.paginate_button.current').addClass('btn-primary');
+        $('.paginate_button:not(.current)').addClass('btn-outline-primary');
+        
+        $('.fa-edit').off('click').on('click', (event: any) => {
+          const rowData = this.currentTable.row($(event.currentTarget).closest('tr')).data();
+          this.seleccionarEditorial(rowData);
+        });
+        
+        $('.fa-eye').off('click').on('click', (event: any) => {
+          const rowData = this.currentTable.row($(event.currentTarget).closest('tr')).data();
+          this.seleccionarEditorial(rowData);
+        });
+        
+        $('.toggle-estado').off('click').on('click', (event: any) => {
+          const rowData = this.currentTable.row($(event.currentTarget).closest('tr')).data();
+          this.toggleEditorialEstado(rowData, event);
+        });
+      }
+    });
+  }
+
+  inicializarTablaReservas(): void {
+    if (!this.reservas.length || this.modo !== 'reservas') return;
+
+    const tableElement = $('#tablaReservas');
+    if (tableElement.length === 0) return;
+
+    // Destruir la tabla anterior si existe
+    if (this.currentTable) {
+      this.currentTable.destroy();
+      this.currentTable = null;
+    }
+
+    // Ocultar solo el cuerpo de la tabla durante la carga
+    $('#tablaReservas tbody').hide();
+
+    this.currentTable = tableElement.DataTable({
+      data: this.reservas,
+      columns: [
+        { 
+          data: null,
+          render: (data: any, type: any, row: ReservaResponse) => {
+            return `
+              <div class="text-center">
+                <i class="fas fa-edit puntero" style="color: blue;" data-bs-toggle="modal" data-bs-target="#editareditoriales"></i>
+                <i class="fas fa-eye ms-2 puntero" style="color: rgb(87, 87, 87);" data-bs-toggle="modal" data-bs-target="#vereditoriales"></i>
+              </div>
+            `;
+          },
+          width: '100px'
+        },
+        { 
+          data: 'id',
+          width: '30%'
+        },
+        { 
+          data: 'nombreAlumno',
+          width: '30%',
+          render: (data: any, type: any, row: Editorial) => {
+            return row.correos && row.correos.length > 0 ? row.correos[0] : '';
+          }
+        },
+        { 
+          data: 'apellidosAlumno',
+          width: '20%',
+        },
+        { 
+          data: 'correo',
+          width: '100px',
+        },
+        { 
+          data: 'fecha',
+          width: '100px',
+          render: (data: any, type: any, row: Editorial) => {
+            return row.telefonos && row.telefonos.length > 0 ? row.telefonos[0] : '';
+          }
+        },
+        { 
+          data: 'verificado',
+          width: '100px',
+          render: (data: any, type: any, row: ReservaResponse) => {
+            const color = row.verificado ? 'green' : 'red';
+            const estadoTexto = row.verificado ? 'activo' : 'inactivo';
+            return `
+              <div class="text-center">
+                <svg width="16" height="16" class="puntero toggle-estado" data-id="${row.id}">
+                  <circle cx="8" cy="8" r="6" fill="${color}" />
+                </svg>
+                <span class="d-none">${estadoTexto}</span>
+              </div>
+            `;
+          }
+        },
+        { 
+          data: 'curso',
+          width: '100px',
+        },
+        { 
+          data: 'libros',
+          width: '100px',
+        },        
       ],
       language: {
         url: '//cdn.datatables.net/plug-ins/1.10.25/i18n/Spanish.json',

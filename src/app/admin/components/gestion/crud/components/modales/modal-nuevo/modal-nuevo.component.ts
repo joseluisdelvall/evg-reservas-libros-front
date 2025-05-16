@@ -13,7 +13,7 @@ import { ToastrService } from 'ngx-toastr';
 })
 export class ModalNuevoComponent implements OnInit, OnChanges {
 
-  @Input() modo: 'libros' | 'editoriales' | null = null;
+  @Input() modo: 'libros' | 'editoriales' | 'reservas' | null = null;
   @Output() entidadCreada = new EventEmitter<any>(); // Emitir el evento cuando se crea una entidad
 
   // nuevoModalOptions
