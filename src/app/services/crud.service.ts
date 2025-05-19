@@ -4,6 +4,8 @@ import { Libro } from '../models/libro.model';
 import { Editorial } from '../models/editorial.model';
 import { HttpClient } from '@angular/common/http';
 import { BaseService } from './base.service';
+import { Response } from '../models/response.model';
+import { ReservaResponse } from '../models/reserva.model';
 
 @Injectable({
   providedIn: 'root'
@@ -15,14 +17,13 @@ export class CrudService {
 
   addLibro(libro: Libro): Observable<Libro> {
     return this.http.post<{ status: string; data: Libro }>(this.endpoint + '/libros/add', libro).pipe(
-      map(response => response.data) // Extraer el libro creado
+      map(response => response.data)
     );
   }
 
   getLibros(): Observable<Libro[]> {
     return this.http.get<{ status: string; data: Libro[] }>(this.endpoint + '/libros').pipe(
       map(response => {
-        // Convertir estado a boolean si es necesario
         return response.data.map(libro => ({
           ...libro,
           estado: typeof libro.estado === 'string' ? libro.estado === '1' : libro.estado
@@ -85,6 +86,14 @@ export class CrudService {
 
   updateEditorial(id: string, editorial: Editorial): Observable<Editorial> {
     return this.http.put<{ status: string; data: Editorial }>(this.endpoint + '/editoriales/' + id, editorial).pipe(
+      map(response => response.data)
+    );
+  }
+
+  getReservas(): Observable<ReservaResponse[]> {
+    console.log(`${this.endpoint}/reservas`);
+    
+    return this.http.get<Response>(`${this.endpoint}/reservas`).pipe(
       map(response => response.data)
     );
   }

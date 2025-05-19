@@ -46,11 +46,12 @@ export class CrudComponent implements OnInit, OnDestroy, AfterViewInit {
   ngOnInit(): void {
     this.route.paramMap.subscribe(params => {
       const modoParam = params.get('modo');
-      if (modoParam === 'libros' || modoParam === 'editoriales') {
+      if (modoParam === 'libros' || modoParam === 'editoriales' || modoParam === 'reservas') {
         this.modo = modoParam;
         // Limpiar los datos anteriores
         this.libros = [];
         this.editorialesA = [];
+        this.reservas = [];
         
         // Limpiar filtros anteriores si existen
         this.limpiarFiltros();
@@ -116,14 +117,23 @@ export class CrudComponent implements OnInit, OnDestroy, AfterViewInit {
     this.filtroEstado = 'todos';
 
     // Ocultar el cuerpo de la tabla correspondiente durante la carga
-    if (this.modo === 'libros') {
-      $('#tablaLibros tbody').hide();
-      this.libros = []; // Limpiar los datos actuales
-      this.cargarLibros();
-    } else if (this.modo === 'editoriales') {
-      $('#tablaEditoriales tbody').hide();
-      this.editorialesA = []; // Limpiar los datos actuales
-      this.cargarEditoriales();
+    switch (this.modo) {
+      case 'libros':
+        $('#tablaLibros tbody').hide();
+        this.libros = []; // Limpiar los datos actuales
+        this.cargarLibros();
+        break;
+      case 'editoriales':
+        $('#tablaEditoriales tbody').hide();
+        this.editorialesA = []; // Limpiar los datos actuales
+        this.cargarEditoriales();
+        break;
+      case 'reservas':
+        console.log('reservas');
+        $('#tablaReservas tbody').hide();
+        this.reservas = []; // Limpiar los datos actuales
+        this.cargarReservas();
+        break;  
     }
   }
 
@@ -173,6 +183,34 @@ export class CrudComponent implements OnInit, OnDestroy, AfterViewInit {
         console.error('Error al cargar las editoriales:', error);
         this.toastr.error('Error al cargar las editoriales', 'Error');
         this.isLoadingTable = false; // Hide spinner
+      }
+    });
+  }
+
+  cargarReservas(): void {
+    this.isLoadingTable = true;
+    console.log('Cargando reservas...');
+    this.crudService.getReservas().subscribe({
+      next: (data: ReservaResponse[]) => {
+        this.reservas = data;
+        console.log(this.reservas);
+        
+
+        if (this.currentTable) {
+          this.currentTable.clear();
+          this.currentTable.rows.add(this.reservas);
+          this.currentTable.draw();
+        } else if (this.modo === 'reservas') {
+          setTimeout(() => {
+            this.inicializarTablaReservas();
+          }, 0);
+        }
+        this.isLoadingTable = false;
+      },
+      error: (error: any) => {
+        console.error('Error al cargar las reservas:', error);
+        this.toastr.error('Error al cargar las reservas', 'Error');
+        this.isLoadingTable = false;
       }
     });
   }
@@ -441,42 +479,32 @@ export class CrudComponent implements OnInit, OnDestroy, AfterViewInit {
           render: (data: any, type: any, row: ReservaResponse) => {
             return `
               <div class="text-center">
-                <i class="fas fa-edit puntero" style="color: blue;" data-bs-toggle="modal" data-bs-target="#editareditoriales"></i>
-                <i class="fas fa-eye ms-2 puntero" style="color: rgb(87, 87, 87);" data-bs-toggle="modal" data-bs-target="#vereditoriales"></i>
+                <i class="fas fa-edit puntero" style="color: blue;" data-bs-toggle="modal" data-bs-target="#editarreservas"></i>
+                <i class="fas fa-eye ms-2 puntero" style="color: rgb(87, 87, 87);" data-bs-toggle="modal" data-bs-target="#verreservas"></i>
               </div>
             `;
           },
           width: '100px'
         },
         { 
-          data: 'id',
-          width: '30%'
-        },
-        { 
           data: 'nombreAlumno',
-          width: '30%',
-          render: (data: any, type: any, row: Editorial) => {
-            return row.correos && row.correos.length > 0 ? row.correos[0] : '';
-          }
+          width: '12%'
         },
         { 
           data: 'apellidosAlumno',
-          width: '20%',
+          width: '17%',
         },
         { 
           data: 'correo',
-          width: '100px',
+          width: '22%',
         },
         { 
           data: 'fecha',
-          width: '100px',
-          render: (data: any, type: any, row: Editorial) => {
-            return row.telefonos && row.telefonos.length > 0 ? row.telefonos[0] : '';
-          }
+          width: '10%'
         },
         { 
           data: 'verificado',
-          width: '100px',
+          width: '10%',
           render: (data: any, type: any, row: ReservaResponse) => {
             const color = row.verificado ? 'green' : 'red';
             const estadoTexto = row.verificado ? 'activo' : 'inactivo';
@@ -520,7 +548,7 @@ export class CrudComponent implements OnInit, OnDestroy, AfterViewInit {
       initComplete: (settings: any, json: any) => {
         this.currentTable.columns.adjust();
         // Mostrar el cuerpo de la tabla cuando esté completamente inicializada
-        $('#tablaEditoriales tbody').show();
+        $('#tablaReservas tbody').show();
         
         // Añadir clases para mejorar el estilo
         $('.dataTables_paginate').addClass('pagination-container');
@@ -574,10 +602,16 @@ export class CrudComponent implements OnInit, OnDestroy, AfterViewInit {
 
   reloadTable(): void {
     this.isLoadingTable = true; // Show spinner
-    if (this.modo === 'libros') {
-      this.cargarLibros();
-    } else if (this.modo === 'editoriales') {
-      this.cargarEditoriales();
+    switch (this.modo) {
+      case 'libros':
+        this.cargarLibros();
+        break;
+      case 'editoriales':
+        this.cargarEditoriales();
+        break;
+      case 'reservas':
+        this.cargarReservas();
+        break;
     }
   }
 

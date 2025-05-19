@@ -3,6 +3,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { catchError, map, switchMap } from 'rxjs/operators';
 import { BaseService } from './base.service';
+import { Response } from '../models/response.model';
 
 // Definir las interfaces necesarias dentro del mismo archivo
 interface ReservaResponse {

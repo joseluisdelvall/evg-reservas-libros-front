@@ -21,6 +21,7 @@ export class ModalNuevoComponent implements OnInit, OnChanges {
 
   formL!: FormGroup;
   formE!: FormGroup;
+  formR!: FormGroup;
   editoriales: Editorial[] = [];
   mostrandoErrores: boolean = false;
 
