@@ -1,4 +1,6 @@
 import { Component, OnInit } from '@angular/core';
+import { Router, NavigationEnd } from '@angular/router';
+import { filter } from 'rxjs/operators';
 
 @Component({
   selector: 'app-aside',
@@ -7,9 +9,24 @@ import { Component, OnInit } from '@angular/core';
 })
 export class AsideComponent implements OnInit {
 
-  constructor() { }
+  constructor(private router: Router) { }
 
   ngOnInit(): void {
+    // Expandir el menú de gestión automáticamente cuando estamos en rutas bajo ese menú
+    this.router.events.pipe(
+      filter(event => event instanceof NavigationEnd)
+    ).subscribe((event: any) => {
+      const url = event.url;
+      if (url.includes('crud/') || url.includes('asignar-libros-cursos')) {
+        setTimeout(() => {
+          const gestionSubmenu = document.getElementById('gestionSubmenu');
+          if (gestionSubmenu && !gestionSubmenu.classList.contains('show')) {
+            const gestionLink = document.querySelector('[href="#gestionSubmenu"]');
+            (gestionLink as HTMLElement)?.click();
+          }
+        }, 100);
+      }
+    });
   }
 
 }

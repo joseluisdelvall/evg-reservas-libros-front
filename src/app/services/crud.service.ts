@@ -134,4 +134,57 @@ export class CrudService {
       })
     );
   }
+
+  // ========== Métodos para gestionar asignaciones de libros a cursos ==========
+
+  /**
+   * Obtiene todas las asignaciones libro-curso
+   */
+  getLibrosCursos(): Observable<any[]> {
+    return this.http.get<{ status: string; data: any[] }>(this.endpoint + '/libros-cursos').pipe(
+      map(response => {
+        if (response.status === 'warning') {
+          return []; // Si no hay asignaciones, devolver array vacío
+        }
+        return response.data || [];
+      })
+    );
+  }
+
+  /**
+   * Obtiene los libros asignados a un curso específico
+   */
+  getLibrosByCurso(cursoId: string): Observable<any[]> {
+    return this.http.get<{ status: string; data: any[] }>(`/libros-cursos/curso/${cursoId}`).pipe(
+      map(response => {
+        if (response.status === 'warning') {
+          return []; // Si no hay libros asignados, devolver array vacío
+        }
+        return response.data || [];
+      })
+    );
+  }
+
+  /**
+   * Asigna un libro a un curso
+   */
+  asignarLibroACurso(idLibro: number, idCurso: string): Observable<any> {
+    return this.http.post<{ status: string; data: any }>(
+      this.endpoint + '/libros-cursos/add', 
+      { idLibro, idCurso }
+    ).pipe(
+      map(response => response.data)
+    );
+  }
+
+  /**
+   * Elimina una asignación libro-curso2
+   */
+  eliminarAsignacionLibroCurso(idLibro: number, idCurso: string): Observable<any> {
+    // Usar POST a /libros-cursos/delete en lugar de DELETE
+    return this.http.post<{ status: string; message: string }>(
+      this.endpoint + '/libros-cursos/delete',
+      { idLibro, idCurso }
+    );
+  }
 }

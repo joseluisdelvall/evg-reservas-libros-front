@@ -1,21 +1,35 @@
 <aside class="bg-white border-end vh-100">
     <ul class="nav flex-column">
         <li class="nav-item">
-            <a class="nav-link text-dark ps-4" routerLink="reservas">Reservas</a>
+            <a class="nav-link text-dark ps-4" routerLink="reservas" routerLinkActive="active">
+                <i class="fas fa-calendar-check me-2"></i>Reservas
+            </a>
         </li>
         <li class="nav-item">
-            <a class="nav-link text-dark ps-4" routerLink="pedidos">Pedidos</a>
+            <a class="nav-link text-dark ps-4" routerLink="pedidos" routerLinkActive="active">
+                <i class="fas fa-shopping-cart me-2"></i>Pedidos
+            </a>
         </li>
         <li class="nav-item">
             <a class="nav-link text-dark ps-4" data-bs-toggle="collapse" href="#gestionSubmenu" role="button" aria-expanded="false" aria-controls="gestionSubmenu">
-                Gestión
+                <i class="fas fa-cogs me-2"></i>Gestión
             </a>
             <div class="collapse" id="gestionSubmenu">
-                <ul class="nav flex-column ms-3 ps-1"> <li class="nav-item">
-                        <a class="nav-link text-dark ps-4" routerLink="crud/libros">Libros</a>
+                <ul class="nav flex-column ms-3 ps-1"> 
+                    <li class="nav-item">
+                        <a class="nav-link text-dark ps-4" routerLink="crud/libros" routerLinkActive="active">
+                            <i class="fas fa-book me-2"></i>Libros
+                        </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link text-dark ps-4" routerLink="crud/editoriales">Editoriales</a>
+                        <a class="nav-link text-dark ps-4" routerLink="crud/editoriales" routerLinkActive="active">
+                            <i class="fas fa-building me-2"></i>Editoriales
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-dark ps-4" routerLink="asignar-libros-cursos" routerLinkActive="active">
+                            <i class="fas fa-book-reader me-2"></i>Asignar Libros a Cursos
+                        </a>
                     </li>
                 </ul>
             </div>
