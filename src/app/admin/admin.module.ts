@@ -1,6 +1,6 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ReactiveFormsModule } from '@angular/forms';
+import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { DataTablesModule } from 'angular-datatables';
 
 import { AdminRoutingModule } from './admin-routing.module';
@@ -19,6 +19,7 @@ import { ModalContentComponent } from './components/shared/modal-content/modal-c
 import { AdminLayoutComponent } from './components/admin-layout/admin-layout.component';
 import { ModalVerComponent } from './components/gestion/crud/components/modales/modal-ver/modal-ver.component';
 import { LoadingSpinnerComponent } from '../shared/loading-spinner/loading-spinner.component';
+import { AsignarLibrosCursosComponent } from './components/gestion/asignar-libros-cursos/asignar-libros-cursos.component';
 
 @NgModule({
   declarations: [
@@ -33,16 +34,16 @@ import { LoadingSpinnerComponent } from '../shared/loading-spinner/loading-spinn
     ModalContentComponent,
     ModalNuevoComponent,
     ModalPeriodoReservasComponent,
-    ModalNuevoComponent,
     ModalEditarComponent,
     ModalFiltroComponent,
-    AdminLayoutComponent,
+    AsignarLibrosCursosComponent,
     ModalVerComponent,
     LoadingSpinnerComponent
   ],
   imports: [
     CommonModule,
     ReactiveFormsModule,
+    FormsModule,
     AdminRoutingModule,
     DataTablesModule
   ]
