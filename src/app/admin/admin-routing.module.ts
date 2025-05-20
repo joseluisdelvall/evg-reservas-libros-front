@@ -7,6 +7,7 @@ import { PedidosComponent } from './components/pedidos/pedidos.component';
 import { ReservasComponent } from './components/reservas/reservas.component';
 import { AdminLayoutComponent } from './components/admin-layout/admin-layout.component';
 import { AuthGuard } from '../guards/auth.guard';
+import { AsignarLibrosCursosComponent } from './components/gestion/asignar-libros-cursos/asignar-libros-cursos.component';
 
 const routes: Routes = [
   {
@@ -19,6 +20,7 @@ const routes: Routes = [
       { path: 'reservas', component: ReservasComponent, canActivate: [AuthGuard] },
       { path: 'pedidos', component: PedidosComponent, canActivate: [AuthGuard] },
       { path: 'crud/:modo', component: CrudComponent, canActivate: [AuthGuard] },
+      { path: 'asignar-libros-cursos', component: AsignarLibrosCursosComponent, canActivate: [AuthGuard] },
       { path: '**', redirectTo: 'login' }
     ]
   }
