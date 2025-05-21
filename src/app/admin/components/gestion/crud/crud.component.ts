@@ -520,11 +520,24 @@ export class CrudComponent implements OnInit, OnDestroy, AfterViewInit {
         },
         { 
           data: 'curso',
-          width: '100px',
+          width: '10%',
         },
         { 
-          data: 'libros',
-          width: '100px',
+          data: 'totalPagado',
+          width: '10%',
+          render: (data: any, type: any, row: ReservaResponse) => {
+            return `${data}€`;
+          }
+        },
+        { 
+          data: '10%',
+          render: (data: any, type: any, row: ReservaResponse) => {
+            return `
+              <div class="text-center">
+                <i class="fas fa-book-open" style="color: rgb(87, 87, 87);" data-bs-toggle="modal" data-bs-target=""></i>
+              </div>
+            `;
+          },
         },        
       ],
       language: {

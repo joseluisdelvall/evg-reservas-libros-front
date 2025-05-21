@@ -1,9 +1,7 @@
-<!--<app-modal-nuevo [modo]="modo" (entidadCreada)="reloadTable()"></app-modal-nuevo>
+<app-modal-nuevo [modo]="modo" (entidadCreada)="reloadTable()"></app-modal-nuevo>
 <app-modal-editar [modo]="modo" [idEntidad]="getIdEntidadSeleccionada()" (entidadActualizada)="reloadTable()"></app-modal-editar>
 <app-modal-filtro [modo]="modo"></app-modal-filtro>
 <app-modal-ver [modo]="modo" [idEntidad]="getIdEntidadSeleccionada()" (estadoActualizado)="reloadTable()"></app-modal-ver>
--->
-<!--<app-loading-spinner [isLoading]="isLoadingTable"></app-loading-spinner>-->
 
 <div class="d-flex">
   <div class="content w-100 p-5">
@@ -92,6 +90,7 @@
             <th class="text-center" title="Fecha de realización">Registrada</th>
             <th class="text-center" title="Estado">Verificación</th>
             <th class="text-center" title="Curso del alumno">Curso</th>
+            <th class="text-center" title="Importe total de la reserva">Importe</th>
             <th class="text-center" title="Libros reservados">Libros</th>
           </tr>
         </thead>
