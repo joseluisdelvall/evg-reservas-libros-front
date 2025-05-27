@@ -6,9 +6,23 @@
             </a>
         </li>
         <li class="nav-item">
-            <a class="nav-link text-dark ps-4" routerLink="pedidos" routerLinkActive="active">
+            <a class="nav-link text-dark ps-4" data-bs-toggle="collapse" href="#pedidosSubmenu" role="button" aria-expanded="false" aria-controls="pedidosSubmenu">
                 <i class="fas fa-shopping-cart me-2"></i>Pedidos
             </a>
+            <div class="collapse" id="pedidosSubmenu">
+                <ul class="nav flex-column ms-3 ps-1"> 
+                    <li class="nav-item">
+                        <a class="nav-link text-dark ps-4" routerLink="pedidos-pendientes" routerLinkActive="active">
+                            <i class="fas fa-clock me-2"></i>Pedidos Pendientes
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-dark ps-4" routerLink="pedidos-realizados" routerLinkActive="active">
+                            <i class="fas fa-check-circle me-2"></i>Pedidos Realizados
+                        </a>
+                    </li>
+                </ul>
+            </div>
         </li>
         <li class="nav-item">
             <a class="nav-link text-dark ps-4" data-bs-toggle="collapse" href="#gestionSubmenu" role="button" aria-expanded="false" aria-controls="gestionSubmenu">
