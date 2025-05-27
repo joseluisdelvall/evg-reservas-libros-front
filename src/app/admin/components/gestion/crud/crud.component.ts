@@ -27,7 +27,7 @@ export class CrudComponent implements OnInit, OnDestroy, AfterViewInit {
   private currentTable: any = null;
   
   // Estado del filtro actual
-  filtroEstado: 'todos' | 'activo' | 'inactivo' = 'todos';
+  filtroEstado: 'todos' | 'activo' | 'inactivo' = 'activo';
 
   // nuevoModalOptions
   nuevoModalOptions!: ModalOptions;
@@ -110,8 +110,8 @@ export class CrudComponent implements OnInit, OnDestroy, AfterViewInit {
       this.currentTable = null;
     }
     
-    // Restablecer el filtro a "todos" al cambiar de vista
-    this.filtroEstado = 'todos';
+    // Restablecer el filtro a "activo" al cambiar de vista
+    this.filtroEstado = 'activo';
 
     // Ocultar el cuerpo de la tabla correspondiente durante la carga
     if (this.modo === 'libros') {
@@ -264,6 +264,12 @@ export class CrudComponent implements OnInit, OnDestroy, AfterViewInit {
         // Mostrar el cuerpo de la tabla cuando esté completamente inicializada
         $('#tablaLibros tbody').show();
         
+        // Asegurar que el filtro esté en "activo" después de la inicialización
+        setTimeout(() => {
+          this.filtroEstado = 'activo';
+          this.filtrarPorEstado('activo');
+        }, 100);
+        
         // Añadir clases para mejorar el estilo
         $('.dataTables_paginate').addClass('pagination-container');
         $('.dataTables_length, .dataTables_filter').addClass('dt-custom-control');
@@ -384,6 +390,12 @@ export class CrudComponent implements OnInit, OnDestroy, AfterViewInit {
         // Mostrar el cuerpo de la tabla cuando esté completamente inicializada
         $('#tablaEditoriales tbody').show();
         
+        // Asegurar que el filtro esté en "activo" después de la inicialización
+        setTimeout(() => {
+          this.filtroEstado = 'activo';
+          this.filtrarPorEstado('activo');
+        }, 100);
+        
         // Añadir clases para mejorar el estilo
         $('.dataTables_paginate').addClass('pagination-container');
         $('.dataTables_length, .dataTables_filter').addClass('dt-custom-control');
@@ -436,6 +448,10 @@ export class CrudComponent implements OnInit, OnDestroy, AfterViewInit {
 
   reloadTable(): void {
     this.isLoadingTable = true; // Show spinner
+    
+    // Asegurar que el filtro esté en "activo" al recargar
+    this.filtroEstado = 'activo';
+    
     if (this.modo === 'libros') {
       this.cargarLibros();
     } else if (this.modo === 'editoriales') {
@@ -481,6 +497,12 @@ export class CrudComponent implements OnInit, OnDestroy, AfterViewInit {
               this.currentTable.clear();
               this.currentTable.rows.add(this.editorialesA);
               this.currentTable.draw();
+              
+              // Asegurar que el filtro se mantenga en "activo"
+              setTimeout(() => {
+                this.filtroEstado = 'activo';
+                this.filtrarPorEstado('activo');
+              }, 100);
             }
           },
           error: (error) => {
@@ -538,6 +560,12 @@ export class CrudComponent implements OnInit, OnDestroy, AfterViewInit {
               this.currentTable.clear();
               this.currentTable.rows.add(this.libros);
               this.currentTable.draw();
+              
+              // Asegurar que el filtro se mantenga en "activo"
+              setTimeout(() => {
+                this.filtroEstado = 'activo';
+                this.filtrarPorEstado('activo');
+              }, 100);
             }
           },
           error: (error) => {
