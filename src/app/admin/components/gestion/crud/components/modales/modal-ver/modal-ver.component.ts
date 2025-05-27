@@ -24,6 +24,7 @@ export class ModalVerComponent implements OnInit, OnChanges {
   // Datos de la editorial y libro
   editorial: Editorial | null = null;
   libro: Libro | null = null;
+  librosReserva: any | null = null;
   
   constructor(
     private crudService: CrudService,
@@ -35,6 +36,7 @@ export class ModalVerComponent implements OnInit, OnChanges {
     document.addEventListener('shown.bs.modal', (event: any) => {
       // Verificar si el modal abierto es el nuestro
       if (this.modo && event.target.id === 'ver' + this.modo) {
+        console.log('modo ' + this.modo);
         this.recargarDatos();
       }
     });
@@ -42,8 +44,10 @@ export class ModalVerComponent implements OnInit, OnChanges {
   
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['modo'] && changes['modo'].currentValue) {
+      console.log('modo' + this.modo);  
+      console.log('idEntidad' + this.idEntidad);
       this.verModalOptions = {
-        title: 'Detalles de ' + (this.modo === 'libros' ? 'libro' : 'editorial'),
+        title: 'Detalles de ' + (this.modo === 'libros' ? 'libro' : this.modo === 'editoriales' ? 'editorial' : 'reserva'),
         modalId: 'ver' + this.modo,
         size: 'xl',
         okButton: {
@@ -57,6 +61,9 @@ export class ModalVerComponent implements OnInit, OnChanges {
         this.cargarDatosEditorial(changes['idEntidad'].currentValue);
       } else if (this.modo === 'libros') {
         this.cargarDatosLibro(changes['idEntidad'].currentValue);
+      } else if (this.modo === 'reservas') {
+        console.log('idEntidad: ' + changes['idEntidad'].currentValue);
+        this.cargarDatosReserva(changes['idEntidad'].currentValue);
       }
     }
   }
@@ -83,6 +90,20 @@ export class ModalVerComponent implements OnInit, OnChanges {
     });
   }
 
+  cargarDatosReserva(id: string): void {
+    this.crudService.getLibroByReservaId(id).subscribe({
+      next: (datos: any) => {
+        console.log('id' + id);
+        console.log(datos);
+        this.librosReserva = datos;
+      },
+      error: (err) => {
+        console.log('id' + id);
+        console.error('Error al cargar los datos de la reserva:', err);
+      }
+    });
+  }
+
   // Método para recargar los datos cuando el modal se muestra
   recargarDatos(): void {
     if (this.idEntidad) {
@@ -90,6 +111,9 @@ export class ModalVerComponent implements OnInit, OnChanges {
         this.cargarDatosEditorial(this.idEntidad);
       } else if (this.modo === 'libros') {
         this.cargarDatosLibro(this.idEntidad);
+      } else if (this.modo === 'reservas') {
+        console.log('idEntidad' + this.idEntidad);
+        this.cargarDatosReserva(this.idEntidad);
       }
     }
   }

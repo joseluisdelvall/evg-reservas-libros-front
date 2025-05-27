@@ -105,11 +105,45 @@
         </div>
     </div>
 
+    <div *ngIf="modo === 'reservas' && librosReserva">
+        <div *ngFor="let libro of librosReserva" class="card mb-4">
+            <div class="card-header bg-blue-primary">
+                <h5 class="mb-0">{{ libro.nombre }}</h5>
+            </div>
+            <div class="card-body">
+                <div class="row mb-3">
+                    <div class="col-md-4 fw-bold">ISBN:</div>
+                    <div class="col-md-8">{{ libro.isbn }}</div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-md-4 fw-bold">Editorial:</div>
+                    <div class="col-md-8">{{ libro.editorial }}</div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-md-4 fw-bold">Precio de compra:</div>
+                    <div class="col-md-8">{{ libro.precio }} €</div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-md-4 fw-bold">Estado:</div>
+                    <div class="col-md-8">
+                        <div class="d-flex align-items-center">
+                            {{ libro.estado }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div *ngIf="!editorial && modo === 'editoriales'" class="alert alert-info">
         Cargando información de la editorial...
     </div>
 
     <div *ngIf="!libro && modo === 'libros'" class="alert alert-info">
         Cargando información del libro...
+    </div>
+
+    <div *ngIf="!librosReserva && modo === 'reservas'" class="alert alert-info">
+        Cargando información de la reserva...
     </div>
 </app-modal-content>

@@ -21,6 +21,7 @@ export class CrudComponent implements OnInit, OnDestroy, AfterViewInit {
   modo: 'libros' | 'editoriales' | 'reservas' | null = null;
   editorialSeleccionadaId: string | null = null;
   libroSeleccionadoId: string | null = null;
+  reservaSeleccionadaId: string | null = null;
   isLoading: boolean = false;
   isLoadingTable: boolean = false;
   dtOptions: any = {};
@@ -579,17 +580,17 @@ export class CrudComponent implements OnInit, OnDestroy, AfterViewInit {
         
         $('.fa-edit').off('click').on('click', (event: any) => {
           const rowData = this.currentTable.row($(event.currentTarget).closest('tr')).data();
-          this.seleccionarEditorial(rowData);
+          this.seleccionarReserva(rowData);
         });
         
         $('.fa-eye').off('click').on('click', (event: any) => {
           const rowData = this.currentTable.row($(event.currentTarget).closest('tr')).data();
-          this.seleccionarEditorial(rowData);
+          this.seleccionarReserva(rowData);
         });
         
         $('.toggle-estado').off('click').on('click', (event: any) => {
           const rowData = this.currentTable.row($(event.currentTarget).closest('tr')).data();
-          this.toggleEditorialEstado(rowData, event);
+          this.toggleReservaEstado(rowData, event);
         });
       }
     });
@@ -609,8 +610,27 @@ export class CrudComponent implements OnInit, OnDestroy, AfterViewInit {
     }
   }
 
+  seleccionarReserva(reserva: ReservaResponse): void {
+    if (reserva.id !== undefined) {
+      this.reservaSeleccionadaId = reserva.id.toString();
+      console.log('Reserva seleccionada ID:', this.reservaSeleccionadaId);
+    } else {
+      this.reservaSeleccionadaId = null;
+      console.error('La reserva seleccionada no tiene ID');
+    }
+  }
+
   getIdEntidadSeleccionada(): string | null {
-    return this.modo === 'libros' ? this.libroSeleccionadoId : this.editorialSeleccionadaId;
+    switch (this.modo) {
+      case 'libros':
+        return this.libroSeleccionadoId;
+      case 'editoriales':
+        return this.editorialSeleccionadaId;
+      case 'reservas':
+        return this.reservaSeleccionadaId;
+      default:
+        return null;
+    }
   }
 
   reloadTable(): void {
@@ -742,6 +762,35 @@ export class CrudComponent implements OnInit, OnDestroy, AfterViewInit {
     });
   }
 
+  toggleReservaEstado(reserva: ReservaResponse, event: Event): void {
+    event.stopPropagation(); // Prevent other click events
+
+    if (!reserva.id) {
+      this.toastr.error('No se pudo cambiar el estado: ID no encontrado', 'Error');
+      return;
+    }
+
+    const nuevoEstado = !reserva.verificado;
+    const reservaId = reserva.id.toString();
+
+    Swal.fire({
+      title: 'Confirmar cambio de estado',
+      html: `¿Estás seguro de cambiar el estado de <strong>${reserva.nombreAlumno}</strong> a <strong>${nuevoEstado ? 'ACTIVO' : 'INACTIVO'}</strong>?`,
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Sí, cambiar',
+      cancelButtonText: 'Cancelar'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.crudService.toggleReservaEstado(reservaId);
+        this.cargarReservas();
+      }
+    });
+  } 
+
+
   filtrarPorEstado(estado: 'todos' | 'activo' | 'inactivo'): void {
     if (!this.currentTable) return;
     
@@ -836,4 +885,5 @@ export class CrudComponent implements OnInit, OnDestroy, AfterViewInit {
       this.cambiarFiltroEstado('activo');
     }
   }
+
 }

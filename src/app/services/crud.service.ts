@@ -53,6 +53,12 @@ export class CrudService {
     );
   }
 
+  getLibroByReservaId(id: string): Observable<Libro> {
+    return this.http.get<{ status: string; data: Libro }>(this.endpoint + `/reservas/${id}/libros`).pipe(
+      map(response => response.data)
+    );
+  }
+
   addEditorial(editorial: Editorial): Observable<Editorial> {
     return this.http.post<{ status: string; data: Editorial }>(this.endpoint + '/editoriales/add', editorial).pipe(
       map(response => response.data) // Extraer la editorial creada
@@ -142,5 +148,12 @@ export class CrudService {
         };
       })
     );
+  }
+
+  toggleReservaEstado(id: string): void {
+    console.log(`Toggling reserva estado for ID: ${id}`);
+    /*return this.http.put<{ status: string; data: ReservaResponse }>(this.endpoint + '/reservas/' + id + '/estado', {}).pipe(
+      map(response => response.data)
+    );*/
   }
 }
