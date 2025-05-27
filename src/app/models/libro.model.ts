@@ -7,4 +7,5 @@ export interface Libro {
     editorial?: Editorial;
     estado?: boolean;
     precio?: number;
+    unidadesPendientes?: number;
 }
