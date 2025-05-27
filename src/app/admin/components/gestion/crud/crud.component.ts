@@ -481,7 +481,6 @@ export class CrudComponent implements OnInit, OnDestroy, AfterViewInit {
             return `
               <div class="text-center">
                 <i class="fas fa-edit puntero" style="color: blue;" data-bs-toggle="modal" data-bs-target="#editarreservas"></i>
-                <i class="fas fa-eye ms-2 puntero" style="color: rgb(87, 87, 87);" data-bs-toggle="modal" data-bs-target="#verreservas"></i>
               </div>
             `;
           },
@@ -535,7 +534,7 @@ export class CrudComponent implements OnInit, OnDestroy, AfterViewInit {
           render: (data: any, type: any, row: ReservaResponse) => {
             return `
               <div class="text-center">
-                <i class="fas fa-book-open" style="color: rgb(87, 87, 87);" data-bs-toggle="modal" data-bs-target=""></i>
+                <i class="fas fa-book-open puntero" style="color: rgb(87, 87, 87);" data-bs-toggle="modal" data-bs-target="#verreservas"></i>
               </div>
             `;
           },
@@ -583,7 +582,7 @@ export class CrudComponent implements OnInit, OnDestroy, AfterViewInit {
           this.seleccionarReserva(rowData);
         });
         
-        $('.fa-eye').off('click').on('click', (event: any) => {
+        $('.fa-book-open').off('click').on('click', (event: any) => {
           const rowData = this.currentTable.row($(event.currentTarget).closest('tr')).data();
           this.seleccionarReserva(rowData);
         });
