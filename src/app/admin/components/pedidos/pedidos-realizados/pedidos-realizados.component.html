@@ -152,7 +152,7 @@
 </div>
 
 <!-- Modal de Detalles del Pedido -->
-<app-modal-content [options]="modalOptions">
+<app-modal-content [options]="modalOptions" (okButtonClicked)="confirmarRecepcionPedido()">
     <div *ngIf="pedidoSeleccionado">
         <!-- Información general del pedido -->
         <div class="alert alert-info">
@@ -207,7 +207,7 @@
                                 (input)="handleUnidadesRecibidasChange(item, $event)"
                                 [max]="item.unidades"
                                 min="0"
-                                [disabled]="pedidoSeleccionado?.estadoPedido === 'Entregado'">
+                                [disabled]="pedidoSeleccionado.estadoPedido === 'Entregado'">
                         </td>
                     </tr>
                 </tbody>
