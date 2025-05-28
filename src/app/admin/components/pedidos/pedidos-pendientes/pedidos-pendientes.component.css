@@ -685,3 +685,13 @@
     font-size: 0.7rem;
   }
 }
+
+.texto-boton-responsive {
+  display: none;
+}
+
+@media (min-width: 1168px) { /* Puedes ajustar este valor de resolución */
+  .texto-boton-responsive {
+    display: inline;
+  }
+}

@@ -41,7 +41,7 @@
                    (click)="seleccionarEditorial(editorial)">
                 <h6 class="mb-1">{{ editorial.nombre }}</h6>
                 <div class="mt-2">
-                  <span class="badge bg-info">
+                  <span class="badge bg-info" style="white-space: normal; word-break: break-word; display: inline-block; max-width: 100%;">
                     {{ getLibrosPendientesPorEditorial(editorial.idEditorial).length }} libro(s) pendiente(s)
                   </span>
                 </div>
@@ -80,26 +80,26 @@
     <!-- Sección de libros pendientes -->
     <div class="col-md-8">
       <div class="card shadow-sm w-100" [class.disabled]="!editorialSeleccionada">
-        <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+        <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center flex-wrap gap-2">
           <h5 class="mb-0">Libros Pendientes de Pedido</h5>
-          <div class="d-flex gap-2">
+          <div class="d-flex flex-wrap gap-2 justify-content-end">
             <button 
               class="btn btn-sm btn-success" 
               (click)="seleccionarTodos()" 
               [disabled]="!editorialSeleccionada || librosPendientesEditorial.length === 0">
-              <i class="fas fa-check-double me-1"></i>Seleccionar todos
+              <i class="fas fa-check-double me-1"></i><span class="texto-boton-responsive">Sel. todos</span>
             </button>
             <button 
               class="btn btn-sm btn-warning" 
               (click)="deseleccionarTodos()" 
               [disabled]="!editorialSeleccionada || librosPedido.length === 0">
-              <i class="fas fa-times me-1"></i>Deseleccionar todos
+              <i class="fas fa-times me-1"></i><span class="texto-boton-responsive">Des. todos</span>
             </button>
             <button 
               class="btn btn-sm btn-light realizar-pedido-btn" 
               (click)="realizarPedido()" 
               [disabled]="!editorialSeleccionada || librosPedido.length === 0">
-              <i class="fas fa-paper-plane me-1"></i>Realizar pedido
+              <i class="fas fa-paper-plane me-1"></i><span class="texto-boton-responsive">Pedir</span>
             </button>
           </div>
         </div>
