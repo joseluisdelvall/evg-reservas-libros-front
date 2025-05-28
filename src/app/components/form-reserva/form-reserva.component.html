@@ -140,34 +140,31 @@
                         </div>
 
                         <div class="mb-3" *ngIf="mostrarLibros">
-                            <label for="libro" class="form-label fw-semibold small text-muted">Libro(s)</label>
-                            <ng-select
-                                [items]="libros"
-                                formControlName="libro"
-                                id="libro"
-                                [multiple]="true"
-                                [closeOnSelect]="true"
-                                [searchable]="true"
-                                bindLabel="nombre"
-                                bindValue="id"
-                                placeholder="Seleccione los libros"
-                                [disabled]="!mostrarLibros"
-                                class="ng-select-sm">
-                                <ng-template ng-label-tmp let-item="item">
-                                    {{ item.nombre }} ({{ item.precio }}€)
-                                </ng-template>
-                                <ng-template ng-option-tmp let-item="item">
-                                    <div>
-                                        <strong>{{ item.nombre }}</strong>
-                                    </div>
-                                    <small>
-                                        <span>ISBN: {{ item.isbn }}</span> |
-                                        <span>Editorial: {{ item.editorial.nombre }}</span> |
-                                        <span><strong>Precio: {{ item.precio }}€</strong></span>
-                                    </small>
-                                </ng-template>
-                            </ng-select>
-                            <div *ngIf="isInvalid('libro')" class="text-danger small">{{ getError('libro') }}</div>
+                            <label class="form-label fw-semibold small text-muted">Libro(s)*</label>
+                            <div *ngIf="(!libros || libros.length === 0) && !loading" class="alert alert-sm alert-warning">
+                                No hay libros disponibles para este curso.
+                            </div>
+                            <div *ngIf="libros && libros.length > 0" class="checkbox-list-container border rounded p-3">
+                                <div *ngFor="let libro of libros; let i = index" class="form-check mb-2">
+                                    <input class="form-check-input" 
+                                           type="checkbox" 
+                                           [value]="libro.id" 
+                                           [id]="'libro_' + i"
+                                           (change)="onLibroCheckboxChange($event, libro.id!)"
+                                           [checked]="isLibroSeleccionado(libro.id!)">
+                                    <label class="form-check-label small" [for]="'libro_' + i">
+                                        <strong>{{ libro.nombre }}</strong> ({{ libro.precio }}€)
+                                        <br>
+                                        <small class="text-muted">ISBN: {{ libro.isbn }} | Editorial: {{ libro.editorial?.nombre }}</small>
+                                    </label>
+                                </div>
+                            </div>
+                            <div *ngIf="isInvalid('librosSeleccionados')" class="text-danger small mt-1">{{ getError('librosSeleccionados') }}</div>
+                            
+                            <!-- Mostrar Total a Pagar -->
+                            <div *ngIf="librosSeleccionados && librosSeleccionados.length > 0 && mostrarLibros" class="mt-3 pt-2 border-top">
+                                <h6 class="fw-bold text-primary">Total a pagar: {{ totalAPagar | currency:'EUR':'symbol':'1.2-2' }}</h6>
+                            </div>
                         </div>
 
                         <h6 class="mb-3 mt-4 text-muted">Justificante de Pago</h6>
