@@ -1,1 +1,183 @@
-<p>pedidos-realizados works!</p>
+<div class="container-fluid p-4">
+    <!-- Spinner de carga -->
+    <div *ngIf="isLoading" class="d-flex justify-content-center my-5">
+        <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Cargando...</span>
+        </div>
+    </div>
+
+    <div class="row" *ngIf="!isLoading">
+        <!-- Columna de Lista de Editoriales -->
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0"><i class="fas fa-building me-2"></i>Editoriales con Pedidos</h5>
+                </div>
+                <div class="card-body">
+                    <!-- Buscador de editoriales -->
+                    <div class="mb-3">
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="fas fa-search"></i></span>
+                            <input 
+                                type="text" 
+                                class="form-control" 
+                                placeholder="Buscar editorial..." 
+                                [(ngModel)]="busquedaEditorial"
+                                (ngModelChange)="filtrarEditoriales()">
+                        </div>
+                        <small class="text-muted mt-1">
+                            <i class="fas fa-info-circle me-1"></i>
+                            Buscar por nombre de editorial
+                        </small>
+                    </div>
+
+                    <!-- Lista de editoriales -->
+                    <div class="editorial-list">
+                        <div *ngFor="let editorial of editorialesFiltradas" 
+                             class="editorial-item"
+                             [class.selected]="editorialSeleccionada?.idEditorial === editorial.idEditorial"
+                             (click)="seleccionarEditorial(editorial)">
+                            <h6 class="mb-1">{{ editorial.nombre }}</h6>
+                            <div class="mt-2">
+                                <span class="badge bg-info">
+                                    {{ getPedidosPorEditorial(editorial.idEditorial || '') }} pedido(s)
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Mensaje si no hay editoriales -->
+                    <div *ngIf="editorialesFiltradas.length === 0" class="text-center my-4 text-muted">
+                        <i class="fas fa-building fa-2x mb-3"></i>
+                        <p>No se encontraron editoriales con pedidos.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Columna de Pedidos de la Editorial -->
+        <div class="col-md-8">
+            <div class="card shadow-sm w-100" [class.disabled]="!editorialSeleccionada">
+                <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">
+                        <i class="fas fa-clipboard-list me-2"></i>Pedidos de 
+                        <span *ngIf="editorialSeleccionada">{{ editorialSeleccionada.nombre }}</span>
+                    </h5>
+                    <button *ngIf="editorialSeleccionada" 
+                            class="btn btn-sm btn-light" 
+                            (click)="limpiarSeleccion()" 
+                            title="Cerrar Pedidos">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <div class="card-body">
+                    <!-- Mensaje cuando no hay editorial seleccionada -->
+                    <div *ngIf="!editorialSeleccionada && !isLoadingDetalles" class="text-center my-5 text-muted">
+                        <i class="fas fa-arrow-left fa-2x mb-3"></i>
+                        <p>Selecciona una editorial para ver sus pedidos</p>
+                    </div>
+
+                    <!-- Lista de pedidos de la editorial -->
+                    <div *ngIf="editorialSeleccionada && !isLoadingDetalles">
+                        <!-- Buscador de pedidos -->
+                        <div class="mb-3">
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-search"></i></span>
+                                <input 
+                                    type="text" 
+                                    class="form-control" 
+                                    placeholder="Buscar pedido..." 
+                                    [(ngModel)]="busquedaPedido"
+                                    (ngModelChange)="filtrarPedidosPorEditorial()">
+                            </div>
+                            <small class="text-muted mt-1">
+                                <i class="fas fa-info-circle me-1"></i>
+                                Buscar por ID o fecha
+                            </small>
+                        </div>
+
+                        <!-- Lista de pedidos -->
+                        <div class="pedido-list">
+                            <div *ngFor="let pedido of pedidosFiltrados" 
+                                 class="pedido-item"
+                                 [class.selected]="pedidoSeleccionado?.idPedido === pedido.idPedido"
+                                 (click)="seleccionarPedido(pedido)"
+                                 data-bs-toggle="modal" 
+                                 [attr.data-bs-target]="'#' + modalOptions.modalId">
+                                <h6 class="mb-1">Pedido #{{ pedido.idPedido }}</h6>
+                                <div class="mt-2">
+                                    <small class="d-block text-muted">
+                                        <i class="fas fa-calendar-alt me-1"></i>{{ pedido.fecha | date:'dd/MM/yyyy' }}
+                                    </small>
+                                    <span class="badge bg-info mt-2">
+                                        {{ pedido.librosPedido?.length || 0 }} libro(s)
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Mensaje si no hay pedidos -->
+                        <div *ngIf="pedidosFiltrados.length === 0" class="text-center my-4 text-muted">
+                            <i class="fas fa-box-open fa-2x mb-3"></i>
+                            <p>No se encontraron pedidos para esta editorial.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal de Detalles del Pedido -->
+<app-modal-content [options]="modalOptions">
+    <div *ngIf="pedidoSeleccionado">
+        <!-- Información general del pedido -->
+        <div class="alert alert-info">
+            <div class="d-flex justify-content-between align-items-center">
+                <div class="info-item">
+                    <p class="mb-0 d-flex align-items-center">
+                        <i class="fas fa-building me-2"></i>
+                        <strong class="me-2">Editorial:</strong>
+                        <span>{{ pedidoSeleccionado.editorial?.nombre || 'N/A' }}</span>
+                    </p>
+                </div>
+                <div class="info-item text-center">
+                    <p class="mb-0 d-flex align-items-center">
+                        <i class="fas fa-calendar-alt me-2"></i>
+                        <strong class="me-2">Fecha:</strong>
+                        <span>{{ pedidoSeleccionado.fecha | date:'dd/MM/yyyy' }}</span>
+                    </p>
+                </div>
+                <div class="info-item text-end">
+                    <p class="mb-0 d-flex align-items-center">
+                        <i class="fas fa-book me-2"></i>
+                        <strong class="me-2">Total de libros:</strong>
+                        <span>{{ pedidoSeleccionado.librosPedido?.length || 0 }}</span>
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tabla de libros del pedido -->
+        <div class="table-responsive mt-4">
+            <table class="table table-hover table-striped">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Libro</th>
+                        <th>ISBN</th>
+                        <th class="text-center">Unidades</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let item of pedidoSeleccionado.librosPedido; let i = index">
+                        <td>{{ i + 1 }}</td>
+                        <td>{{ item.libro?.nombre || 'Nombre no disponible' }}</td>
+                        <td>{{ item.libro?.isbn || 'N/A' }}</td>
+                        <td class="text-center">{{ item.unidades }}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</app-modal-content>
