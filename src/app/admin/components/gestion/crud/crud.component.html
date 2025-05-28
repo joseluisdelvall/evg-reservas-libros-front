@@ -1,4 +1,4 @@
-<app-modal-periodo-reservas></app-modal-periodo-reservas>
+<app-modal-periodo-reservas (periodoActualizado)="obtenerPeriodoActual()"></app-modal-periodo-reservas>
 
 <app-modal-nuevo [modo]="modo" (entidadCreada)="reloadTable()"></app-modal-nuevo>
 <app-modal-editar [modo]="modo" [idEntidad]="getIdEntidadSeleccionada()" (entidadActualizada)="reloadTable()"></app-modal-editar>
@@ -7,12 +7,57 @@
 
 <div class="d-flex">
   <div class="content w-100 p-5">
+     <!-- Tarjeta de Período de Reservas -->
+     <div *ngIf="modo === 'reservas'" class="card shadow-sm border-0 mb-4">
+      <div class="card-body">
+        <div class="d-flex align-items-center justify-content-between">
+          <div>
+            <h5 class="card-title mb-2 text-primary">
+              <i class="fas fa-calendar-alt me-2"></i>
+              Período de Reservas
+            </h5>
+            <div class="mb-2" *ngIf="periodoActual">
+              <div class="d-flex align-items-center mb-1">
+                <span class="badge" [ngClass]="{
+                  'bg-success': esPeriodoActivo(),
+                  'bg-warning': !esPeriodoActivo() && esPeriodoFuturo(),
+                  'bg-danger': !esPeriodoActivo() && !esPeriodoFuturo()
+                }">
+                  <i class="fas" [ngClass]="{
+                    'fa-check-circle': esPeriodoActivo(),
+                    'fa-clock': !esPeriodoActivo() && esPeriodoFuturo(),
+                    'fa-times-circle': !esPeriodoActivo() && !esPeriodoFuturo()
+                  }"></i>
+                  {{ getEstadoPeriodo() }}
+                </span>
+              </div>
+              <p class="card-text text-muted mb-0">
+                <i class="fas fa-calendar-day me-2"></i>
+                <strong>Inicio:</strong> {{ periodoActual.fechaInicio | date:'dd/MM/yyyy' }}
+              </p>
+              <p class="card-text text-muted mb-0">
+                <i class="fas fa-calendar-check me-2"></i>
+                <strong>Fin:</strong> {{ periodoActual.fechaFin | date:'dd/MM/yyyy' }}
+              </p>
+            </div>
+            <div *ngIf="!periodoActual" class="text-muted">
+              <i class="fas fa-info-circle me-2"></i>
+              No hay período configurado
+            </div>
+          </div>
+          <button type="button" class="btn btn-primary d-flex align-items-center" 
+                  data-bs-toggle="modal" 
+                  data-bs-target="#gestionReservas">
+            <i class="fas fa-edit me-2"></i>
+            Modificar Período
+          </button>
+        </div>
+      </div>
+    </div>
+
     <div class="d-flex justify-content-between align-items-center">
       <h2 class="mb-0 d-flex align-items-center">
         {{ modo | titlecase }}
-        <button *ngIf="modo === 'reservas'" type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#gestionReservas">
-          Gestionar Periodo
-        </button>
         <div *ngIf="isLoadingTable" class="spinner-border text-primary ms-3" role="status" style="width: 1.5rem; height: 1.5rem;">
           <span class="visually-hidden">Cargando...</span>
         </div>

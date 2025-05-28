@@ -8,6 +8,7 @@ import { CrudService } from 'src/app/services/crud.service';
 import Swal from 'sweetalert2';
 import { LoadingSpinnerComponent } from 'src/app/shared/loading-spinner/loading-spinner.component';
 import { ReservaResponse } from 'src/app/models/reserva.model';
+import { PeriodoReservasService, PeriodoReservas } from 'src/app/services/periodo-reservas.service';
 
 // Importación para jQuery y DataTables
 declare var $: any;
@@ -37,11 +38,13 @@ export class CrudComponent implements OnInit, OnDestroy, AfterViewInit {
   libros: Libro[] = [];
   editorialesA: Editorial[] = [];
   reservas: ReservaResponse[] = [];
+  periodoActual: PeriodoReservas | null = null;
 
   constructor(
     private route: ActivatedRoute,
     private crudService: CrudService,
-    private toastr: ToastrService
+    private toastr: ToastrService,
+    private periodoReservasService: PeriodoReservasService
   ) { }
 
   ngOnInit(): void {
@@ -59,6 +62,11 @@ export class CrudComponent implements OnInit, OnDestroy, AfterViewInit {
         
         // Añadir función personalizada de búsqueda
         this.configurarBusquedaPersonalizada();
+        
+        // Si estamos en modo reservas, obtener el período actual
+        if (this.modo === 'reservas') {
+          this.obtenerPeriodoActual();
+        }
         
         // Cargar los nuevos datos
         this.cargarTable();
@@ -882,6 +890,58 @@ export class CrudComponent implements OnInit, OnDestroy, AfterViewInit {
     } else {
       // Si se desmarca, mostrar solo activos
       this.cambiarFiltroEstado('activo');
+    }
+  }
+
+  obtenerPeriodoActual() {
+    this.periodoReservasService.getPeriodoReservas().subscribe({
+      next: (response) => {
+        if (response.status === 'success') {
+          this.periodoActual = response.data;
+        }
+      },
+      error: (error) => {
+        this.toastr.error('Error al cargar el período de reservas', 'Error');
+        console.error('Error:', error);
+      }
+    });
+  }
+
+  esPeriodoActivo(): boolean {
+    if (!this.periodoActual) return false;
+    
+    const fechaActual = new Date();
+    const fechaInicio = new Date(this.periodoActual.fechaInicio);
+    const fechaFin = new Date(this.periodoActual.fechaFin);
+    
+    // Resetear las horas para comparar solo fechas
+    fechaActual.setHours(0, 0, 0, 0);
+    fechaInicio.setHours(0, 0, 0, 0);
+    fechaFin.setHours(23, 59, 59, 999);
+    
+    return fechaActual >= fechaInicio && fechaActual <= fechaFin;
+  }
+
+  esPeriodoFuturo(): boolean {
+    if (!this.periodoActual) return false;
+    
+    const fechaActual = new Date();
+    const fechaInicio = new Date(this.periodoActual.fechaInicio);
+    
+    // Resetear las horas para comparar solo fechas
+    fechaActual.setHours(0, 0, 0, 0);
+    fechaInicio.setHours(0, 0, 0, 0);
+    
+    return fechaInicio > fechaActual;
+  }
+
+  getEstadoPeriodo(): string {
+    if (this.esPeriodoActivo()) {
+      return 'Período Activo';
+    } else if (this.esPeriodoFuturo()) {
+      return 'Próximamente';
+    } else {
+      return 'Período Finalizado';
     }
   }
 

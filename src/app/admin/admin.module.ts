@@ -2,6 +2,8 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule } from '@angular/forms';
 import { DataTablesModule } from 'angular-datatables';
+import { ToastrModule } from 'ngx-toastr';
+import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 
 import { AdminRoutingModule } from './admin-routing.module';
 import { AdminComponent } from './admin.component';
@@ -33,10 +35,8 @@ import { LoadingSpinnerComponent } from '../shared/loading-spinner/loading-spinn
     ModalContentComponent,
     ModalNuevoComponent,
     ModalPeriodoReservasComponent,
-    ModalNuevoComponent,
     ModalEditarComponent,
     ModalFiltroComponent,
-    AdminLayoutComponent,
     ModalVerComponent,
     LoadingSpinnerComponent
   ],
@@ -44,7 +44,9 @@ import { LoadingSpinnerComponent } from '../shared/loading-spinner/loading-spinn
     CommonModule,
     ReactiveFormsModule,
     AdminRoutingModule,
-    DataTablesModule
-  ]
+    DataTablesModule,
+    ToastrModule
+  ],
+  schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
 export class AdminModule { }
