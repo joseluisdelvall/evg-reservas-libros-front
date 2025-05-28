@@ -582,14 +582,15 @@ export class PedidosPendientesComponent implements OnInit {
   seleccionarTodos(): void {
     if (!this.editorialSeleccionada) return;
     
-    this.librosPendientesEditorial.forEach(libro => {
+    // Iterar sobre los libros filtrados en lugar de todos los de la editorial
+    this.librosPendientesFiltrados.forEach(libro => {
       if (libro.id && libro.unidadesPendientes && libro.unidadesPendientes > 0) {
-        // Si el libro ya está en el pedido, actualizar su cantidad
+        // Si el libro ya está en el pedido, actualizar su cantidad al máximo disponible
         const index = this.librosPedido.findIndex(l => l.id === libro.id);
         if (index !== -1) {
           this.librosPedido[index].cantidad = libro.unidadesPendientes;
         } else {
-          // Si no está en el pedido, añadirlo con la cantidad máxima
+          // Si no está en el pedido, añadirlo con la cantidad máxima disponible
           this.librosPedido.push({ 
             id: libro.id, 
             cantidad: libro.unidadesPendientes 
@@ -598,9 +599,10 @@ export class PedidosPendientesComponent implements OnInit {
       }
     });
     
+    // Ajustar el mensaje para reflejar que se seleccionaron los filtrados
     this.toastr.info(
-      `Se han seleccionado ${this.librosPendientesEditorial.length} libros con sus cantidades máximas`,
-      'Información'
+      `Se han seleccionado ${this.librosPendientesFiltrados.length} libros filtrados con sus cantidades máximas.`,
+      'Libros Seleccionados'
     );
   }
 
@@ -608,6 +610,11 @@ export class PedidosPendientesComponent implements OnInit {
    * Deselecciona todos los libros del pedido actual
    */
   deseleccionarTodos(): void {
+    // Considerar si al deseleccionar todos, también se deberían afectar solo los filtrados.
+    // Por ahora, mantiene la funcionalidad de deseleccionar TODOS los que estaban en librosPedido.
+    // Si se quiere que solo afecte a los filtrados que están en el pedido, la lógica sería más compleja:
+    // const idsFiltrados = new Set(this.librosPendientesFiltrados.map(l => l.id));
+    // this.librosPedido = this.librosPedido.filter(lp => !idsFiltrados.has(lp.id));
     this.librosPedido = [];
   }
 
@@ -721,50 +728,73 @@ export class PedidosPendientesComponent implements OnInit {
   }
 
   getCantidadPedido(libroId: number | undefined): number {
-    if (libroId === undefined) return 1;
-    const libroPedido = this.librosPedido.find(l => l.id === libroId);
-    return libroPedido ? libroPedido.cantidad : 1;
+    if (!libroId) return 1; // Valor por defecto si no hay ID
+    const libroEnPedido = this.librosPedido.find(lp => lp.id === libroId);
+    return libroEnPedido ? libroEnPedido.cantidad : 1;
   }
 
   actualizarCantidad(libroId: number | undefined, event: any): void {
-    if (libroId === undefined) return;
-    
-    const libro = this.librosPendientes.find(l => l.id === libroId);
-    if (!libro || !libro.unidadesPendientes) return;
-    
-    const cantidad = parseInt(event.target.value);
-    if (isNaN(cantidad) || cantidad < 1) return;
+    if (!libroId) return;
 
-    // Limitar la cantidad al máximo pendiente
-    const cantidadFinal = Math.min(cantidad, libro.unidadesPendientes);
-    
-    const index = this.librosPedido.findIndex(l => l.id === libroId);
-    if (index !== -1) {
-      this.librosPedido[index].cantidad = cantidadFinal;
+    const libroSeleccionado = this.librosPendientesEditorial.find(l => l.id === libroId);
+    if (!libroSeleccionado) return;
+
+    const maxUnidades = libroSeleccionado.unidadesPendientes || 0;
+    let cantidad = parseInt(event.target.value, 10);
+
+    if (isNaN(cantidad) || cantidad < 1) {
+      cantidad = 1; // Mínimo 1 si se introduce algo inválido o menor que 1
     }
+
+    if (cantidad > maxUnidades) {
+      cantidad = maxUnidades; // No permitir pedir más de las unidades pendientes
+    }
+    
+    // Si maxUnidades es 0, la cantidad también debería ser 0, pero el mínimo actual es 1.
+    // Para este caso, si se intenta pedir un libro con 0 unidades pendientes, se establece a 0.
+    if (maxUnidades === 0) {
+        cantidad = 0;
+    }
+
+    const index = this.librosPedido.findIndex(lp => lp.id === libroId);
+    if (index > -1) {
+      if (cantidad === 0) { // Si la cantidad es 0, se elimina de la lista de pedido
+        this.librosPedido.splice(index, 1);
+      } else {
+        this.librosPedido[index].cantidad = cantidad;
+      }
+    } else if (cantidad > 0) { // Solo añadir si la cantidad es mayor que 0
+      this.librosPedido.push({ id: libroId, cantidad });
+    }
+
+    // Actualizar el valor en el input para reflejar la corrección
+    event.target.value = cantidad.toString();
   }
 
   incrementarCantidad(libroId: number | undefined): void {
-    if (libroId === undefined) return;
-    
-    const libro = this.librosPendientes.find(l => l.id === libroId);
-    if (!libro || !libro.unidadesPendientes) return;
-    
-    const index = this.librosPedido.findIndex(l => l.id === libroId);
-    if (index !== -1) {
-      // Verificar si ya está en el máximo
-      if (this.librosPedido[index].cantidad >= libro.unidadesPendientes) {
-        return;
+    if (!libroId) return;
+    const libroSeleccionado = this.librosPendientesEditorial.find(l => l.id === libroId);
+    if (!libroSeleccionado) return;
+    const maxUnidades = libroSeleccionado.unidadesPendientes || 0;
+
+    const index = this.librosPedido.findIndex(lp => lp.id === libroId);
+    if (index > -1) {
+      if (this.librosPedido[index].cantidad < maxUnidades) {
+        this.librosPedido[index].cantidad++;
       }
-      this.librosPedido[index].cantidad++;
+    } else if (maxUnidades > 0) { // Solo añadir si hay unidades pendientes y es el primer incremento
+        this.librosPedido.push({ id: libroId, cantidad: 1 });
     }
   }
 
   decrementarCantidad(libroId: number | undefined): void {
-    if (libroId === undefined) return;
-    const index = this.librosPedido.findIndex(l => l.id === libroId);
-    if (index !== -1 && this.librosPedido[index].cantidad > 1) {
+    if (!libroId) return;
+    const index = this.librosPedido.findIndex(lp => lp.id === libroId);
+    if (index > -1) {
       this.librosPedido[index].cantidad--;
+      if (this.librosPedido[index].cantidad <= 0) {
+        this.librosPedido.splice(index, 1); // Eliminar si la cantidad es 0 o menos
+      }
     }
   }
 }

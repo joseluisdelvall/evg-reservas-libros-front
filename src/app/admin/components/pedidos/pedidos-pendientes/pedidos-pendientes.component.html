@@ -180,7 +180,7 @@
                           </button>
                           <input type="number" class="form-control text-center" 
                                  [value]="getCantidadPedido(libro.id)"
-                                 (change)="actualizarCantidad(libro.id, $event)"
+                                 (input)="actualizarCantidad(libro.id, $event)"
                                  (click)="$event.stopPropagation()"
                                  min="1">
                           <button class="btn btn-outline-secondary" type="button" 

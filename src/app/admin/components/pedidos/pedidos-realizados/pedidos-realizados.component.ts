@@ -12,12 +12,14 @@ interface Pedido {
   idEditorial: string; // Coincide con el tipo en Editorial.model.ts
   editorial?: Editorial; // Para facilitar la visualización del nombre
   librosPedido?: LibroPedido[];
+  estadoPedido?: 'Pendiente' | 'Procesando' | 'Enviado' | 'Entregado' | 'Cancelado'; // Nuevo estado
 }
 
 interface LibroPedido {
   idLibro: number; // Coincide con el tipo en Libro.model.ts
   libro?: Libro; // Para facilitar la visualización del nombre
   unidades: number;
+  unidadesRecibidas?: number; // Nueva propiedad
 }
 
 @Component({
@@ -47,8 +49,12 @@ export class PedidosRealizadosComponent implements OnInit {
   modalOptions: ModalOptions = {
     title: 'Detalles del Pedido',
     modalId: 'detallePedidoModal',
-    size: 'lg',
+    size: 'xl', // Ampliamos el modal para la nueva columna
     okButton: {
+      text: 'Confirmar Recepción',
+      action: () => this.confirmarRecepcionPedido(),
+    },
+    cancelButton: {
       text: 'Cerrar'
     }
   };
@@ -71,34 +77,34 @@ export class PedidosRealizadosComponent implements OnInit {
 
     // Simular pedidos
     const pedidosSimulados: Pedido[] = [
-      { idPedido: 13, fecha: '2024-03-01', idEditorial: '1' },
-      { idPedido: 14, fecha: '2024-03-05', idEditorial: '2' },
-      { idPedido: 15, fecha: '2024-03-10', idEditorial: '3' },
-      { idPedido: 16, fecha: '2024-03-12', idEditorial: '1' },
-      { idPedido: 17, fecha: '2024-03-15', idEditorial: '4' },
+      { idPedido: 13, fecha: '2024-03-01', idEditorial: '1', estadoPedido: 'Enviado' },
+      { idPedido: 14, fecha: '2024-03-05', idEditorial: '2', estadoPedido: 'Entregado' },
+      { idPedido: 15, fecha: '2024-03-10', idEditorial: '3', estadoPedido: 'Enviado' },
+      { idPedido: 16, fecha: '2024-03-12', idEditorial: '1', estadoPedido: 'Procesando' },
+      { idPedido: 17, fecha: '2024-03-15', idEditorial: '4', estadoPedido: 'Enviado' },
     ];
 
     // Simular libros por pedido
     const librosPorPedidoSimulados: { [idPedido: number]: LibroPedido[] } = {
       13: [
-        { idLibro: 1, unidades: 6 },
-        { idLibro: 3, unidades: 8 },
+        { idLibro: 1, unidades: 6, unidadesRecibidas: 0 },
+        { idLibro: 3, unidades: 8, unidadesRecibidas: 0 },
       ],
       14: [
-        { idLibro: 7, unidades: 1 },
-        { idLibro: 9, unidades: 2 },
-        { idLibro: 13, unidades: 3 },
+        { idLibro: 7, unidades: 1, unidadesRecibidas: 1 },
+        { idLibro: 9, unidades: 2, unidadesRecibidas: 2 },
+        { idLibro: 13, unidades: 3, unidadesRecibidas: 3 },
       ],
       15: [
-        { idLibro: 8, unidades: 4 },
-        { idLibro: 10, unidades: 1 },
+        { idLibro: 8, unidades: 4, unidadesRecibidas: 0 },
+        { idLibro: 10, unidades: 1, unidadesRecibidas: 0 },
       ],
       16: [
-        { idLibro: 2, unidades: 5 },
+        { idLibro: 2, unidades: 5, unidadesRecibidas: 0 },
       ],
       17: [
-        { idLibro: 15, unidades: 2 },
-        { idLibro: 16, unidades: 1 },
+        { idLibro: 15, unidades: 2, unidadesRecibidas: 0 },
+        { idLibro: 16, unidades: 1, unidadesRecibidas: 0 },
       ]
     };
 
@@ -106,7 +112,7 @@ export class PedidosRealizadosComponent implements OnInit {
       const editorial = this.todasEditoriales.find(e => e.idEditorial === p.idEditorial);
       const librosPedido = librosPorPedidoSimulados[p.idPedido]?.map(lp => {
         const libro = todosLibros.find(l => l.id === lp.idLibro);
-        return { ...lp, libro };
+        return { ...lp, libro, unidadesRecibidas: lp.unidadesRecibidas === undefined && p.estadoPedido === 'Entregado' ? lp.unidades : (lp.unidadesRecibidas || 0) };
       }) || [];
       return { ...p, editorial, librosPedido };
     });
@@ -193,14 +199,18 @@ export class PedidosRealizadosComponent implements OnInit {
 
   seleccionarPedido(pedido: Pedido): void {
     this.isLoadingDetalles = true;
-    setTimeout(() => {
-      this.pedidoSeleccionado = pedido;
-      this.modalOptions = {
-        ...this.modalOptions,
-        title: `Detalles del Pedido #${pedido.idPedido}`
-      };
-      this.isLoadingDetalles = false;
-    }, 300);
+    this.pedidoSeleccionado = JSON.parse(JSON.stringify(pedido)); 
+    this.modalOptions = {
+      ...this.modalOptions,
+      title: `Recibir Pedido #${pedido.idPedido} (${pedido.estadoPedido || 'N/A'})`,
+      okButton: {
+        ...this.modalOptions.okButton,
+        text: 'Confirmar Recepción',
+        action: () => this.confirmarRecepcionPedido(),
+        disabled: pedido.estadoPedido === 'Entregado'
+      },
+    };
+    this.isLoadingDetalles = false;
   }
 
   limpiarSeleccion(): void {
@@ -214,6 +224,51 @@ export class PedidosRealizadosComponent implements OnInit {
 
   getPedidosPorEditorial(idEditorial: string): number {
     return this.pedidos.filter(p => p.idEditorial === idEditorial).length;
+  }
+
+  handleUnidadesRecibidasChange(item: LibroPedido, event: Event): void {
+    const inputElement = event.target as HTMLInputElement;
+    let valor = parseInt(inputElement.value, 10);
+
+    if (isNaN(valor) || valor < 0) {
+      valor = 0;
+    }
+    if (valor > item.unidades) {
+      valor = item.unidades;
+    }
+    item.unidadesRecibidas = valor;
+    inputElement.value = valor.toString(); // Actualizar el input por si se corrigió el valor
+  }
+
+  confirmarRecepcionPedido(): void {
+    if (!this.pedidoSeleccionado) return;
+
+    // Lógica para confirmar la recepción. Ejemplo:
+    // Validar que todas las unidades recibidas sean consistentes
+    let completo = true;
+    this.pedidoSeleccionado.librosPedido?.forEach(item => {
+      if ((item.unidadesRecibidas || 0) < item.unidades) {
+        completo = false;
+      }
+      // Aquí podrías actualizar el stock del libro si tienes esa lógica
+      // item.libro.stock += item.unidadesRecibidas;
+    });
+
+    const pedidoOriginal = this.pedidos.find(p => p.idPedido === this.pedidoSeleccionado!.idPedido);
+    if (pedidoOriginal) {
+      pedidoOriginal.librosPedido = JSON.parse(JSON.stringify(this.pedidoSeleccionado.librosPedido)); // Actualizar con los datos del modal
+      pedidoOriginal.estadoPedido = completo ? 'Entregado' : 'Procesando'; 
+    }
+    
+    this.toastr.success(`Pedido #${this.pedidoSeleccionado.idPedido} actualizado. Estado: ${completo ? 'Entregado' : 'Procesando'}.`, 'Recepción Confirmada');
+    // Opcional: cerrar el modal automáticamente
+    // const modalElement = document.getElementById(this.modalOptions.modalId);
+    // if (modalElement) {
+    //   const modalInstance = bootstrap.Modal.getInstance(modalElement);
+    //   modalInstance?.hide();
+    // }
+    this.pedidoSeleccionado = null; // Limpiar para cerrar modal o refrescar vista
+    this.filtrarPedidosPorEditorial(); // Refrescar lista de pedidos si es necesario
   }
 
   // En un futuro, estos métodos llamarían al servicio CrudService
