@@ -101,8 +101,11 @@ export class PedidosPendientesComponent implements OnInit {
     this.isLoadingLibros = true;
     this.crudService.getLibrosPendientesPorEditorial(this.editorialSeleccionada.idEditorial)
       .subscribe({
-        next: (data) => {
-          this.librosPendientesEditorial = data;
+        next: (data: any[]) => {
+          this.librosPendientesEditorial = data.map(libroDelBackend => ({
+            ...libroDelBackend,
+            id: libroDelBackend.idLibro
+          }));
           this.filtrarLibrosPendientes();
           this.isLoadingLibros = false;
         },
@@ -137,7 +140,7 @@ export class PedidosPendientesComponent implements OnInit {
     console.log('Libro a seleccionar:', libro); // Para debug
     
     if (!libro.id) {
-      this.toastr.warning('El libro no tiene un ID válido');
+      this.toastr.warning('El libro no tiene un ID válido' + libro.id);
       return;
     }
     
