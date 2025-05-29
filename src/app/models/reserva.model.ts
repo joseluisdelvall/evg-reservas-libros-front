@@ -25,5 +25,6 @@ export interface ReservaResponse {
     fecha: string;
     verificado: number;
     curso: number;
+    nombreCurso?: string;
     libros: LibroReserva[];
 } 

@@ -180,10 +180,12 @@ export class CrudService {
   }
 
   // Método para cambiar el estado de una reserva
-  toggleReservaEstado(id: string): void {
+  toggleReservaEstado(id: string): Observable<ReservaResponse> {
     console.log(`Toggling reserva estado for ID: ${id}`);
-    /*return this.http.put<{ status: string; data: ReservaResponse }>(this.endpoint + '/reservas/' + id + '/estado', {}).pipe(
+    console.log('✅ | 1 - crud.service.ts | toggleReservaEstado');
+    console.log(this.endpoint + '/reservas/' + id + '/estado');
+    return this.http.put<{ status: string; data: ReservaResponse }>(this.endpoint + '/reservas/' + id + '/estado', {}).pipe(
       map(response => response.data)
-    );*/
+    );
   }
 }

@@ -527,18 +527,22 @@ export class CrudComponent implements OnInit, OnDestroy, AfterViewInit {
           }
         },
         { 
-          data: 'curso',
+          data: null,
           width: '10%',
+          render: (data: any, type: any, row: ReservaResponse) => {
+            return row.curso ? row.curso : row.nombreCurso;
+          }
         },
         { 
           data: 'totalPagado',
           width: '10%',
           render: (data: any, type: any, row: ReservaResponse) => {
-            return `${data}€`;
+            return data ? `${data}€` : '';
           }
         },
         { 
-          data: '10%',
+          data: null,
+          width: '10%',
           render: (data: any, type: any, row: ReservaResponse) => {
             return `
               <div class="text-center">
@@ -546,7 +550,7 @@ export class CrudComponent implements OnInit, OnDestroy, AfterViewInit {
               </div>
             `;
           },
-        },        
+        }      
       ],
       language: {
         url: '//cdn.datatables.net/plug-ins/1.10.25/i18n/Spanish.json',
@@ -791,12 +795,40 @@ export class CrudComponent implements OnInit, OnDestroy, AfterViewInit {
       cancelButtonText: 'Cancelar'
     }).then((result) => {
       if (result.isConfirmed) {
-        this.crudService.toggleReservaEstado(reservaId);
-        this.cargarReservas();
+        this.crudService.toggleReservaEstado(reservaId).subscribe({
+          next: (reservaActualizada) => {
+            const index = this.reservas.findIndex(r => r.id === reserva.id);
+            if (index !== -1) {
+              this.reservas[index] = reservaActualizada;
+            }
+
+            this.toastr.success(
+              `Estado cambiado a ${reservaActualizada.verificado ? 'Verificado' : 'No verificado'}`,
+              'Éxito'
+            );
+
+            if (this.currentTable) {
+              this.currentTable.clear();
+              this.currentTable.rows.add(this.reservas);
+              this.currentTable.draw();
+            }
+          },
+          error: (error) => {
+            console.error('Error al cambiar el estado:', error);
+            let errorMsg = 'Error al cambiar el estado';
+
+            if (error.error && error.error.message) {
+              errorMsg = error.error.message;
+            } else if (error.message) {
+              errorMsg = error.message;
+            }
+
+            this.toastr.error(errorMsg, 'Error');
+          }
+        });
       }
     });
-  } 
-
+  }
 
   filtrarPorEstado(estado: 'todos' | 'activo' | 'inactivo'): void {
     if (!this.currentTable) return;
