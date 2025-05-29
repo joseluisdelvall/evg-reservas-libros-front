@@ -4,6 +4,7 @@ import { Libro } from 'src/app/models/libro.model';
 import { Editorial } from 'src/app/models/editorial.model';
 import { CrudService } from 'src/app/services/crud.service';
 import Swal from 'sweetalert2';
+import { PedidoService } from 'src/app/services/pedido.service';
 
 interface LibroPedido {
   id: number;
@@ -36,7 +37,8 @@ export class PedidosPendientesComponent implements OnInit {
 
   constructor(
     private crudService: CrudService,
-    private toastr: ToastrService
+    private toastr: ToastrService,
+    private pedidoService: PedidoService
   ) { }
 
   ngOnInit(): void {
@@ -102,10 +104,13 @@ export class PedidosPendientesComponent implements OnInit {
     this.crudService.getLibrosPendientesPorEditorial(this.editorialSeleccionada.idEditorial)
       .subscribe({
         next: (data: any[]) => {
-          this.librosPendientesEditorial = data.map(libroDelBackend => ({
-            ...libroDelBackend,
-            id: libroDelBackend.idLibro
-          }));
+          this.librosPendientesEditorial = data.map(libroDelBackend => {
+            const { idLibro, ...resto } = libroDelBackend;
+            return {
+              ...resto,
+              id: idLibro
+            };
+          });
           this.filtrarLibrosPendientes();
           this.isLoadingLibros = false;
         },
@@ -283,35 +288,29 @@ export class PedidosPendientesComponent implements OnInit {
   procesarPedido(): void {
     if (!this.editorialSeleccionada) return;
 
-    // Simular delay de procesamiento (2-3 segundos)
-    Swal.fire({
-      title: 'Procesando pedido',
-      html: 'Por favor, espera...',
-      allowOutsideClick: false,
-      didOpen: () => {
-        Swal.showLoading();
+    const librosParaEnviar = this.librosPedido.map(libro => ({
+      idLibro: libro.id, // Convertimos id a idLibro
+      cantidad: libro.cantidad
+    }));
+
+    const pedidoParaEnviar = {
+      idEditorial: this.editorialSeleccionada.idEditorial,
+      libros: librosParaEnviar
+    };
+
+    this.pedidoService.addPedido(pedidoParaEnviar).subscribe({
+      next: (respuesta) => {
+        this.toastr.success('¡Pedido realizado correctamente!', 'Éxito');
+        // Limpiar selección
+        this.librosPedido = [];
+        this.editorialSeleccionada = null;
+
+      },
+      error: (error) => {
+        this.toastr.error('Error al realizar el pedido', 'Error');
+        console.error('Error al realizar el pedido:', error);
       }
     });
-
-    setTimeout(() => {
-      const numeroPedido = 'PED-' + Date.now().toString().slice(-6);
-      const totalLibros = this.librosPedido.reduce((total, libro) => total + libro.cantidad, 0);
-
-      Swal.fire({
-        title: '¡Pedido Realizado!',
-        html: `
-          <div class="text-start">
-            <p><strong>Número de pedido:</strong> ${numeroPedido}</p>
-            <p><strong>Total de libros:</strong> ${totalLibros}</p>
-          </div>
-        `,
-        icon: 'success'
-      });
-
-      // Limpiar selección
-      this.librosPedido = [];
-      this.editorialSeleccionada = null;
-    }, 2500);
   }
 
   /**
