@@ -81,7 +81,10 @@
     <div class="col-md-8">
       <div class="card shadow-sm w-100" [class.disabled]="!editorialSeleccionada">
         <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center flex-wrap gap-2">
-          <h5 class="mb-0">Libros Pendientes de Pedido</h5>
+          <h5 class="mb-0">
+            <i class="fas fa-clipboard-list me-2"></i>Libros pendientes de 
+            <span *ngIf="editorialSeleccionada">{{ editorialSeleccionada.nombre }}</span>
+        </h5>
           <div class="d-flex flex-wrap gap-2 justify-content-end">
             <button 
               class="btn btn-sm btn-success" 
