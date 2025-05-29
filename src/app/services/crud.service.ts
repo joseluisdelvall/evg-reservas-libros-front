@@ -187,4 +187,36 @@ export class CrudService {
       { idLibro, idCurso }
     );
   }
+
+  /**
+   * Obtiene las editoriales que tienen libros reservados pendientes de pedir
+   */
+  getEditorialesConLibrosPendientes(): Observable<Editorial[]> {
+    return this.http.get<{ status: string; message: string; data: Editorial[] }>(
+      '/pedidos/editoriales-con-libros-pendientes'
+    ).pipe(
+      map(response => {
+        if (response.status === 'error') {
+          throw new Error(response.message);
+        }
+        return response.data || [];
+      })
+    );
+  }
+
+  /**
+   * Obtiene los libros pendientes de pedir para una editorial específica
+   */
+  getLibrosPendientesPorEditorial(idEditorial: string): Observable<Libro[]> {
+    return this.http.get<{ status: string; message: string; data: Libro[] }>(
+      `/pedidos/editoriales/${idEditorial}/libros-pendientes`
+    ).pipe(
+      map(response => {
+        if (response.status === 'error') {
+          throw new Error(response.message);
+        }
+        return response.data || [];
+      })
+    );
+  }
 }
