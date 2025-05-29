@@ -5,6 +5,7 @@ import { CrudService } from 'src/app/services/crud.service';
 import { Editorial } from 'src/app/models/editorial.model';
 import { Libro } from 'src/app/models/libro.model';
 import { ToastrService } from 'ngx-toastr';
+import { ReservaRequest } from 'src/app/models/reserva.model';
 
 @Component({
   selector: 'app-modal-editar',
@@ -23,10 +24,12 @@ export class ModalEditarComponent implements OnInit, OnChanges {
   // Formularios
   formE!: FormGroup;
   formL!: FormGroup;
+  formR!: FormGroup;
   
   // Datos de la editorial y libro
   editorial: Editorial | null = null;
   libro: Libro | null = null;
+  reserva: ReservaRequest | null = null;
   
   // Lista de editoriales para el select
   editoriales: Editorial[] = [];
@@ -50,7 +53,7 @@ export class ModalEditarComponent implements OnInit, OnChanges {
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['modo'] && changes['modo'].currentValue) {
       this.editarModalOptions = {
-        title: 'Editar ' + (this.modo === 'libros' ? 'libro' : 'editorial'),
+        title: 'Editar ' + (this.modo === 'libros' ? 'Libro' : this.modo === 'reservas' ? 'Reserva' : 'Editorial'),
         modalId: 'editar' + this.modo,
         size: 'xl',
         okButton: {
@@ -75,6 +78,8 @@ export class ModalEditarComponent implements OnInit, OnChanges {
         this.cargarDatosEditorial(changes['idEntidad'].currentValue);
       } else if (this.modo === 'libros') {
         this.cargarDatosLibro(changes['idEntidad'].currentValue);
+      } else if (this.modo === 'reservas') {
+        this.cargarDatosReserva(changes['idEntidad'].currentValue);
       }
     }
   }
@@ -124,6 +129,13 @@ export class ModalEditarComponent implements OnInit, OnChanges {
         control?.markAsUntouched();
         control?.markAsPristine();
       });
+    } else if (this.modo === 'reservas' && this.formR) {
+      // Desmarcar todos los campos como tocados para quitar los errores visuales
+      Object.keys(this.formR.controls).forEach(key => {
+        const control = this.formR.get(key);
+        control?.markAsUntouched();
+        control?.markAsPristine();
+      });
     }
     
     this.mostrandoErrores = false;
@@ -167,6 +179,8 @@ export class ModalEditarComponent implements OnInit, OnChanges {
       return this.formL?.valid || false;
     } else if (this.modo === 'editoriales') {
       return this.formE?.valid || false;
+    } else if (this.modo === 'reservas') {
+      return this.formR?.valid || false;
     }
     return false;
   }
@@ -196,6 +210,22 @@ export class ModalEditarComponent implements OnInit, OnChanges {
         Validators.pattern('^[0-9]+(\\.[0-9]{1,2})?$')
       ]]
     });
+
+    this.formR = this.fb.group({
+      id: [''],
+      nombreAlumno: ['', [Validators.required, Validators.minLength(3)]],
+      apellidosAlumno: ['', [Validators.required, Validators.minLength(3)]],
+      correo: ['', [Validators.required, Validators.email]],
+      telefono: ['', [Validators.required, Validators.pattern('^[6-9]\\d{8}$')]],
+      fecha: ['', [Validators.required]],
+      curso: ['', [Validators.required]],
+      totalPagado: ['', [
+        Validators.required,
+        Validators.min(0),
+        Validators.pattern('^[0-9]+(\\.[0-9]{1,2})?$')
+      ]],
+      verificado: [false]
+    });
   }
 
   // Método para bloquear la entrada de caracteres no numéricos en el campo de precio
@@ -210,16 +240,42 @@ export class ModalEditarComponent implements OnInit, OnChanges {
 
   // Método para comprobar si un control es inválido
   isInvalid(controlName: string): boolean {
-    const form = this.modo === 'libros' ? this.formL : this.formE;
+    let form: FormGroup;
+    switch (this.modo) {
+      case 'libros':
+        form = this.formL;
+        break;
+      case 'editoriales':
+        form = this.formE;
+        break;
+      case 'reservas':
+        form = this.formR;
+        break;
+      default:
+        return false;
+    }
     const control = form.get(controlName);
     return !!(control && control.invalid && (control.dirty || control.touched));
   }
 
   // Método para obtener el mensaje de error
   getError(controlName: string): string {
-    const form = this.modo === 'libros' ? this.formL : this.formE;
-    const control = form.get(controlName);
+    let form: FormGroup;
+    switch (this.modo) {
+      case 'libros':
+        form = this.formL;
+        break;
+      case 'editoriales':
+        form = this.formE;
+        break;
+      case 'reservas':
+        form = this.formR;
+        break;
+      default:
+        return '';
+    }
     
+    const control = form.get(controlName);
     if (!control) return '';
     
     if (control.hasError('required')) return 'Este campo es obligatorio.';
@@ -227,6 +283,8 @@ export class ModalEditarComponent implements OnInit, OnChanges {
     if (control.hasError('pattern')) {
       if (controlName === 'isbn') return 'El ISBN debe tener entre 10 y 20 caracteres (dígitos y guiones).';
       if (controlName === 'precio') return 'El precio debe ser un número con hasta 2 decimales.';
+      if (controlName === 'telefono') return 'El teléfono debe comenzar por 6 o 9 y tener 9 dígitos.';
+      if (controlName === 'totalPagado') return 'El precio debe ser un número con hasta 2 decimales.';
       return 'Formato inválido.';
     }
     if (control.hasError('min')) return `El valor mínimo es ${control.errors?.['min'].min}.`;
@@ -328,6 +386,37 @@ export class ModalEditarComponent implements OnInit, OnChanges {
       }
     });
   }
+
+  cargarDatosReserva(id: string): void {
+    this.crudService.getReservaById(id).subscribe({
+      next: (reserva: any) => {
+        this.reserva = reserva;
+        // Resetear el formulario con los datos cargados
+        this.formR.patchValue({
+          id: reserva.id,
+          nombreAlumno: reserva.nombreAlumno,
+          apellidosAlumno: reserva.apellidosAlumno,
+          correo: reserva.correo,
+          telefono: reserva.telefono,
+          fecha: reserva.fecha,
+          curso: reserva.curso,
+          totalPagado: reserva.totalPagado,
+          verificado: reserva.verificado === 1
+        });
+
+        // Marcar los campos como no tocados después de cargar los datos
+        Object.keys(this.formR.controls).forEach(key => {
+          const control = this.formR.get(key);
+          control?.markAsPristine();
+          control?.markAsUntouched();
+        });
+      },
+      error: (err: unknown) => {
+        console.error('Error al cargar los datos de la reserva:', err);
+        this.toastr.error('Error al cargar los datos de la reserva', 'Error');
+      }
+    });
+  }
   
   onSubmit(): void {
     if (this.modo === 'editoriales' && this.formE.valid && this.idEntidad) {
@@ -389,6 +478,23 @@ export class ModalEditarComponent implements OnInit, OnChanges {
           this.toastr.error('Error al actualizar el libro', 'Error');
         }
       });
+    } else if (this.modo === 'reservas' && this.formR.valid && this.idEntidad) {
+      const reservaActualizada = {
+        ...this.reserva,
+        ...this.formR.value
+      };
+
+      this.crudService.updateReserva(this.idEntidad, reservaActualizada).subscribe({
+        next: () => {
+          this.toastr.success('Reserva actualizada correctamente', 'Éxito');
+          this.entidadActualizada.emit();
+          this.mostrandoErrores = false;
+        },
+        error: (err: unknown) => {
+          console.error('Error al actualizar la reserva:', err);
+          this.toastr.error('Error al actualizar la reserva', 'Error');
+        }
+      });
     } else {
       // Si el formulario no es válido, marcar todos los campos como tocados para mostrar errores
       if (this.modo === 'libros') {
@@ -432,6 +538,11 @@ export class ModalEditarComponent implements OnInit, OnChanges {
             this.mostrandoErrores = false;
           }, 3000);
         }
+      } else if (this.modo === 'reservas') {
+        Object.keys(this.formR.controls).forEach(key => {
+          const control = this.formR.get(key);
+          control?.markAsTouched();
+        });
       }
     }
   }
