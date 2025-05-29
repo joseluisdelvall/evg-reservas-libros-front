@@ -243,6 +243,16 @@ export class PedidosRealizadosComponent implements OnInit {
   confirmarRecepcionPedido(): void {
     if (!this.pedidoSeleccionado) return;
 
+    const datosParaLog = {
+      idEditorial: this.pedidoSeleccionado.idEditorial,
+      idPedido: this.pedidoSeleccionado.idPedido,
+      librosRecibidos: this.pedidoSeleccionado.librosPedido?.map(item => ({
+        idLibro: item.libro?.id, // Asumiendo que el id del libro está en item.libro.idLibro
+        cantidadRecibida: item.unidadesRecibidas || 0
+      })) || []
+    };
+    console.log('Datos de recepción de pedido:', datosParaLog);
+
     // Lógica para confirmar la recepción. Ejemplo:
     // Validar que todas las unidades recibidas sean consistentes
     let completo = true;
@@ -260,15 +270,13 @@ export class PedidosRealizadosComponent implements OnInit {
       pedidoOriginal.estadoPedido = completo ? 'Entregado' : 'Procesando'; 
     }
     
+    
+
     this.toastr.success(`Pedido #${this.pedidoSeleccionado.idPedido} actualizado. Estado: ${completo ? 'Entregado' : 'Procesando'}.`, 'Recepción Confirmada');
-    // Opcional: cerrar el modal automáticamente
-    // const modalElement = document.getElementById(this.modalOptions.modalId);
-    // if (modalElement) {
-    //   const modalInstance = bootstrap.Modal.getInstance(modalElement);
-    //   modalInstance?.hide();
-    // }
     this.pedidoSeleccionado = null; // Limpiar para cerrar modal o refrescar vista
     this.filtrarPedidosPorEditorial(); // Refrescar lista de pedidos si es necesario
+
+    
   }
 
   // En un futuro, estos métodos llamarían al servicio CrudService
