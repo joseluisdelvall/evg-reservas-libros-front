@@ -84,11 +84,22 @@ export class PedidosPendientesComponent implements OnInit {
    * Selecciona una editorial y carga sus libros pendientes
    */
   seleccionarEditorial(editorial: Editorial): void {
-    this.editorialSeleccionada = editorial;
-    this.librosPedido = []; // Limpiar selección anterior
-    this.busquedaLibro = ''; // Limpiar búsqueda anterior
-    
-    this.cargarLibrosPendientesEditorial();
+    this.crudService.getEditorialById(editorial.idEditorial!).subscribe({
+      next: (editorialCompleta) => {
+        this.editorialSeleccionada = editorialCompleta;
+        this.librosPedido = [];
+        this.busquedaLibro = '';
+        this.cargarLibrosPendientesEditorial();
+      },
+      error: (error) => {
+        this.toastr.error('No se pudo cargar la editorial completa', 'Error');
+        // Si falla, al menos asigna el objeto básico
+        this.editorialSeleccionada = editorial;
+        this.librosPedido = [];
+        this.busquedaLibro = '';
+        this.cargarLibrosPendientesEditorial();
+      }
+    });
   }
 
   /**
@@ -221,13 +232,13 @@ export class PedidosPendientesComponent implements OnInit {
       return `<div class="libro-pedido-item">${libro?.nombre} - ${libroPedido.cantidad} unidades</div>`;
     }).join('');
 
-    const correosHtml = this.editorialSeleccionada.correos && this.editorialSeleccionada.correos.length > 0 ?
-      `<p><strong>Correos:</strong><br>${this.editorialSeleccionada.correos.map(correo => 
-        `<span class="ms-3">• ${correo}</span>`).join('<br>')}</p>` : '';
+    const correosHtml = this.editorialSeleccionada.correos && this.editorialSeleccionada.correos.length > 0
+      ? `<p><strong>Correos:</strong><br>${this.editorialSeleccionada.correos.map(correo => `<span class='ms-3'>• ${correo}</span>`).join('<br>')}</p>`
+      : '';
 
-    const telefonosHtml = this.editorialSeleccionada.telefonos && this.editorialSeleccionada.telefonos.length > 0 ?
-      `<p><strong>Teléfonos:</strong><br>${this.editorialSeleccionada.telefonos.map(telefono => 
-        `<span class="ms-3">• ${telefono}</span>`).join('<br>')}</p>` : '';
+    const telefonosHtml = this.editorialSeleccionada.telefonos && this.editorialSeleccionada.telefonos.length > 0
+      ? `<p><strong>Teléfonos:</strong><br>${this.editorialSeleccionada.telefonos.map(telefono => `<span class='ms-3'>• ${telefono}</span>`).join('<br>')}</p>`
+      : '';
 
     Swal.fire({
       title: 'Información del Pedido',
@@ -237,7 +248,6 @@ export class PedidosPendientesComponent implements OnInit {
           <p><strong>Nombre:</strong> ${this.editorialSeleccionada.nombre}</p>
           ${correosHtml}
           ${telefonosHtml}
-          
           <h6 class="mt-4 mb-3">Libros a Pedir</h6>
           <div style="max-height: 200px; overflow-y: auto; text-align: left; font-size: 14px;">
             ${librosInfo}
