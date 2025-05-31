@@ -489,6 +489,7 @@ export class CrudComponent implements OnInit, OnDestroy, AfterViewInit {
             return `
               <div class="text-center">
                 <i class="fas fa-edit puntero" style="color: blue;" data-bs-toggle="modal" data-bs-target="#editarreservas"></i>
+                <i class="fas fa-trash-alt ms-2 puntero" style="color: red;" data-id="${row.id}"></i>
               </div>
             `;
           },
@@ -592,6 +593,11 @@ export class CrudComponent implements OnInit, OnDestroy, AfterViewInit {
         $('.fa-edit').off('click').on('click', (event: any) => {
           const rowData = this.currentTable.row($(event.currentTarget).closest('tr')).data();
           this.seleccionarReserva(rowData);
+        });
+
+        $('.fa-trash-alt').off('click').on('click', (event: any) => {
+          const rowData = this.currentTable.row($(event.currentTarget).closest('tr')).data();
+          this.anularReserva(rowData, event);
         });
         
         $('.fa-book-open').off('click').on('click', (event: any) => {
@@ -824,6 +830,34 @@ export class CrudComponent implements OnInit, OnDestroy, AfterViewInit {
             }
 
             this.toastr.error(errorMsg, 'Error');
+          }
+        });
+      }
+    });
+  }
+
+  anularReserva(reserva: ReservaResponse, event: Event): void {
+    event.stopPropagation(); // Prevent other click events
+
+    Swal.fire({
+      title: 'Confirmar anulación',
+      html: `¿Estás seguro de anular la reserva de <strong>${reserva.nombreAlumno}</strong>?`,
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Sí, anular',
+      cancelButtonText: 'Cancelar'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.crudService.anularReserva(reserva.id.toString()).subscribe({
+          next: () => {
+            this.toastr.success('Reserva anulada correctamente', 'Éxito');
+            this.cargarReservas();
+          },
+          error: (error) => {
+            this.toastr.error('Error al anular la reserva', 'Error');
+            console.error('Error al anular la reserva:', error);
           }
         });
       }

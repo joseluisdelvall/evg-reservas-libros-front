@@ -133,6 +133,13 @@ export class CrudService {
     );
   }
 
+  // Método para anular una reserva
+  anularReserva(id: string): Observable<ReservaResponse> {
+    return this.http.put<{ status: string; data: ReservaResponse }>(this.endpoint + '/reservas/' + id + '/anular', {}).pipe(
+      map(response => response.data)
+    );
+  }
+
   // Método para cambiar el estado de una editorial
   toggleEditorialEstado(id: string): Observable<Editorial> {
     console.log(`Toggling editorial estado for ID: ${id}`);
