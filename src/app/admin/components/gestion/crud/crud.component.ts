@@ -646,9 +646,11 @@ export class CrudComponent implements OnInit, OnDestroy, AfterViewInit {
       
       // Si el valor de búsqueda es exactamente "activo" o "inactivo"
       if (searchValue.trim().toLowerCase() === 'activo' || searchValue.trim().toLowerCase() === 'inactivo') {
-        const rowData = this.currentTable.row(dataIndex).data();
+        const row = this.currentTable.row(dataIndex);
+        if (!row) return false;
+        const rowData = row.data();
+        if (!rowData) return false;
         const estadoFila = rowData.estado ? 'activo' : 'inactivo';
-        
         return estadoFila === searchValue.trim().toLowerCase();
       }
       
