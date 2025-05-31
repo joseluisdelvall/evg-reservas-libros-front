@@ -5,7 +5,8 @@ import { CrudService } from 'src/app/services/crud.service';
 import { Libro } from 'src/app/models/libro.model';
 import { Editorial } from 'src/app/models/editorial.model';
 import { ToastrService } from 'ngx-toastr';
-
+import { Etapa } from 'src/app/models/etapa.model';
+import { EtapaService } from 'src/app/services/etapa.service';
 @Component({
   selector: 'app-modal-nuevo',
   templateUrl: './modal-nuevo.component.html',
@@ -22,16 +23,19 @@ export class ModalNuevoComponent implements OnInit, OnChanges {
   formL!: FormGroup;
   formE!: FormGroup;
   editoriales: Editorial[] = [];
+  etapas: Etapa[] = [];
   mostrandoErrores: boolean = false;
 
   constructor(
     private formBuilder: FormBuilder,
     private crudService: CrudService,
+    private etapaService: EtapaService,
     private toastr: ToastrService
   ) { }
 
   ngOnInit(): void {
     this.cargarEditoriales();
+    this.cargarEtapas();
     this.configurarModalCierreCondicional();
     this.configurarReseteoFormularioAlCerrar();
   }
@@ -159,7 +163,8 @@ export class ModalNuevoComponent implements OnInit, OnChanges {
           Validators.required, 
           Validators.min(1),
           Validators.pattern('^[0-9]+(\\.[0-9]{1,2})?$')
-        ]]
+        ]],
+        etapa: [null, Validators.required]
       }); 
     } else if (this.modo === 'editoriales') {
       this.formE = this.formBuilder.group({
@@ -260,6 +265,19 @@ export class ModalNuevoComponent implements OnInit, OnChanges {
     });
   }
 
+  cargarEtapas(): void {
+    this.etapaService.getEtapas().subscribe({
+      next: (data: Etapa[]) => {
+        this.etapas = data;
+      },
+      error: (error) => {
+        console.error('Error al cargar las etapas:', error);
+        this.toastr.error('Error al cargar las etapas', 'Error');
+      }
+    });
+  }
+  
+
   onSubmit(): void {
     if (this.modo === 'libros') {
       if (this.formL.valid) {
@@ -269,7 +287,10 @@ export class ModalNuevoComponent implements OnInit, OnChanges {
           editorial: {
             idEditorial: this.formL.value.editorial
           } as Editorial,
-          precio: this.formL.value.precio
+          precio: this.formL.value.precio,
+          etapa: {
+            id: this.formL.value.etapa
+          } as Etapa
         };
 
         this.crudService.addLibro(libroData).subscribe({
