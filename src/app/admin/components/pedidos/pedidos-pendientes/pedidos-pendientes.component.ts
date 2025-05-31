@@ -229,7 +229,7 @@ export class PedidosPendientesComponent implements OnInit {
 
     const librosInfo = this.librosPedido.map(libroPedido => {
       const libro = this.librosPendientesEditorial.find(l => l.id === libroPedido.id);
-      return `<div class="libro-pedido-item">${libro?.nombre} - ${libroPedido.cantidad} unidades</div>`;
+      return `<div class="libro-pedido-item">${libro?.nombre} (${libro?.isbn}) - ${libroPedido.cantidad} unidades</div>`;
     }).join('');
 
     const correosHtml = this.editorialSeleccionada.correos && this.editorialSeleccionada.correos.length > 0
