@@ -304,7 +304,8 @@ export class PedidosPendientesComponent implements OnInit {
         // Limpiar selección
         this.librosPedido = [];
         this.editorialSeleccionada = null;
-
+        // Refrescar la lista de editoriales automáticamente
+        this.cargarDatos();
       },
       error: (error) => {
         this.toastr.error('Error al realizar el pedido', 'Error');
