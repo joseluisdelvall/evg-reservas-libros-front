@@ -119,12 +119,12 @@
 
     <!-- Reservas -->
     <div *ngIf="modo === 'reservas' && librosReserva">
-        <div class="row">
-            <div *ngFor="let libro of librosReserva" class="col-md-6 mb-4">
+        <div class="row row-cols-1 row-cols-lg-2 g-4">
+            <div *ngFor="let libro of librosReserva" class="col">
                 <div class="card h-100 shadow-sm hover-card">
                     <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
-                        <h5 class="mb-0">{{ libro.nombre }}</h5>
-                        <span class="badge bg-light text-dark">
+                        <h5 class="mb-0 text-truncate pe-2">{{ libro.nombre }}</h5>
+                        <span class="badge bg-light text-dark flex-shrink-0">
                             <i class="fas" [ngClass]="{
                                 'fa-question-circle text-warning': libro.estado === 'Sin Verificar',
                                 'fa-clock text-info': libro.estado === 'Pendiente de pedir',
@@ -133,29 +133,37 @@
                                 'fa-check-circle text-success': libro.estado === 'Recogido',
                                 'fa-times-circle text-danger': libro.estado === 'Anulado'
                             }"></i>
-                            {{ libro.estado }}
+                            <span class="d-none d-sm-inline ms-1">{{ libro.estado }}</span>
                         </span>
                     </div>
-                    <div class="card-body">
-                        <div class="d-flex align-items-center mb-3">
-                            <i class="fas fa-barcode me-2 text-blue-primary"></i>
-                            <div>
-                                <small class="text-muted d-block">ISBN</small>
-                                <strong>{{ libro.isbn }}</strong>
+                    <div class="card-body p-3">
+                        <div class="row g-3">
+                            <div class="col-12">
+                                <div class="d-flex align-items-center p-2 bg-light rounded">
+                                    <i class="fas fa-barcode me-3 text-primary flex-shrink-0"></i>
+                                    <div class="w-100">
+                                        <small class="text-muted d-block">ISBN</small>
+                                        <strong class="text-truncate d-block">{{ libro.isbn }}</strong>
+                                    </div>
+                                </div>
                             </div>
-                        </div>
-                        <div class="d-flex align-items-center mb-3">
-                            <i class="fas fa-building me-2 text-blue-primary"></i>
-                            <div>
-                                <small class="text-muted d-block">Editorial</small>
-                                <strong>{{ libro.editorial }}</strong>
+                            <div class="col-12">
+                                <div class="d-flex align-items-center p-2 bg-light rounded">
+                                    <i class="fas fa-building me-3 text-primary flex-shrink-0"></i>
+                                    <div class="w-100">
+                                        <small class="text-muted d-block">Editorial</small>
+                                        <strong class="text-truncate d-block">{{ libro.editorial }}</strong>
+                                    </div>
+                                </div>
                             </div>
-                        </div>
-                        <div class="d-flex align-items-center">
-                            <i class="fas fa-euro-sign me-2 text-blue-primary"></i>
-                            <div>
-                                <small class="text-muted d-block">Precio de compra</small>
-                                <strong>{{ libro.precio }} €</strong>
+                            <div class="col-12">
+                                <div class="d-flex align-items-center p-2 bg-light rounded">
+                                    <i class="fas fa-euro-sign me-3 text-primary flex-shrink-0"></i>
+                                    <div class="w-100">
+                                        <small class="text-muted d-block">Precio de compra</small>
+                                        <strong>{{ libro.precio }} €</strong>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
