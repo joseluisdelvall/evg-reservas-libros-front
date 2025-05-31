@@ -132,9 +132,14 @@
                                     <small class="d-block text-muted">
                                         <i class="fas fa-calendar-alt me-1"></i>{{ pedido.fecha | date:'dd/MM/yyyy' }}
                                     </small>
-                                    <span class="badge bg-info mt-2">
-                                        {{ pedido.librosPedido?.length || 0 }} libro(s)
-                                    </span>
+                                    <div class="mt-2">
+                                        <span class="badge bg-info me-2">
+                                            {{ pedido.numLibros || 0 }} libro(s)
+                                        </span>
+                                        <span class="badge" [ngClass]="getEstadoBadgeClass(pedido.estado || '')">
+                                            {{ getEstadoTexto(pedido.estado || '') }}
+                                        </span>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -175,7 +180,7 @@
                     <p class="mb-0 d-flex align-items-center">
                         <i class="fas fa-book me-2"></i>
                         <strong class="me-2">Total de libros:</strong>
-                        <span>{{ pedidoSeleccionado.librosPedido?.length || 0 }}</span>
+                        <span>{{ pedidoSeleccionado.numLibros || 0 }}</span>
                     </p>
                 </div>
             </div>
@@ -189,8 +194,10 @@
                         <th>#</th>
                         <th>Libro</th>
                         <th>ISBN</th>
-                        <th class="text-center">Cant. Pedido</th>
-                        <th class="text-center">Cant. Recibida</th>
+                        <th class="text-center" style="width: 10%;">Cant. Pedido</th>
+                        <th class="text-center" style="width: 15%;">Cant. Ya Recibida</th>
+                        <th class="text-center" style="width: 12%;">Cant. Restante</th>
+                        <th class="text-center" style="width: 12%;">Cant. Recibida</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -199,15 +206,17 @@
                         <td>{{ item.libro?.nombre || 'Nombre no disponible' }}</td>
                         <td>{{ item.libro?.isbn || 'N/A' }}</td>
                         <td class="text-center">{{ item.unidades }}</td>
+                        <td class="text-center">{{ item.unidadesRecibidas || 0 }}</td>
+                        <td class="text-center">{{ item.unidades - (item.unidadesRecibidas || 0) }}</td>
                         <td class="text-center">
                             <input 
                                 type="number" 
                                 class="form-control form-control-sm text-center w-75 mx-auto" 
-                                [value]="item.unidadesRecibidas || 0"
-                                (input)="handleUnidadesRecibidasChange(item, $event)"
-                                [max]="item.unidades"
+                                [value]="0"
+                                [max]="item.unidades - (item.unidadesRecibidas || 0)"
                                 min="0"
-                                [disabled]="pedidoSeleccionado.estadoPedido === 'Entregado'">
+                                (input)="handleUnidadesRecibidasChange(item, $event)"
+                                [disabled]="pedidoSeleccionado.estadoPedido === 'Entregado' || (item.unidadesRecibidas || 0) >= item.unidades">
                         </td>
                     </tr>
                 </tbody>
