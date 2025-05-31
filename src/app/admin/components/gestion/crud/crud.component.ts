@@ -493,7 +493,7 @@ export class CrudComponent implements OnInit, OnDestroy, AfterViewInit {
               </div>
             `;
           },
-          width: '100px'
+          width: '8%'
         },
         { 
           data: 'nombreAlumno',
