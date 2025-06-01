@@ -167,6 +167,12 @@
                             </div>
                         </div>
                     </div>
+                    <div class="card-footer bg-transparent border-top-0" *ngIf="libro.estado !== 'Anulado' && libro.estado !== 'Recogido'">
+                        <button class="btn btn-outline-danger w-100" (click)="anularLibro(libro)">
+                            <i class="fas fa-ban me-2"></i>
+                            Anular Libro
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>

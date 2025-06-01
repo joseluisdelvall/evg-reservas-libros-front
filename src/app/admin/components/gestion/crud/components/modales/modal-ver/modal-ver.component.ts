@@ -230,4 +230,33 @@ export class ModalVerComponent implements OnInit, OnChanges {
       }
     });
   }
+
+  // Método para anular un libro
+  anularLibro(libro: Libro): void {
+    console.log('Anular libro: ' + libro.id);
+    Swal.fire({
+      title: 'Confirmar anulación',
+      html: `¿Estás seguro de anular el libro <strong>${libro.nombre}</strong>?`,
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Sí, anular',
+      cancelButtonText: 'Cancelar'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.crudService.anularLibro(libro.id, this.idEntidad).subscribe({
+        next: () => {
+          this.toastr.success('Libro anulado correctamente', 'Éxito');
+          this.recargarDatos();
+        },
+        error: (error) => {
+          console.error('Error al anular el libro:', error);
+          this.toastr.error('Error al anular el libro', 'Error');
+        }
+      });
+      }
+    });
+  }
+  
 }

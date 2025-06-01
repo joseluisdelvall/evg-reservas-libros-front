@@ -57,6 +57,13 @@ export class CrudService {
     );
   }
 
+  // Método para anular un libro
+  anularLibro(id: any, idEntidad: any): Observable<Libro> {
+    return this.http.put<{ status: string; data: Libro }>(this.endpoint + '/libros/' + id + '/anular/' + idEntidad, {}).pipe(
+      map(response => response.data)
+    );
+  }
+
   // Método para obtener un libro por su ID de reserva
   getLibroByReservaId(id: string): Observable<Libro> {
     return this.http.get<{ status: string; data: Libro }>(this.endpoint + `/reservas/${id}/libros`).pipe(
