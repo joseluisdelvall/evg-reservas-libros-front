@@ -1040,7 +1040,7 @@ export class CrudComponent implements OnInit, OnDestroy, AfterViewInit {
       },
       error: (error) => {
         console.error('Error al obtener el justificante:', error);
-        alert('No se pudo cargar el justificante. Por favor, inténtelo de nuevo.');
+        this.toastr.error('No se pudo cargar el justificante. Por favor, inténtelo de nuevo.');
       }
     });
   }
