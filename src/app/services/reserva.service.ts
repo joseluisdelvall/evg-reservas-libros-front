@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { catchError, map, switchMap } from 'rxjs/operators';
 import { BaseService } from './base.service';
@@ -71,17 +71,8 @@ export class ReservaService extends BaseService {
         // Log para depuración
         console.log('Datos enviados al servidor (formato Postman):', JSON.stringify(datosPostman));
         
-        // Configurar cabeceras para JSON
-        const headers = new HttpHeaders({
-          'Content-Type': 'application/json'
-        });
-        
-        // Enviar como JSON puro
-        return this.http.post(`${this.apiBaseUrl}${this.endpoint}`, datosPostman, { 
-          headers, 
-          responseType: 'text' 
-        })
-        .pipe(
+        // Usar el método post del BaseService con responseType text para manejar respuestas HTML
+        return this.postWithTextResponse<string>(this.endpoint, datosPostman).pipe(
           map(responseText => this.handleApiResponse<ReservaResponse>(
             responseText, 
             this.createMockResponse(reserva)
@@ -112,4 +103,4 @@ export class ReservaService extends BaseService {
       libros: []
     };
   }
-} 
+}

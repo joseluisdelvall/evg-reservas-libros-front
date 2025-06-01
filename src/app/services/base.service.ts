@@ -148,6 +148,16 @@ export class BaseService {
     );
   }
 
+  public postWithTextResponse<T>(endpoint: string, body: any): Observable<T> {
+    return this.http.post(`${this.apiBaseUrl}${endpoint}`, body, {
+      headers: this.getHeaders(),
+      responseType: 'text'
+    }).pipe(
+      map(response => response as unknown as T),
+      catchError(error => this.handleError<T>(error))
+    );
+  }
+
   public put<T>(endpoint: string, body: any): Observable<T> {
     return this.http.put<T>(`${this.apiBaseUrl}${endpoint}`, body, {
       headers: this.getHeaders()
@@ -163,4 +173,4 @@ export class BaseService {
       catchError(error => this.handleError<T>(error))
     );
   }
-} 
+}
