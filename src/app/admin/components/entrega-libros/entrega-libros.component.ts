@@ -25,6 +25,7 @@ export class EntregaLibrosComponent implements OnInit {
   reservasPorPagina: number = 6;
   mostrarModalConfirmacion: boolean = false;
   cargando: boolean = false;
+  procesandoEntrega: boolean = false;
 
   constructor(
     private toastr: ToastrService,
@@ -157,12 +158,59 @@ export class EntregaLibrosComponent implements OnInit {
       this.toastr.warning('Selecciona al menos un libro para entregar.', 'Aviso');
       return;
     }
-    // Simular entrega marcando fechaRecogida con fecha actual
-    this.librosEntrega.forEach(l => {
-      if (l.entregado) l.libro.fechaRecogida = new Date().toISOString().split('T')[0];
-    });
+
+    if (!this.reservaSeleccionada) {
+      this.toastr.error('No hay reserva seleccionada.', 'Error');
+      return;
+    }
+
+    // Obtener los IDs de los libros a entregar
+    const librosAEntregar = this.librosEntrega
+      .filter(l => l.entregado)
+      .map(l => l.libro.idLibro);
+
+    this.procesandoEntrega = true;
     this.cerrarModalConfirmacion();
-    this.toastr.success(`¡Entrega registrada! Se han entregado ${entregados} libro(s).`, 'Éxito');
+
+    // Llamar al endpoint para entregar los libros
+    this.reservaService.entregarLibros(this.reservaSeleccionada.idReserva, librosAEntregar)
+      .subscribe({
+        next: (response) => {
+          this.procesandoEntrega = false;
+          
+          // Actualizar el estado local de los libros entregados
+          this.librosEntrega.forEach(l => {
+            if (l.entregado) {
+              l.libro.fechaRecogida = new Date().toISOString().split('T')[0];
+              l.entregado = false; // Reset selection
+            }
+          });
+
+          // Actualizar también en la reserva original para que se refleje en la lista
+          if (this.reservaSeleccionada) {
+            this.reservaSeleccionada.libros.forEach(libro => {
+              if (librosAEntregar.includes(libro.idLibro)) {
+                libro.fechaRecogida = new Date().toISOString().split('T')[0];
+              }
+            });
+          }
+
+          this.toastr.success(`¡Entrega registrada correctamente! Se han entregado ${entregados} libro(s).`, 'Éxito');
+        },
+        error: (error) => {
+          this.procesandoEntrega = false;
+          console.error('Error al entregar libros:', error);
+          
+          let mensajeError = 'Error al registrar la entrega.';
+          if (error.error && error.error.message) {
+            mensajeError = error.error.message;
+          } else if (error.message) {
+            mensajeError = error.message;
+          }
+          
+          this.toastr.error(mensajeError, 'Error');
+        }
+      });
   }
 
   limpiarSeleccion() {
@@ -172,6 +220,11 @@ export class EntregaLibrosComponent implements OnInit {
 
   todosEntregados(): boolean {
     return this.librosEntrega.length > 0 && this.librosEntrega.every(l => l.libro.fechaRecogida !== null);
+  }
+
+  // Verificar si hay libros seleccionados para entregar
+  hayLibrosSeleccionados(): boolean {
+    return this.librosEntrega.some(l => l.entregado);
   }
 
   getNombreCurso(idCurso: string | number): string {

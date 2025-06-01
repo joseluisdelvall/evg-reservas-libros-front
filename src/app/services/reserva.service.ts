@@ -41,7 +41,7 @@ export class ReservaService {
   constructor(private http: BaseService) {}
 
   obtenerReservas(): Observable<ModelReservaResponse[]> {
-    return this.http.get<any>(this.endpoint).pipe(
+    return this.http.get<any>(this.endpoint + '/entregas').pipe(
       map(response => {
         if (response && response.status === 'success' && response.data) {
           return response.data;
@@ -51,6 +51,24 @@ export class ReservaService {
       catchError(error => {
         console.error('Error al obtener reservas:', error);
         return [];
+      })
+    );
+  }
+
+  entregarLibros(idReserva: number, librosIds: number[]): Observable<any> {
+    const url = `/reserva/${idReserva}/entregar-libros`;
+    const body = { libros: librosIds };
+    
+    return this.http.post<any>(url, body).pipe(
+      map(response => {
+        if (response && response.status === 'success') {
+          return response;
+        }
+        return response;
+      }),
+      catchError(error => {
+        console.error('Error al entregar libros:', error);
+        throw error;
       })
     );
   }

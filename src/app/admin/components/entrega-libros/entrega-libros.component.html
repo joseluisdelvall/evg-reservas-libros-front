@@ -127,8 +127,12 @@
             </table>
           </div>
           <div class="mt-3 d-flex flex-wrap gap-2">
-            <button class="btn btn-success" (click)="abrirModalConfirmacion()" [disabled]="todosEntregados()">
-              <i class="fas fa-check me-2"></i>Confirmar Entrega
+            <button class="btn btn-success" 
+                    (click)="abrirModalConfirmacion()" 
+                    [disabled]="todosEntregados() || !hayLibrosSeleccionados() || procesandoEntrega">
+              <span *ngIf="procesandoEntrega" class="spinner-border spinner-border-sm me-2" role="status"></span>
+              <i *ngIf="!procesandoEntrega" class="fas fa-check me-2"></i>
+              {{ procesandoEntrega ? 'Procesando...' : 'Confirmar Entrega' }}
             </button>
           </div>
           <div *ngIf="mensajeExito" class="alert alert-info mt-3">{{ mensajeExito }}</div>
@@ -147,10 +151,23 @@
         </div>
         <div class="modal-body">
           <p>¿Estás seguro de que quieres registrar la entrega de los libros seleccionados?</p>
+          <div class="alert alert-info small mb-0">
+            <strong>Libros a entregar:</strong>
+            <ul class="mb-0 mt-2">
+              <ng-container *ngFor="let item of librosEntrega">
+                <li *ngIf="item.entregado">
+                  {{ item.libro.nombre }}
+                </li>
+              </ng-container>
+            </ul>
+          </div>
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" (click)="cerrarModalConfirmacion()">Cancelar</button>
-          <button type="button" class="btn btn-success" (click)="confirmarEntrega()">Confirmar</button>
+          <button type="button" class="btn btn-success" (click)="confirmarEntrega()" [disabled]="procesandoEntrega">
+            <span *ngIf="procesandoEntrega" class="spinner-border spinner-border-sm me-2" role="status"></span>
+            {{ procesandoEntrega ? 'Procesando...' : 'Confirmar' }}
+          </button>
         </div>
       </div>
     </div>
