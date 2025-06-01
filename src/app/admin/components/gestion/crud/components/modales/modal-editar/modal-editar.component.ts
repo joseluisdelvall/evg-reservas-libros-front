@@ -480,8 +480,10 @@ export class ModalEditarComponent implements OnInit, OnChanges {
       });
     } else if (this.modo === 'reservas' && this.formR.valid && this.idEntidad) {
       const reservaActualizada = {
-        ...this.reserva,
-        ...this.formR.value
+        nombreAlumno: this.formR.value.nombreAlumno,
+        apellidosAlumno: this.formR.value.apellidosAlumno,
+        correo: this.formR.value.correo,
+        telefono: this.formR.value.telefono
       };
 
       this.crudService.updateReserva(this.idEntidad, reservaActualizada).subscribe({

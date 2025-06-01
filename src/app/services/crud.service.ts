@@ -122,7 +122,7 @@ export class CrudService {
   }
 
   // Método para actualizar una reserva
-  updateReserva(id: string, reserva: ReservaResponse): Observable<ReservaResponse> {
+  updateReserva(id: string, reserva: any): Observable<ReservaResponse> {
     console.log('✅ | 1 - crud.service.ts | updateReserva');
     console.log(reserva);
     console.log(this.endpoint + '/reservas/' + id);

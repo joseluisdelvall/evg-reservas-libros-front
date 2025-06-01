@@ -1,4 +1,5 @@
 <app-modal-content [options]="editarModalOptions" (okButtonClicked)="onSubmit()">
+    <!-- Libros -->
     <form *ngIf="modo === 'libros'" [formGroup]="formL">
         <div class="form-group my-2">
             <label for="bookName" class="fw-bold">Nombre*</label>
@@ -41,6 +42,7 @@
             </div>
         </div>
     </form>
+    <!-- Editoriales -->
     <form *ngIf="modo === 'editoriales'" [formGroup]="formE">
         <div class="form-group my-2">
             <label for="editorialName" class="fw-bold">Nombre*</label>
@@ -112,6 +114,7 @@
             </div>
         </div>
     </form>
+    <!-- Reservas -->
     <form *ngIf="modo === 'reservas'" [formGroup]="formR" class="row g-3">
         <!-- Datos personales -->
         <div class="col-md-6">
