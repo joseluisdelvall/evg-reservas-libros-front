@@ -190,27 +190,51 @@ export class FormReservaComponent implements OnInit {
   }  
 
   listenCursoChanges() {
-    this.reservaForm.get('curso')?.valueChanges.subscribe(cursoId => { // cursoId en lugar de curso
+    this.reservaForm.get('curso')?.valueChanges.subscribe(cursoId => {
       const librosControl = this.reservaForm.get('librosSeleccionados');
-      
-      // Limpiar validadores y valor
+      const nombreTutorControl = this.reservaForm.get('nombreTutor');
+      const apellidosTutorControl = this.reservaForm.get('apellidosTutor');
+  
       librosControl?.clearValidators();
-      librosControl?.setValue([]); // Resetear a un array vacío
-      this.librosSeleccionados = []; // También limpiar el array local
-      this.calcularTotalAPagar(); // Recalcular total (debería ser 0)
-      
-      if (cursoId) { // Comprobar si cursoId tiene valor
-        this.loadLibrosByCurso(cursoId.toString()); // Asegurarse que cursoId es string
+      librosControl?.setValue([]);
+      this.librosSeleccionados = [];
+      this.calcularTotalAPagar();
+  
+      if (cursoId) {
+        const cursoSeleccionado = this.cursos.find(c => c.id === cursoId);
+        const esInfantil = cursoSeleccionado?.nombre.toLowerCase().includes('infantil');
+  
+        // Validación condicional para los tutores
+        if (esInfantil) {
+          nombreTutorControl?.setValidators([Validators.required, Validators.minLength(3)]);
+          apellidosTutorControl?.setValidators([Validators.required, Validators.minLength(3)]);
+        } else {
+          nombreTutorControl?.clearValidators();
+          apellidosTutorControl?.clearValidators();
+        }
+  
+        nombreTutorControl?.updateValueAndValidity();
+        apellidosTutorControl?.updateValueAndValidity();
+  
+        this.loadLibrosByCurso(cursoId.toString());
         librosControl?.enable();
         librosControl?.setValidators(this.minLibroSeleccionado(1));
       } else {
         this.libros = [];
         this.mostrarLibros = false;
         librosControl?.disable();
+  
+        // Limpiar validadores del tutor si no hay curso seleccionado
+        nombreTutorControl?.clearValidators();
+        apellidosTutorControl?.clearValidators();
+        nombreTutorControl?.updateValueAndValidity();
+        apellidosTutorControl?.updateValueAndValidity();
       }
+  
       librosControl?.updateValueAndValidity();
     });
   }
+  
 
   // Validador personalizado para asegurar que al menos X libros estén seleccionados
   minLibroSeleccionado(min: number) {
