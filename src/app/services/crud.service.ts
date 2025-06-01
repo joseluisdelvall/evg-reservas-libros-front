@@ -154,37 +154,43 @@ export class CrudService {
   /**
    * Obtiene los libros asignados a un curso específico
    */
-  getLibrosByCurso(cursoId: string): Observable<any[]> {
-    return this.http.get<{ status: string; data: any[] }>(`/libros-cursos/curso/${cursoId}`).pipe(
-      map(response => {
-        if (response.status === 'warning') {
-          return []; // Si no hay libros asignados, devolver array vacío
-        }
-        return response.data || [];
-      })
-    );
+  getLibrosByCurso(cursoId: string): Observable<{ status: string; data: any[] }> {
+    return this.http.get<{ status: string; data: any[] }>(`/libros/curso/${cursoId}`);
   }
 
   /**
    * Asigna un libro a un curso
    */
-  asignarLibroACurso(idLibro: number, idCurso: string): Observable<any> {
+  asignarLibroACurso(idLibro: number, idCurso: number): Observable<any> {
+    // Convertir idCurso a number si viene como string
+    const cursoId = typeof idCurso === 'string' ? parseInt(idCurso, 10) : idCurso;
+    
+    // Usar POST a /crud/libros-cursos/add con los parámetros en el body
     return this.http.post<{ status: string; data: any }>(
-      this.endpoint + '/libros-cursos/add', 
-      { idLibro, idCurso }
+      '/crud/libros-cursos/add',
+      { 
+        idLibro: idLibro, 
+        idCurso: cursoId  // Asegurar que sea number
+      }
     ).pipe(
       map(response => response.data)
     );
   }
 
   /**
-   * Elimina una asignación libro-curso2
+   * Elimina una asignación libro-curso
    */
-  eliminarAsignacionLibroCurso(idLibro: number, idCurso: string): Observable<any> {
-    // Usar POST a /libros-cursos/delete en lugar de DELETE
+  eliminarAsignacionLibroCurso(idLibro: number, idCurso: number): Observable<any> {
+    // Convertir idCurso a number si viene como string
+    const cursoId = typeof idCurso === 'string' ? parseInt(idCurso, 10) : idCurso;
+    
+    // Usar POST a /crud/libros-cursos/delete con los parámetros en el body
     return this.http.post<{ status: string; message: string }>(
-      this.endpoint + '/libros-cursos/delete',
-      { idLibro, idCurso }
+      '/crud/libros-cursos/delete',
+      { 
+        idLibro: idLibro, 
+        idCurso: idCurso  // Asegurar que sea number
+      }
     );
   }
 
@@ -218,5 +224,12 @@ export class CrudService {
         return response.data || [];
       })
     );
+  }
+
+  /**
+   * Obtiene los libros de una etapa específica
+   */
+  getLibrosByEtapa(etapaId: string): Observable<{ status: string; data: any[] }> {
+    return this.http.get<{ status: string; data: any[] }>(`/libros/etapa/${etapaId}`);
   }
 }
