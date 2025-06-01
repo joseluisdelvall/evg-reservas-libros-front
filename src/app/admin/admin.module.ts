@@ -21,6 +21,7 @@ import { LoadingSpinnerComponent } from '../shared/loading-spinner/loading-spinn
 import { AsignarLibrosCursosComponent } from './components/gestion/asignar-libros-cursos/asignar-libros-cursos.component';
 import { PedidosPendientesComponent } from './components/pedidos/pedidos-pendientes/pedidos-pendientes.component';
 import { PedidosRealizadosComponent } from './components/pedidos/pedidos-realizados/pedidos-realizados.component';
+import { EntregaLibrosComponent } from './components/entrega-libros/entrega-libros.component';
 
 @NgModule({
   declarations: [
@@ -40,7 +41,8 @@ import { PedidosRealizadosComponent } from './components/pedidos/pedidos-realiza
     ModalVerComponent,
     LoadingSpinnerComponent,
     PedidosPendientesComponent,
-    PedidosRealizadosComponent
+    PedidosRealizadosComponent,
+    EntregaLibrosComponent
   ],
   imports: [
     CommonModule,

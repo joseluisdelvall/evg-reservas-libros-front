@@ -9,6 +9,7 @@ import { AuthGuard } from '../guards/auth.guard';
 import { AsignarLibrosCursosComponent } from './components/gestion/asignar-libros-cursos/asignar-libros-cursos.component';
 import { PedidosPendientesComponent } from './components/pedidos/pedidos-pendientes/pedidos-pendientes.component';
 import { PedidosRealizadosComponent } from './components/pedidos/pedidos-realizados/pedidos-realizados.component';
+import { EntregaLibrosComponent } from './components/entrega-libros/entrega-libros.component';
 
 const routes: Routes = [
   {
@@ -23,6 +24,7 @@ const routes: Routes = [
       { path: 'pedidos-realizados', component: PedidosRealizadosComponent, canActivate: [AuthGuard] },
       { path: 'crud/:modo', component: CrudComponent, canActivate: [AuthGuard] },
       { path: 'asignar-libros-cursos', component: AsignarLibrosCursosComponent, canActivate: [AuthGuard] },
+      { path: 'entrega-libros', component: EntregaLibrosComponent, canActivate: [AuthGuard] },
       { path: '**', redirectTo: 'login' }
     ]
   }
