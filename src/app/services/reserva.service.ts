@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { switchMap, map, catchError } from 'rxjs/operators';
 import { BaseService } from './base.service';
+import { ReservaResponse as ModelReservaResponse } from '../models/reserva.model';
 
 // Interfaces
 export interface ReservaResponse {
@@ -38,6 +39,21 @@ export class ReservaService {
   private endpoint = '/reservas';
 
   constructor(private http: BaseService) {}
+
+  obtenerReservas(): Observable<ModelReservaResponse[]> {
+    return this.http.get<any>(this.endpoint).pipe(
+      map(response => {
+        if (response && response.status === 'success' && response.data) {
+          return response.data;
+        }
+        return [];
+      }),
+      catchError(error => {
+        console.error('Error al obtener reservas:', error);
+        return [];
+      })
+    );
+  }
 
   crearReserva(reserva: ReservaRequest, justificante: File): Observable<ReservaResponse> {
     // Convertir el archivo a Base64 usando el método de BaseService

@@ -77,14 +77,14 @@
         <div class="col-lg-9 col-md-6 col-12 mb-4" *ngIf="reservaCompletada">
             <div class="card border-0 shadow-lg h-100">
                 <div class="card-body p-4">
-                    <h5 class="text-primary mb-3">Detalles de la Reserva #{{ reservaCompletada.id }}</h5>
+                    <h5 class="text-primary mb-3">Detalles de la Reserva #{{ reservaCompletada.idReserva }}</h5>
                     
                     <div class="mb-3">
                         <p class="mb-1"><strong>Nombre:</strong> {{ reservaCompletada.nombreAlumno || 'No especificado' }} {{ reservaCompletada.apellidosAlumno || '' }}</p>
                         <p class="mb-1"><strong>Correo:</strong> {{ reservaCompletada.correo || 'No especificado' }}</p>
                         <p class="mb-1"><strong>Fecha:</strong> {{ reservaCompletada.fecha || 'No especificada' }}</p>
                         <p class="mb-1"><strong>Estado:</strong> {{ reservaCompletada.verificado ? 'Verificado' : 'Pendiente de verificación' }}</p>
-                        <p class="mb-1"><strong>Curso:</strong> {{ getCursoNombre(reservaCompletada.curso) }}</p>
+                        <p class="mb-1"><strong>Curso:</strong> {{ getCursoNombre(reservaCompletada.curso.idCurso) }}</p>
                     </div>
                     
                     <h6 class="text-secondary mb-2">Libros reservados:</h6>
@@ -112,10 +112,10 @@
                     </div>
                     
                     <div class="text-center mt-3">
-                        <p class="small text-muted" *ngIf="reservaCompletada.id < 1000">
+                        <p class="small text-muted" *ngIf="reservaCompletada.idReserva < 1000">
                             Se ha enviado un correo de confirmación a {{ reservaCompletada.correo || 'tu correo' }}
                         </p>
-                        <p class="small text-muted text-warning" *ngIf="reservaCompletada.id >= 1000">
+                        <p class="small text-muted text-warning" *ngIf="reservaCompletada.idReserva >= 1000">
                             <i class="fas fa-exclamation-circle me-1"></i> No se pudo enviar el correo de confirmación. Por favor, guarde el número de reserva.
                         </p>
                         <button type="button" class="btn btn-sm btn-outline-primary" (click)="nuevaReserva()">

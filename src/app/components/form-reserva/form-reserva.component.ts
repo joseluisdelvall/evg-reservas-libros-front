@@ -383,6 +383,26 @@ export class FormReservaComponent implements OnInit {
             
             // Verificar si la respuesta tiene la estructura esperada
             if (response && response.id) {
+              // Convertir la respuesta del servicio al formato del modelo
+              const reservaCompletada: ReservaResponse = {
+                idReserva: response.id,
+                nombreAlumno: response.nombreAlumno,
+                apellidosAlumno: response.apellidosAlumno,
+                correo: response.correo,
+                dni: response.dni,
+                telefono: response.telefono,
+                justificante: response.justificante,
+                fecha: response.fecha,
+                verificado: response.verificado === 1,
+                totalPagado: response.totalPagado,
+                curso: {
+                  idCurso: response.curso,
+                  nombreCurso: this.getCursoNombre(response.curso),
+                  nombreEtapa: ''
+                },
+                libros: response.libros || []
+              };
+
               // Si el id es mayor a 1000, sabemos que es una respuesta simulada
               // debido a un problema de comunicación con el servidor de correo
               if (response.id >= 1000) {
@@ -394,7 +414,7 @@ export class FormReservaComponent implements OnInit {
               }
               
               // Guardar la respuesta y resetear el formulario
-              this.reservaCompletada = response;
+              this.reservaCompletada = reservaCompletada;
               this.resetForm();
             } else {
               // Si la respuesta no tiene la estructura esperada

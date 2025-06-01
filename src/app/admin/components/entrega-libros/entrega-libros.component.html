@@ -1,5 +1,13 @@
 <div class="container-fluid p-4">
-  <div class="row" *ngIf="!reservaSeleccionada">
+  <!-- Loading state -->
+  <div *ngIf="cargando" class="text-center my-5">
+    <div class="spinner-border text-primary" role="status">
+      <span class="visually-hidden">Cargando...</span>
+    </div>
+    <p class="mt-2">Cargando reservas...</p>
+  </div>
+
+  <div class="row" *ngIf="!reservaSeleccionada && !cargando">
     <div class="col-12 col-md-10 col-lg-12 mx-auto">
       <div class="card shadow-sm">
         <div class="card-header bg-primary text-white">
@@ -49,7 +57,7 @@
                 <span class="badge me-2" [ngClass]="getBadgeEstadoReserva(reserva)">
                   {{ getTextoEstadoReserva(reserva) }}
                 </span>
-                <span class="badge bg-info">#{{ reserva.id }}</span>
+                <span class="badge bg-info">#{{ reserva.idReserva }}</span>
               </div>
             </button>
           </div>
@@ -71,7 +79,7 @@
     </div>
   </div>
 
-  <div class="row" *ngIf="reservaSeleccionada">
+  <div class="row" *ngIf="reservaSeleccionada && !cargando">
     <div class="col-12 col-md-10 col-lg-12 mx-auto">
       <div class="card shadow-sm">
         <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
@@ -83,7 +91,7 @@
             <strong>Alumno:</strong> {{ reservaSeleccionada.nombreAlumno }} {{ reservaSeleccionada.apellidosAlumno }}<br>
             <strong>Correo:</strong> {{ reservaSeleccionada.correo }}<br>
             <strong>Fecha de reserva:</strong> {{ reservaSeleccionada.fecha }}<br>
-            <strong>Curso:</strong> {{ getNombreCurso(reservaSeleccionada.curso) }}
+            <strong>Curso:</strong> {{ reservaSeleccionada.curso.nombreCurso }}
           </div>
           <div class="d-flex justify-content-between align-items-center mb-2 flex-wrap gap-2">
             <span class="badge bg-success">Entregados: {{ getTotalEntregados() }}</span>
@@ -101,18 +109,18 @@
                 </tr>
               </thead>
               <tbody>
-                <tr *ngFor="let item of librosEntrega; let i = index" [ngClass]="{'table-success': item.entregado || item.libro.estado === 'entregado'}">
+                <tr *ngFor="let item of librosEntrega; let i = index" [ngClass]="{'table-success': item.entregado || item.libro.fechaRecogida !== null}">
                   <td>{{ i + 1 }}</td>
                   <td>{{ item.libro.nombre }}</td>
                   <td>{{ item.libro.precio }}€</td>
                   <td>
-                    <span class="badge" [ngClass]="{'bg-success': item.libro.estado === 'entregado', 'bg-warning': item.libro.estado !== 'entregado'}">
-                      <i *ngIf="item.libro.estado === 'entregado' || item.entregado" class="fas fa-check-circle me-1"></i>
-                      {{ item.libro.estado === 'entregado' ? 'Entregado' : (item.entregado ? 'A entregar' : 'Pendiente') }}
+                    <span class="badge" [ngClass]="{'bg-success': item.libro.fechaRecogida !== null, 'bg-warning': item.libro.fechaRecogida === null}">
+                      <i *ngIf="item.libro.fechaRecogida !== null || item.entregado" class="fas fa-check-circle me-1"></i>
+                      {{ item.libro.fechaRecogida !== null ? 'Entregado' : (item.entregado ? 'A entregar' : item.libro.nombreEstado) }}
                     </span>
                   </td>
                   <td>
-                    <input type="checkbox" class="form-check-input" [checked]="item.entregado" (change)="marcarEntrega(i)" [disabled]="item.libro.estado === 'entregado'">
+                    <input type="checkbox" class="form-check-input" [checked]="item.entregado" (change)="marcarEntrega(i)" [disabled]="item.libro.fechaRecogida !== null">
                   </td>
                 </tr>
               </tbody>
