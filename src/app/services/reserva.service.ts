@@ -1,11 +1,10 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { catchError, map, switchMap } from 'rxjs/operators';
+import { switchMap, map, catchError } from 'rxjs/operators';
 import { BaseService } from './base.service';
 
-// Definir las interfaces necesarias dentro del mismo archivo
-interface ReservaResponse {
+// Interfaces
+export interface ReservaResponse {
   id: number;
   nombreAlumno: string;
   apellidosAlumno: string;
@@ -20,7 +19,7 @@ interface ReservaResponse {
   libros: any[];
 }
 
-interface ReservaRequest {
+export interface ReservaRequest {
   nombreAlumno: string;
   apellidosAlumno: string;
   nombreTutorLegal?: string;
@@ -35,20 +34,14 @@ interface ReservaRequest {
 @Injectable({
   providedIn: 'root'
 })
-export class ReservaService extends BaseService {
+export class ReservaService {
   private endpoint = '/reservas';
 
-  constructor(http: HttpClient) { 
-    super(http);
-  }
+  constructor(private http: BaseService) {}
 
   crearReserva(reserva: ReservaRequest, justificante: File): Observable<ReservaResponse> {
-    // Log para depuración
-    console.log('Datos originales:', reserva);
-    console.log('Archivo original:', justificante);
-    
-    // Convertir el archivo a Base64 usando el método del BaseService
-    return this.fileToBase64(justificante).pipe(
+    // Convertir el archivo a Base64 usando el método de BaseService
+    return this.http.fileToBase64(justificante).pipe(
       switchMap(base64File => {
         // Crear el objeto en el formato exacto que espera el backend
         const datosPostman = {
@@ -61,23 +54,20 @@ export class ReservaService extends BaseService {
           telefono: reserva.telefono,
           justificante: base64File,
           justificanteNombre: justificante.name,
-          fecha: this.getCurrentDate(), // Usando método del BaseService
+          fecha: this.http.getCurrentDate(),
           verificado: 0,
           totalPagado: 0,
-          curso: Number(reserva.idCurso), // Convertir a número
+          curso: Number(reserva.idCurso),
           libro: reserva.libros
         };
-        
-        // Log para depuración
-        console.log('Datos enviados al servidor (formato Postman):', JSON.stringify(datosPostman));
-        
-        // Usar el método post del BaseService con responseType text para manejar respuestas HTML
-        return this.postWithTextResponse<string>(this.endpoint, datosPostman).pipe(
-          map(responseText => this.handleApiResponse<ReservaResponse>(
+
+        // Usar el método postWithTextResponse del BaseService con responseType text para manejar respuestas HTML
+        return this.http.postWithTextResponse<string>(this.endpoint, datosPostman).pipe(
+          map(responseText => this.http.handleApiResponse<ReservaResponse>(
             responseText, 
             this.createMockResponse(reserva)
           )),
-          catchError(error => this.handleError<ReservaResponse>(
+          catchError(error => this.http.handleError<ReservaResponse>(
             error, 
             this.createMockResponse(reserva)
           ))
@@ -85,18 +75,18 @@ export class ReservaService extends BaseService {
       })
     );
   }
-  
-  // Crear una respuesta simulada cuando no podemos obtener la real pero sabemos que el status fue 200
+
+  // Respuesta simulada para fallback
   private createMockResponse(reserva: ReservaRequest): ReservaResponse {
     return {
-      id: -1, // ID temporal negativo para indicar que es una respuesta simulada
+      id: -1,
       nombreAlumno: reserva.nombreAlumno,
       apellidosAlumno: reserva.apellidosAlumno,
       correo: reserva.correo,
       dni: reserva.dni,
       telefono: reserva.telefono,
       justificante: 'archivo-simulado.pdf',
-      fecha: this.getCurrentDate(),
+      fecha: this.http.getCurrentDate(),
       verificado: 0,
       totalPagado: 0,
       curso: Number(reserva.idCurso),
