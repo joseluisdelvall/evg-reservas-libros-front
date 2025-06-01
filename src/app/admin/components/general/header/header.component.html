@@ -32,6 +32,11 @@
                         <li><a class="dropdown-item" routerLink="asignar-libros-cursos" routerLinkActive="active">Asignar Libros a Cursos</a></li>
                     </ul>
                 </li>
+                <li class="nav-item">
+                    <a class="nav-link" routerLink="entrega-libros" routerLinkActive="active">
+                        Entrega de Libros
+                    </a>
+                </li>
             </ul>
             <div *ngIf="!isLoggedIn; else loggedInTemplate" class="d-flex">
                 <button class="btn btn-outline-success ms-2 p-1 px-2" type="button" (click)="login()">

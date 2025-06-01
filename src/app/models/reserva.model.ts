@@ -22,6 +22,7 @@ export interface ReservaResponse {
     nombreAlumno: string;
     apellidosAlumno: string;
     correo: string;
+    dni?: string;
     fecha: string;
     verificado: number;
     curso: number;
