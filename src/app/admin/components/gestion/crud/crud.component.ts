@@ -9,6 +9,7 @@ import Swal from 'sweetalert2';
 import { LoadingSpinnerComponent } from 'src/app/shared/loading-spinner/loading-spinner.component';
 import { ReservaResponse } from 'src/app/models/reserva.model';
 import { PeriodoReservasService, PeriodoReservas } from 'src/app/services/periodo-reservas.service';
+import { ReservaService } from 'src/app/services/reserva.service';
 
 // Importación para jQuery y DataTables
 declare var $: any;
@@ -44,7 +45,8 @@ export class CrudComponent implements OnInit, OnDestroy, AfterViewInit {
     private route: ActivatedRoute,
     private crudService: CrudService,
     private toastr: ToastrService,
-    private periodoReservasService: PeriodoReservasService
+    private periodoReservasService: PeriodoReservasService,
+    private reservaService: ReservaService
   ) { }
 
   ngOnInit(): void {
@@ -518,10 +520,16 @@ export class CrudComponent implements OnInit, OnDestroy, AfterViewInit {
             const color = row.verificado ? 'green' : 'red';
             const estadoTexto = row.verificado ? 'activo' : 'inactivo';
             return `
-              <div class="text-center">
-                <svg width="16" height="16" class="puntero toggle-estado" data-id="${row.id}">
+              <div class="text-center d-flex align-items-center justify-content-center">
+                <svg width="16" height="16" class="puntero toggle-estado me-2" data-id="${row.id}">
                   <circle cx="8" cy="8" r="6" fill="${color}" />
                 </svg>
+                <button type="button" class="btn btn-outline-primary btn-sm rounded-circle ver-justificante" 
+                  data-id="${row.id}" 
+                  title="Ver justificante de pago"
+                  style="width: 24px; height: 24px; padding: 0; display: flex; align-items: center; justify-content: center;">
+                  <i class="fas fa-file-invoice" style="font-size: 12px;"></i>
+                </button>
                 <span class="d-none">${estadoTexto}</span>
               </div>
             `;
@@ -608,6 +616,12 @@ export class CrudComponent implements OnInit, OnDestroy, AfterViewInit {
         $('.toggle-estado').off('click').on('click', (event: any) => {
           const rowData = this.currentTable.row($(event.currentTarget).closest('tr')).data();
           this.toggleReservaEstado(rowData, event);
+        });
+
+        $('.ver-justificante').off('click').on('click', (event: any) => {
+          event.stopPropagation();
+          const rowData = this.currentTable.row($(event.currentTarget).closest('tr')).data();
+          this.verJustificante(rowData.id, `Justificante_${rowData.nombreAlumno}_${rowData.apellidosAlumno}.pdf`);
         });
       }
     });
@@ -1011,4 +1025,23 @@ export class CrudComponent implements OnInit, OnDestroy, AfterViewInit {
     }
   }
 
+  /**
+   * Método para visualizar el justificante de una reserva
+   */
+  verJustificante(idReserva: number, nombreArchivo: string = 'justificante.pdf'): void {
+    this.reservaService.obtenerJustificante(idReserva).subscribe({
+      next: (justificante) => {
+        if (justificante) {
+          this.reservaService.visualizarJustificante(justificante, nombreArchivo);
+        } else {
+          // Manejo del caso cuando no hay justificante
+          alert('No se encontró el justificante para esta reserva.');
+        }
+      },
+      error: (error) => {
+        console.error('Error al obtener el justificante:', error);
+        alert('No se pudo cargar el justificante. Por favor, inténtelo de nuevo.');
+      }
+    });
+  }
 }
