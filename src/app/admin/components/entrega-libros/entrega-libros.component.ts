@@ -87,8 +87,7 @@ export class EntregaLibrosComponent implements OnInit {
     const termino = this.busqueda.toLowerCase().trim();
     if (termino) {
       resultado = resultado.filter(r =>
-        r.nombreAlumno.toLowerCase().includes(termino) ||
-        r.apellidosAlumno.toLowerCase().includes(termino) ||
+        (r.nombreAlumno + ' ' + r.apellidosAlumno).toLowerCase().includes(termino) ||
         r.correo.toLowerCase().includes(termino) ||
         r.idReserva.toString().includes(termino) ||
         (r.dni && r.dni.toLowerCase().includes(termino))
