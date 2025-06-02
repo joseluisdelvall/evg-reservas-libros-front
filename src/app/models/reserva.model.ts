@@ -44,3 +44,15 @@ export interface ReservaResponse {
     curso: CursoReserva;
     libros: LibroReserva[];
 }
+
+export interface ReservaResponseR {
+    id: number;
+    nombreAlumno: string;
+    apellidosAlumno: string;
+    correo: string;
+    fecha: string;
+    verificado: number;
+    curso: number;
+    nombreCurso ?: string;
+    libros: LibroReserva[];
+}
