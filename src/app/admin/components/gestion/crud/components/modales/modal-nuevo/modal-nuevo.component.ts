@@ -14,7 +14,7 @@ import { EtapaService } from 'src/app/services/etapa.service';
 })
 export class ModalNuevoComponent implements OnInit, OnChanges {
 
-  @Input() modo: 'libros' | 'editoriales' | null = null;
+  @Input() modo: 'libros' | 'editoriales' | 'reservas' | null = null;
   @Output() entidadCreada = new EventEmitter<any>(); // Emitir el evento cuando se crea una entidad
 
   // nuevoModalOptions
@@ -22,6 +22,7 @@ export class ModalNuevoComponent implements OnInit, OnChanges {
 
   formL!: FormGroup;
   formE!: FormGroup;
+  formR!: FormGroup;
   editoriales: Editorial[] = [];
   etapas: Etapa[] = [];
   mostrandoErrores: boolean = false;
@@ -34,6 +35,7 @@ export class ModalNuevoComponent implements OnInit, OnChanges {
   ) { }
 
   ngOnInit(): void {
+    this.crearFormularios();
     this.cargarEditoriales();
     this.cargarEtapas();
     this.configurarModalCierreCondicional();
@@ -154,6 +156,37 @@ export class ModalNuevoComponent implements OnInit, OnChanges {
   }
 
   crearFormularios() {
+    // Inicializar formulario de libros por defecto
+    this.formL = this.formBuilder.group({
+      nombre: ['', [Validators.required, Validators.minLength(3)]],
+      isbn: ['', [Validators.required, Validators.pattern('^[0-9-]{10,20}$')]],
+      editorial: [null, Validators.required],
+      precio: [null, [
+        Validators.required, 
+        Validators.min(1),
+        Validators.pattern('^[0-9]+(\\.[0-9]{1,2})?$')
+      ]]
+    });
+
+    // Inicializar formulario de editoriales por defecto
+    this.formE = this.formBuilder.group({
+      nombre: ['', [Validators.required, Validators.minLength(3)]],
+      correos: this.formBuilder.array([
+        this.formBuilder.control('', [Validators.email]),
+        this.formBuilder.control('', [Validators.email]),
+        this.formBuilder.control('', [Validators.email])
+      ]),
+      telefonos: this.formBuilder.array([
+        this.formBuilder.control('', [Validators.pattern('^[6-9]\\d{8}$')]),
+        this.formBuilder.control('', [Validators.pattern('^[6-9]\\d{8}$')]),
+        this.formBuilder.control('', [Validators.pattern('^[6-9]\\d{8}$')])
+      ])
+    });
+
+    // Inicializar formulario de reservas por defecto
+    this.formR = this.formBuilder.group({
+      // Aquí puedes agregar los campos necesarios para el formulario de reservas
+    });
     if (this.modo === 'libros') {
       this.formL = this.formBuilder.group({
         nombre: ['', [Validators.required, Validators.minLength(3)]],

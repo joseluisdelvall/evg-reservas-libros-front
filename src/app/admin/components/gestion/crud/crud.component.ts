@@ -7,6 +7,9 @@ import { Editorial } from 'src/app/models/editorial.model';
 import { CrudService } from 'src/app/services/crud.service';
 import Swal from 'sweetalert2';
 import { LoadingSpinnerComponent } from 'src/app/shared/loading-spinner/loading-spinner.component';
+import { ReservaRequest, ReservaResponseR as ReservaResponse } from 'src/app/models/reserva.model';
+import { PeriodoReservasService, PeriodoReservas } from 'src/app/services/periodo-reservas.service';
+import { ReservaService } from 'src/app/services/reserva.service';
 
 // Importación para jQuery y DataTables
 declare var $: any;
@@ -17,9 +20,10 @@ declare var $: any;
   styleUrls: ['./crud.component.css']
 })
 export class CrudComponent implements OnInit, OnDestroy, AfterViewInit {
-  modo: 'libros' | 'editoriales' | null = null;
+  modo: 'libros' | 'editoriales' | 'reservas' | null = null;
   editorialSeleccionadaId: string | null = null;
   libroSeleccionadoId: string | null = null;
+  reservaSeleccionadaId: string | null = null;
   isLoading: boolean = false;
   isLoadingTable: boolean = false;
   dtOptions: any = {};
@@ -34,27 +38,37 @@ export class CrudComponent implements OnInit, OnDestroy, AfterViewInit {
 
   libros: Libro[] = [];
   editorialesA: Editorial[] = [];
+  reservas: ReservaResponse[] = [];
+  periodoActual: PeriodoReservas | null = null;
 
   constructor(
     private route: ActivatedRoute,
     private crudService: CrudService,
-    private toastr: ToastrService
+    private toastr: ToastrService,
+    private periodoReservasService: PeriodoReservasService,
+    private reservaService: ReservaService
   ) { }
 
   ngOnInit(): void {
     this.route.paramMap.subscribe(params => {
       const modoParam = params.get('modo');
-      if (modoParam === 'libros' || modoParam === 'editoriales') {
+      if (modoParam === 'libros' || modoParam === 'editoriales' || modoParam === 'reservas') {
         this.modo = modoParam;
         // Limpiar los datos anteriores
         this.libros = [];
         this.editorialesA = [];
+        this.reservas = [];
         
         // Limpiar filtros anteriores si existen
         this.limpiarFiltros();
         
         // Añadir función personalizada de búsqueda
         this.configurarBusquedaPersonalizada();
+        
+        // Si estamos en modo reservas, obtener el período actual
+        if (this.modo === 'reservas') {
+          this.obtenerPeriodoActual();
+        }
         
         // Cargar los nuevos datos
         this.cargarTable();
@@ -114,14 +128,23 @@ export class CrudComponent implements OnInit, OnDestroy, AfterViewInit {
     this.filtroEstado = 'activo';
 
     // Ocultar el cuerpo de la tabla correspondiente durante la carga
-    if (this.modo === 'libros') {
-      $('#tablaLibros tbody').hide();
-      this.libros = []; // Limpiar los datos actuales
-      this.cargarLibros();
-    } else if (this.modo === 'editoriales') {
-      $('#tablaEditoriales tbody').hide();
-      this.editorialesA = []; // Limpiar los datos actuales
-      this.cargarEditoriales();
+    switch (this.modo) {
+      case 'libros':
+        $('#tablaLibros tbody').hide();
+        this.libros = []; // Limpiar los datos actuales
+        this.cargarLibros();
+        break;
+      case 'editoriales':
+        $('#tablaEditoriales tbody').hide();
+        this.editorialesA = []; // Limpiar los datos actuales
+        this.cargarEditoriales();
+        break;
+      case 'reservas':
+        console.log('reservas');
+        $('#tablaReservas tbody').hide();
+        this.reservas = []; // Limpiar los datos actuales
+        this.cargarReservas();
+        break;  
     }
   }
 
@@ -175,6 +198,34 @@ export class CrudComponent implements OnInit, OnDestroy, AfterViewInit {
     });
   }
 
+  cargarReservas(): void {
+    this.isLoadingTable = true;
+    console.log('Cargando reservas...');
+    this.crudService.getReservas().subscribe({
+      next: (data: ReservaResponse[]) => {
+        this.reservas = data;
+        console.log(this.reservas);
+        
+
+        if (this.currentTable) {
+          this.currentTable.clear();
+          this.currentTable.rows.add(this.reservas);
+          this.currentTable.draw();
+        } else if (this.modo === 'reservas') {
+          setTimeout(() => {
+            this.inicializarTablaReservas();
+          }, 0);
+        }
+        this.isLoadingTable = false;
+      },
+      error: (error: any) => {
+        console.error('Error al cargar las reservas:', error);
+        this.toastr.error('Error al cargar las reservas', 'Error');
+        this.isLoadingTable = false;
+      }
+    });
+  }
+
   inicializarTablaLibros(): void {
     if (!this.libros.length || this.modo !== 'libros') return;
 
@@ -222,7 +273,10 @@ export class CrudComponent implements OnInit, OnDestroy, AfterViewInit {
         },
         { 
           data: 'precio',
-          width: '15%'
+          width: '15%',
+          render: (data: any, type: any, row: Libro) => {
+            return data ? `${parseFloat(data).toFixed(2)}€` : '';
+          }
         },
         { 
           data: 'estado',
@@ -428,6 +482,170 @@ export class CrudComponent implements OnInit, OnDestroy, AfterViewInit {
     });
   }
 
+  inicializarTablaReservas(): void {
+    if (!this.reservas.length || this.modo !== 'reservas') return;
+
+    const tableElement = $('#tablaReservas');
+    if (tableElement.length === 0) return;
+
+    // Destruir la tabla anterior si existe
+    if (this.currentTable) {
+      this.currentTable.destroy();
+      this.currentTable = null;
+    }
+
+    // Ocultar solo el cuerpo de la tabla durante la carga
+    $('#tablaReservas tbody').hide();
+
+    this.currentTable = tableElement.DataTable({
+      data: this.reservas,
+      columns: [       
+        { 
+          data: null,
+          render: (data: any, type: any, row: ReservaResponse) => {
+            return `
+              <div class="text-center">
+                <i class="fas fa-edit puntero" style="color: blue;" data-bs-toggle="modal" data-bs-target="#editarreservas"></i>
+                <i class="fas fa-trash-alt ms-2 puntero" style="color: red;" data-id="${row.id}"></i>
+                <i class="fas fa-phone ms-2 puntero mostrar-contacto" style="color: #007bff;" data-id="${row.id}"></i>
+              </div>
+            `;
+          },
+          width: '90px'
+        },
+        { 
+          data: 'nombreAlumno',
+          width: '12%'
+        },
+        { 
+          data: 'apellidosAlumno',
+          width: '17%',
+        },
+        { 
+          data: 'fecha',
+          width: '10%'
+        },
+        { 
+          data: 'verificado',
+          width: '10%',
+          render: (data: any, type: any, row: ReservaResponse) => {
+            const color = row.verificado ? 'green' : 'red';
+            const estadoTexto = row.verificado ? 'activo' : 'inactivo';
+            return `
+              <div class="text-center d-flex align-items-center justify-content-center">
+                <svg width="16" height="16" class="puntero toggle-estado me-2" data-id="${row.id}">
+                  <circle cx="8" cy="8" r="6" fill="${color}" />
+                </svg>
+                <button type="button" class="btn btn-outline-primary btn-sm rounded-circle ver-justificante" 
+                  data-id="${row.id}" 
+                  title="Ver justificante de pago"
+                  style="width: 24px; height: 24px; padding: 0; display: flex; align-items: center; justify-content: center;">
+                  <i class="fas fa-file-invoice" style="font-size: 12px;"></i>
+                </button>
+                <span class="d-none">${estadoTexto}</span>
+              </div>
+            `;
+          }
+        },
+        { 
+          data: null,
+          width: '20%',
+          render: (data: any, type: any, row: ReservaResponse) => {
+            return row.curso ? row.curso : row.nombreCurso;
+          }
+        },
+        { 
+          data: 'totalPagado',
+          width: '10%',
+          render: (data: any, type: any, row: ReservaResponse) => {
+            return data ? `${data}€` : '';
+          }
+        },
+        { 
+          data: null,
+          width: '10%',
+          render: (data: any, type: any, row: ReservaResponse) => {
+            return `
+              <div class="text-center">
+                <i class="fas fa-book-open puntero" style="color: rgb(87, 87, 87);" data-bs-toggle="modal" data-bs-target="#verreservas"></i>
+              </div>
+            `;
+          },
+        }      
+      ],
+      language: {
+        url: '//cdn.datatables.net/plug-ins/1.10.25/i18n/Spanish.json',
+        paginate: {
+          first: '<i class="fas fa-angle-double-left"></i>',
+          previous: '<i class="fas fa-angle-left"></i>',
+          next: '<i class="fas fa-angle-right"></i>',
+          last: '<i class="fas fa-angle-double-right"></i>'
+        }
+      },
+      pagingType: 'simple_numbers',
+      pageLength: 10,
+      processing: true,
+      destroy: true,
+      autoWidth: false,
+      scrollX: true,
+      stateSave: true,
+      deferRender: true,
+      dom: '<"top d-flex justify-content-between mb-3"lf>rt<"bottom d-flex justify-content-between"ip>',
+      initComplete: (settings: any, json: any) => {
+        this.currentTable.columns.adjust();
+        // Mostrar el cuerpo de la tabla cuando esté completamente inicializada
+        $('#tablaReservas tbody').show();
+        
+        // Añadir clases para mejorar el estilo
+        $('.dataTables_paginate').addClass('pagination-container');
+        $('.dataTables_length, .dataTables_filter').addClass('dt-custom-control');
+        $('.paginate_button').addClass('btn btn-sm');
+        $('.paginate_button.current').addClass('btn-primary');
+        $('.paginate_button:not(.current)').addClass('btn-outline-primary');
+      },
+      drawCallback: () => {
+        this.currentTable.columns.adjust();
+        
+        // Actualizar las clases al redibujar
+        $('.paginate_button.current').addClass('btn-primary');
+        $('.paginate_button:not(.current)').addClass('btn-outline-primary');
+        
+        $('.fa-edit').off('click').on('click', (event: any) => {
+          const rowData = this.currentTable.row($(event.currentTarget).closest('tr')).data();
+          this.seleccionarReserva(rowData);
+        });
+
+        $('.fa-trash-alt').off('click').on('click', (event: any) => {
+          const rowData = this.currentTable.row($(event.currentTarget).closest('tr')).data();
+          this.anularReserva(rowData, event);
+        });
+        
+        $('.fa-book-open').off('click').on('click', (event: any) => {
+          const rowData = this.currentTable.row($(event.currentTarget).closest('tr')).data();
+          this.seleccionarReserva(rowData);
+        });
+        
+        $('.toggle-estado').off('click').on('click', (event: any) => {
+          const rowData = this.currentTable.row($(event.currentTarget).closest('tr')).data();
+          this.toggleReservaEstado(rowData, event);
+        });        
+        
+        $('.ver-justificante').off('click').on('click', (event: any) => {
+          event.stopPropagation();
+          const rowData = this.currentTable.row($(event.currentTarget).closest('tr')).data();
+          this.verJustificante(rowData.id, `Justificante_${rowData.nombreAlumno}_${rowData.apellidosAlumno}.pdf`);
+        });
+        
+        // Agregar evento para mostrar la información de contacto
+        $('.mostrar-contacto').off('click').on('click', (event: any) => {
+          event.stopPropagation();
+          const rowData = this.currentTable.row($(event.currentTarget).closest('tr')).data();
+          this.mostrarContactoReserva(rowData);
+        });
+      }
+    });
+  }
+
   seleccionarEditorial(editorial: Editorial): void {
     this.editorialSeleccionadaId = editorial.idEditorial || null;
   }
@@ -442,20 +660,41 @@ export class CrudComponent implements OnInit, OnDestroy, AfterViewInit {
     }
   }
 
+  seleccionarReserva(reserva: ReservaResponse): void {
+    if (reserva.id !== undefined) {
+      this.reservaSeleccionadaId = reserva.id.toString();
+      console.log('Reserva seleccionada ID:', this.reservaSeleccionadaId);
+    } else {
+      this.reservaSeleccionadaId = null;
+      console.error('La reserva seleccionada no tiene ID');
+    }
+  }
+
   getIdEntidadSeleccionada(): string | null {
-    return this.modo === 'libros' ? this.libroSeleccionadoId : this.editorialSeleccionadaId;
+    switch (this.modo) {
+      case 'libros':
+        return this.libroSeleccionadoId;
+      case 'editoriales':
+        return this.editorialSeleccionadaId;
+      case 'reservas':
+        return this.reservaSeleccionadaId;
+      default:
+        return null;
+    }
   }
 
   reloadTable(): void {
     this.isLoadingTable = true; // Show spinner
-    
-    // Asegurar que el filtro esté en "activo" al recargar
-    this.filtroEstado = 'activo';
-    
-    if (this.modo === 'libros') {
-      this.cargarLibros();
-    } else if (this.modo === 'editoriales') {
-      this.cargarEditoriales();
+    switch (this.modo) {
+      case 'libros':
+        this.cargarLibros();
+        break;
+      case 'editoriales':
+        this.cargarEditoriales();
+        break;
+      case 'reservas':
+        this.cargarReservas();
+        break;
     }
   }
 
@@ -585,6 +824,91 @@ export class CrudComponent implements OnInit, OnDestroy, AfterViewInit {
     });
   }
 
+  toggleReservaEstado(reserva: ReservaResponse, event: Event): void {
+    event.stopPropagation(); // Prevent other click events
+
+    if (!reserva.id) {
+      this.toastr.error('No se pudo cambiar el estado: ID no encontrado', 'Error');
+      return;
+    }
+
+    const nuevoEstado = !reserva.verificado;
+    const reservaId = reserva.id.toString();
+
+    Swal.fire({
+      title: 'Confirmar cambio de estado',
+      html: `¿Estás seguro de cambiar el estado de <strong>${reserva.nombreAlumno}</strong> a <strong>${nuevoEstado ? 'ACTIVO' : 'INACTIVO'}</strong>?`,
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Sí, cambiar',
+      cancelButtonText: 'Cancelar'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.crudService.toggleReservaEstado(reservaId).subscribe({
+          next: (reservaActualizada) => {
+            const index = this.reservas.findIndex(r => r.id === reserva.id);
+            if (index !== -1) {
+              this.reservas[index] = reservaActualizada;
+            }
+
+            this.toastr.success(
+              `Estado cambiado a ${reservaActualizada.verificado ? 'Verificado' : 'No verificado'}`,
+              'Éxito'
+            );
+
+            if (this.currentTable) {
+              this.currentTable.clear();
+              this.currentTable.rows.add(this.reservas);
+              this.currentTable.draw();
+            }
+          },
+          error: (error) => {
+            console.error('Error al cambiar el estado:', error);
+            let errorMsg = 'Error al cambiar el estado';
+
+            if (error.error && error.error.message) {
+              errorMsg = error.error.message;
+            } else if (error.message) {
+              errorMsg = error.message;
+            }
+
+            this.toastr.error(errorMsg, 'Error');
+          }
+        });
+      }
+    });
+  }
+
+  anularReserva(reserva: ReservaResponse, event: Event): void {
+    event.stopPropagation(); // Prevent other click events
+
+    Swal.fire({
+      title: 'Confirmar anulación',
+      html: `¿Estás seguro de anular la reserva de <strong>${reserva.nombreAlumno}</strong>?`,
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Sí, anular',
+      cancelButtonText: 'Cancelar'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.crudService.anularReserva(reserva.id.toString()).subscribe({
+          next: () => {
+            this.toastr.success('Reserva anulada correctamente', 'Éxito');
+            this.cargarReservas();
+          },
+          error: (error) => {
+            this.toastr.error('Error al anular la reserva', 'Error');
+            console.error('Error al anular la reserva:', error);
+          }
+        });
+      }
+    });
+  }
+
   filtrarPorEstado(estado: 'todos' | 'activo' | 'inactivo'): void {
     if (!this.currentTable) return;
     
@@ -680,5 +1004,126 @@ export class CrudComponent implements OnInit, OnDestroy, AfterViewInit {
       // Si se desmarca, mostrar solo activos
       this.cambiarFiltroEstado('activo');
     }
+  }
+
+  obtenerPeriodoActual() {
+    this.periodoReservasService.getPeriodoReservas().subscribe({
+      next: (response) => {
+        if (response.status === 'success') {
+          this.periodoActual = response.data;
+        }
+      },
+      error: (error) => {
+        this.toastr.error('Error al cargar el período de reservas', 'Error');
+        console.error('Error:', error);
+      }
+    });
+  }
+
+  esPeriodoActivo(): boolean {
+    if (!this.periodoActual) return false;
+    
+    const fechaActual = new Date();
+    const fechaInicio = new Date(this.periodoActual.fechaInicio);
+    const fechaFin = new Date(this.periodoActual.fechaFin);
+    
+    // Resetear las horas para comparar solo fechas
+    fechaActual.setHours(0, 0, 0, 0);
+    fechaInicio.setHours(0, 0, 0, 0);
+    fechaFin.setHours(23, 59, 59, 999);
+    
+    return fechaActual >= fechaInicio && fechaActual <= fechaFin;
+  }
+
+  esPeriodoFuturo(): boolean {
+    if (!this.periodoActual) return false;
+    
+    const fechaActual = new Date();
+    const fechaInicio = new Date(this.periodoActual.fechaInicio);
+    
+    // Resetear las horas para comparar solo fechas
+    fechaActual.setHours(0, 0, 0, 0);
+    fechaInicio.setHours(0, 0, 0, 0);
+    
+    return fechaInicio > fechaActual;
+  }
+
+  getEstadoPeriodo(): string {
+    if (this.esPeriodoActivo()) {
+      return 'Período Activo';
+    } else if (this.esPeriodoFuturo()) {
+      return 'Próximamente';
+    } else {
+      return 'Período Finalizado';
+    }
+  }
+
+  /**
+   * Método para visualizar el justificante de una reserva
+   */
+  verJustificante(idReserva: number, nombreArchivo: string = 'justificante.pdf'): void {
+    this.reservaService.obtenerJustificante(idReserva).subscribe({
+      next: (justificante) => {
+        if (justificante) {
+          this.reservaService.visualizarJustificante(justificante, nombreArchivo);
+        } else {
+          // Manejo del caso cuando no hay justificante
+          alert('No se encontró el justificante para esta reserva.');
+        }
+      },
+      error: (error) => {
+        console.error('Error al obtener el justificante:', error);
+        this.toastr.error('No se pudo cargar el justificante. Por favor, inténtelo de nuevo.');
+      }
+    });
+  }
+
+  /**
+   * Método para mostrar los datos de contacto de una reserva sin cambiar el modo
+   */
+  mostrarContactoReserva(reserva: ReservaRequest): void {
+    Swal.fire({
+      title: 'Información de Contacto',
+      html: `
+      <div class="text-start mt-4 p-3 border-start border-4 border-primary bg-light rounded">
+        <div class="mb-3">
+        <h6 class="fw-bold mb-2 text-primary">
+          <i class="fas fa-user me-2"></i>Alumno/a:
+        </h6>
+        <p class="ms-4 mb-0">${reserva.nombreAlumno} ${reserva.apellidosAlumno}</p>
+        </div>
+        
+        <div class="mb-3">
+        <h6 class="fw-bold mb-2 text-primary">
+          <i class="fas fa-envelope me-2"></i>Correo Electrónico:
+        </h6>
+        <p class="ms-4 mb-0">
+          <a href="mailto:${reserva.correo}" class="text-decoration-none">
+          ${reserva.correo}
+          </a>
+        </p>
+        </div>
+        
+        <div>
+        <h6 class="fw-bold mb-2 text-primary">
+          <i class="fas fa-phone me-2"></i>Teléfono:
+        </h6>
+        <p class="ms-4 mb-0">
+          <a href="tel:${reserva.telefono}" class="text-decoration-none">
+          ${reserva.telefono}
+          </a>
+        </p>
+        </div>
+      </div>
+      `,
+      confirmButtonText: 'Cerrar',
+      confirmButtonColor: '#3085d6',
+      width: '32rem',
+      customClass: {
+      confirmButton: 'btn btn-primary px-4',
+      popup: 'rounded shadow border-0',
+      title: 'text-primary'
+      }
+    });
   }
 }
