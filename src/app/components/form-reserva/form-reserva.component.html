@@ -45,28 +45,13 @@
                     </h6>
                     <ul class="list-unstyled small text-muted">
                         <li class="mb-2">
-                        <i class="fas fa-check-circle text-success me-2"></i> Por favor, completa todos los campos obligatorios (*).
-                        </li>
-                        <li class="mb-2">
                         <i class="fas fa-check-circle text-success me-2"></i> Revisa cuidadosamente los datos del alumno antes de enviar.
                         </li>
                         <li class="mb-2">
-                        <i class="fas fa-check-circle text-success me-2"></i> El campo de tutor es opcional, solo si es necesario.
-                        </li>
-                        <li class="mb-2">
-                        <i class="fas fa-check-circle text-success me-2"></i> Asegúrate de que el DNI y el correo electrónico sean correctos para futuras comunicaciones.
-                        </li>
-                        <li class="mb-2">
-                        <i class="fas fa-check-circle text-success me-2"></i> Selecciona el curso para ver los libros disponibles.
-                        </li>
-                        <li class="mb-2">
-                        <i class="fas fa-check-circle text-success me-2"></i> Puedes seleccionar varios libros para la reserva.
+                        <i class="fas fa-check-circle text-success me-2"></i> Asegurate de que el correo electrónico y DNI sean correctos para futuras comunicaciones.	
                         </li>
                         <li class="mb-2">
                         <i class="fas fa-check-circle text-success me-2"></i> Es necesario adjuntar el justificante de pago para completar la reserva.
-                        </li>
-                        <li class="mb-2">
-                        <i class="fas fa-check-circle text-success me-2"></i> Una vez enviada la reserva, recibirá un correo de confirmación.
                         </li>
                     </ul>
                 </div>
@@ -131,57 +116,9 @@
             <div class="card border-0 shadow-lg">
                 <div class="card-body p-4">
                     <form [formGroup]="reservaForm" (ngSubmit)="onSubmit()">
-                        <h6 class="mb-3 text-muted">Datos del Alumno</h6>
-                        <div class="row mb-3">
-                            <div class="col-md-6 mb-3 mb-md-0">
-                                <label for="nombreAlumno" class="form-label fw-semibold small text-muted">Nombre del Alumno*</label>
-                                <input type="text" id="nombreAlumno" class="form-control form-control-sm" formControlName="nombreAlumno" placeholder="Ingrese el nombre">
-                                <div *ngIf="isInvalid('nombreAlumno')" class="text-danger small">{{ getError('nombreAlumno') }}</div>
-                            </div>
-                            <div class="col-md-6">
-                                <label for="apellidosAlumno" class="form-label fw-semibold small text-muted">Apellidos del Alumno*</label>
-                                <input type="text" id="apellidosAlumno" class="form-control form-control-sm" formControlName="apellidosAlumno" placeholder="Ingrese los apellidos">
-                                <div *ngIf="isInvalid('apellidosAlumno')" class="text-danger small">{{ getError('apellidosAlumno') }}</div>
-                            </div>
-                        </div>
-
-                        <h6 class="mb-3 mt-4 text-muted">Información del Tutor (Opcional)</h6>
-                        <div class="row mb-3">
-                            <div class="col-md-6 mb-3 mb-md-0">
-                                <label for="nombreTutor" class="form-label fw-semibold small text-muted">Padre / Madre / Tutor Legal</label>
-                                <input type="text" id="nombreTutor" class="form-control form-control-sm" formControlName="nombreTutor" placeholder="Ingrese el nombre del tutor">
-                                <div *ngIf="isInvalid('nombreTutor')" class="text-danger small">{{ getError('nombreTutor') }}</div>
-                            </div>
-                            <div class="col-md-6">
-                                <label for="apellidosTutor" class="form-label fw-semibold small text-muted">Apellidos del Tutor Legal</label>
-                                <input type="text" id="apellidosTutor" class="form-control form-control-sm" formControlName="apellidosTutor" placeholder="Ingrese los apellidos del tutor">
-                                <div *ngIf="isInvalid('apellidosTutor')" class="text-danger small">{{ getError('apellidosTutor') }}</div>
-                            </div>
-                        </div>
-
-                        <h6 class="mb-3 mt-4 text-muted">Datos de Contacto</h6>
-                        <div class="row mb-3">
-                            <div class="col-md-6 mb-3 mb-md-0">
-                                <label for="dni" class="form-label fw-semibold small text-muted">DNI*</label>
-                                <input type="text" id="dni" class="form-control form-control-sm" formControlName="dni" placeholder="Ingrese el DNI">
-                                <div *ngIf="isInvalid('dni')" class="text-danger small">{{ getError('dni') }}</div>
-                            </div>
-                            <div class="col-md-6">
-                                <label for="correo" class="form-label fw-semibold small text-muted">Correo Electrónico*</label>
-                                <input type="email" id="correo" class="form-control form-control-sm" formControlName="correo" placeholder="Ingrese el correo electrónico">
-                                <div *ngIf="isInvalid('correo')" class="text-danger small">{{ getError('correo') }}</div>
-                            </div>
-                        </div>
-
-                        <div class="mb-3">
-                            <label for="telefono" class="form-label fw-semibold small text-muted">Teléfono de Contacto*</label>
-                            <input type="tel" id="telefono" class="form-control form-control-sm" formControlName="telefono" placeholder="Ingrese el teléfono">
-                            <div *ngIf="isInvalid('telefono')" class="text-danger small">{{ getError('telefono') }}</div>
-                        </div>
-
                         <h6 class="mb-3 mt-4 text-muted">Selección de Libros</h6>
                         <div class="mb-3">
-                            <label for="curso" class="form-label fw-semibold small text-muted">Curso</label>
+                            <label for="curso" class="form-label fw-semibold small text-muted">Curso (Selecciona el curso para ver los libros disponibles, puedes seleccionar varios libros)</label>
                             <ng-select
                                 [items]="cursos"
                                 formControlName="curso"
@@ -225,7 +162,55 @@
                             </div>
                         </div>
 
-                        <h6 class="mb-3 mt-4 text-muted">Justificante de Pago</h6>
+                        <h6 class="mb-3 text-muted">Datos del Alumno</h6>
+                        <div class="row mb-3">
+                            <div class="col-md-6 mb-3 mb-md-0">
+                                <label for="nombreAlumno" class="form-label fw-semibold small text-muted">Nombre del Alumno*</label>
+                                <input type="text" id="nombreAlumno" class="form-control form-control-sm" formControlName="nombreAlumno" placeholder="Ingrese el nombre del alumno">
+                                <div *ngIf="isInvalid('nombreAlumno')" class="text-danger small">{{ getError('nombreAlumno') }}</div>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="apellidosAlumno" class="form-label fw-semibold small text-muted">Apellidos del Alumno*</label>
+                                <input type="text" id="apellidosAlumno" class="form-control form-control-sm" formControlName="apellidosAlumno" placeholder="Ingrese los apellidos del alumno">
+                                <div *ngIf="isInvalid('apellidosAlumno')" class="text-danger small">{{ getError('apellidosAlumno') }}</div>
+                            </div>
+                        </div>
+
+                        <h6 class="mb-3 mt-4 text-muted">Información del Tutor (Obligatoria únicamente para reservas de Infantil)</h6>
+                        <div class="row mb-3">
+                            <div class="col-md-6 mb-3 mb-md-0">
+                                <label for="nombreTutor" class="form-label fw-semibold small text-muted">Padre / Madre / Tutor Legal</label>
+                                <input type="text" id="nombreTutor" class="form-control form-control-sm" formControlName="nombreTutor" placeholder="Ingrese el nombre del tutor">
+                                <div *ngIf="isInvalid('nombreTutor')" class="text-danger small">{{ getError('nombreTutor') }}</div>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="apellidosTutor" class="form-label fw-semibold small text-muted">Apellidos del Tutor Legal</label>
+                                <input type="text" id="apellidosTutor" class="form-control form-control-sm" formControlName="apellidosTutor" placeholder="Ingrese los apellidos del tutor">
+                                <div *ngIf="isInvalid('apellidosTutor')" class="text-danger small">{{ getError('apellidosTutor') }}</div>
+                            </div>
+                        </div>
+
+                        <h6 class="mb-3 mt-4 text-muted">Datos de Contacto (Asegúrate de que sean correctos para futuras comunicaciones)</h6>
+                        <div class="row mb-3">
+                            <div class="col-md-6 mb-3 mb-md-0">
+                                <label for="dni" class="form-label fw-semibold small text-muted">DNI*</label>
+                                <input type="text" id="dni" class="form-control form-control-sm" formControlName="dni" placeholder="Ingrese el DNI">
+                                <div *ngIf="isInvalid('dni')" class="text-danger small">{{ getError('dni') }}</div>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="correo" class="form-label fw-semibold small text-muted">Correo Electrónico*</label>
+                                <input type="email" id="correo" class="form-control form-control-sm" formControlName="correo" placeholder="Ingrese el correo electrónico">
+                                <div *ngIf="isInvalid('correo')" class="text-danger small">{{ getError('correo') }}</div>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="telefono" class="form-label fw-semibold small text-muted">Teléfono de Contacto*</label>
+                            <input type="tel" id="telefono" class="form-control form-control-sm" formControlName="telefono" placeholder="Ingrese el teléfono">
+                            <div *ngIf="isInvalid('telefono')" class="text-danger small">{{ getError('telefono') }}</div>
+                        </div>
+
+                        <h6 class="mb-3 mt-4 text-muted">Justificante de Pago (Es necesario adjuntar el justificante para completar la reserva)</h6>
                         <!-- IBAN en un alert de Bootstrap -->
                         <div class="mb-3">
                             <div class="alert alert-info mb-0" role="alert">
