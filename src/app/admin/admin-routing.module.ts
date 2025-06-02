@@ -3,10 +3,13 @@ import { RouterModule, Routes } from '@angular/router';
 import { AdminComponent } from './admin.component';
 import { CrudComponent } from './components/gestion/crud/crud.component';
 import { LoginComponent } from './components/login/login.component';
-import { PedidosComponent } from './components/pedidos/pedidos.component';
 import { ReservasComponent } from './components/reservas/reservas.component';
 import { AdminLayoutComponent } from './components/admin-layout/admin-layout.component';
 import { AuthGuard } from '../guards/auth.guard';
+import { AsignarLibrosCursosComponent } from './components/gestion/asignar-libros-cursos/asignar-libros-cursos.component';
+import { PedidosPendientesComponent } from './components/pedidos/pedidos-pendientes/pedidos-pendientes.component';
+import { PedidosRealizadosComponent } from './components/pedidos/pedidos-realizados/pedidos-realizados.component';
+import { EntregaLibrosComponent } from './components/entrega-libros/entrega-libros.component';
 
 const routes: Routes = [
   {
@@ -17,8 +20,11 @@ const routes: Routes = [
     children: [
       { path: 'login', component: LoginComponent },
       { path: 'reservas', component: ReservasComponent, canActivate: [AuthGuard] },
-      { path: 'pedidos', component: PedidosComponent, canActivate: [AuthGuard] },
+      { path: 'pedidos-pendientes', component: PedidosPendientesComponent, canActivate: [AuthGuard] },
+      { path: 'pedidos-realizados', component: PedidosRealizadosComponent, canActivate: [AuthGuard] },
       { path: 'crud/:modo', component: CrudComponent, canActivate: [AuthGuard] },
+      { path: 'asignar-libros-cursos', component: AsignarLibrosCursosComponent, canActivate: [AuthGuard] },
+      { path: 'entrega-libros', component: EntregaLibrosComponent, canActivate: [AuthGuard] },
       { path: '**', redirectTo: 'login' }
     ]
   }

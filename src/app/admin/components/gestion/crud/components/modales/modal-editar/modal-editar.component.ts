@@ -5,6 +5,8 @@ import { CrudService } from 'src/app/services/crud.service';
 import { Editorial } from 'src/app/models/editorial.model';
 import { Libro } from 'src/app/models/libro.model';
 import { ToastrService } from 'ngx-toastr';
+import { Etapa } from 'src/app/models/etapa.model';
+import { EtapaService } from 'src/app/services/etapa.service';
 import { ReservaRequest } from 'src/app/models/reserva.model';
 
 @Component({
@@ -33,12 +35,14 @@ export class ModalEditarComponent implements OnInit, OnChanges {
   
   // Lista de editoriales para el select
   editoriales: Editorial[] = [];
+  etapas: Etapa[] = [];
   
   // Flag para controlar que solo se muestre un mensaje de error a la vez
   mostrandoErrores: boolean = false;
   
   constructor(
     private crudService: CrudService,
+    private etapaService: EtapaService,
     private fb: FormBuilder,
     private toastr: ToastrService
   ) { }
@@ -46,6 +50,7 @@ export class ModalEditarComponent implements OnInit, OnChanges {
   ngOnInit(): void {
     this.inicializarFormularios();
     this.cargarEditoriales();
+    this.cargarEtapas();
     this.configurarModalCierreCondicional();
     this.configurarReseteoFormularioAlCerrar();
   }
@@ -208,7 +213,8 @@ export class ModalEditarComponent implements OnInit, OnChanges {
         Validators.required, 
         Validators.min(1),
         Validators.pattern('^[0-9]+(\\.[0-9]{1,2})?$')
-      ]]
+      ]],
+      etapa: [null, Validators.required]
     });
 
     this.formR = this.fb.group({
@@ -330,6 +336,19 @@ export class ModalEditarComponent implements OnInit, OnChanges {
     });
   }
   
+  cargarEtapas(): void {
+    this.etapaService.getEtapas().subscribe({
+      next: (etapas: Etapa[]) => {
+        this.etapas = etapas;
+      },
+      error: (error) => {
+        console.error('Error al cargar las etapas:', error);
+        this.toastr.error('Error al cargar las etapas', 'Error');
+      }
+    });
+  }
+  
+
   cargarDatosEditorial(id: string): void {
     this.crudService.getEditorialById(id).subscribe({
       next: (editorial: Editorial) => {
@@ -377,7 +396,8 @@ export class ModalEditarComponent implements OnInit, OnChanges {
           nombre: libro.nombre,
           isbn: libro.isbn,
           editorial: libro.editorial?.idEditorial,
-          precio: libro.precio
+          precio: libro.precio,
+          etapa: libro.etapa?.id
         });
       },
       error: (err: unknown) => {
@@ -464,7 +484,10 @@ export class ModalEditarComponent implements OnInit, OnChanges {
         editorial: {
           idEditorial: this.formL.value.editorial
         },
-        precio: this.formL.value.precio
+        precio: this.formL.value.precio,
+        etapa: {
+          id: this.formL.value.etapa
+        } as Etapa
       };
       
       this.crudService.updateLibro(this.idEntidad, libroActualizado).subscribe({

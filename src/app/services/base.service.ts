@@ -15,7 +15,7 @@ export class BaseService {
   /**
    * Convierte un archivo a base64
    */
-  protected fileToBase64(file: File): Observable<string> {
+  public fileToBase64(file: File): Observable<string> {
     return new Observable(observer => {
       const reader = new FileReader();
       reader.readAsDataURL(file);
@@ -37,7 +37,7 @@ export class BaseService {
   /**
    * Obtiene la fecha actual en formato YYYY-MM-DD
    */
-  protected getCurrentDate(): string {
+  public getCurrentDate(): string {
     const date = new Date();
     return date.toISOString().split('T')[0];
   }
@@ -45,7 +45,7 @@ export class BaseService {
   /**
    * Maneja las respuestas del servidor que pueden contener advertencias de PHP
    */
-  protected handleApiResponse<T>(responseText: string, fallbackResponse?: T): T {
+  public handleApiResponse<T>(responseText: string, fallbackResponse?: T): T {
     console.log('Respuesta recibida del servidor (texto):', responseText);
     
     // Verificar si la respuesta parece HTML (contiene tags)
@@ -102,7 +102,7 @@ export class BaseService {
   /**
    * Maneja los errores de las peticiones HTTP
    */
-  protected handleError<T>(error: any, fallbackResponse?: T): Observable<T> {
+  public handleError<T>(error: any, fallbackResponse?: T): Observable<T> {
     let errorMsg: string;
     
     if (error instanceof HttpErrorResponse) {
@@ -148,6 +148,16 @@ export class BaseService {
     );
   }
 
+  public postWithTextResponse<T>(endpoint: string, body: any): Observable<T> {
+    return this.http.post(`${this.apiBaseUrl}${endpoint}`, body, {
+      headers: this.getHeaders(),
+      responseType: 'text'
+    }).pipe(
+      map(response => response as unknown as T),
+      catchError(error => this.handleError<T>(error))
+    );
+  }
+
   public put<T>(endpoint: string, body: any): Observable<T> {
     return this.http.put<T>(`${this.apiBaseUrl}${endpoint}`, body, {
       headers: this.getHeaders()
@@ -163,4 +173,4 @@ export class BaseService {
       catchError(error => this.handleError<T>(error))
     );
   }
-} 
+}

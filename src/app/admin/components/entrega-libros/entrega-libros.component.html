@@ -1,0 +1,175 @@
+<div class="container-fluid p-4">
+  <!-- Loading state -->
+  <div *ngIf="cargando" class="text-center my-5">
+    <div class="spinner-border text-primary" role="status">
+      <span class="visually-hidden">Cargando...</span>
+    </div>
+    <p class="mt-2">Cargando reservas...</p>
+  </div>
+
+  <div class="row" *ngIf="!reservaSeleccionada && !cargando">
+    <div class="col-12 col-md-10 col-lg-12 mx-auto">
+      <div class="card shadow-sm">
+        <div class="card-header bg-primary text-white">
+          <h5 class="mb-0"><i class="fas fa-search me-2"></i>Buscar Reserva</h5>
+        </div>
+        <div class="card-body">
+          <div class="row g-2 mb-3">
+            <div class="col-12 col-md-4">
+              <div class="input-group">
+                <span class="input-group-text"><i class="fas fa-search"></i></span>
+                <input type="text" class="form-control" placeholder="Buscar por nombre, apellidos, correo, DNI..." [(ngModel)]="busqueda" (ngModelChange)="filtrarReservas()">
+              </div>
+            </div>
+            <div class="col-6 col-md-3">
+              <select class="form-select" [(ngModel)]="filtroCurso" (change)="filtrarReservas()">
+                <option value="">Todos los cursos</option>
+                <option *ngFor="let curso of cursos" [value]="curso.id">{{ curso.nombre }}</option>
+              </select>
+            </div>
+            <div class="col-6 col-md-3">
+              <input type="date" class="form-control" [(ngModel)]="filtroFecha" (change)="filtrarReservas()">
+            </div>
+            <div class="col-12 col-md-2">
+              <select class="form-select" [(ngModel)]="filtroEstado" (change)="filtrarReservas()">
+                <option value="">Todas las reservas</option>
+                <option value="pendiente">Pendiente</option>
+                <option value="parcial">Parcial</option>
+                <option value="completo">Completada</option>
+              </select>
+            </div>
+          </div>
+          <div *ngIf="getReservasPagina().length === 0" class="text-center text-muted my-4">
+            <i class="fas fa-user-times fa-2x mb-2"></i>
+            <p>No se encontraron reservas.</p>
+          </div>
+          <div class="list-group mb-3">
+            <button type="button" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center"
+              *ngFor="let reserva of getReservasPagina()"
+              (click)="seleccionarReserva(reserva)"
+              [ngClass]="{'active-reserva': esReservaSeleccionada(reserva)}">
+              <div>
+                <strong>{{ reserva.nombreAlumno }} {{ reserva.apellidosAlumno }}</strong>
+                <div class="small text-muted">{{ reserva.correo }}</div>
+                <div class="small text-secondary">Fecha: {{ reserva.fecha }}</div>
+              </div>
+              <div class="text-end">
+                <span class="badge me-2" [ngClass]="getBadgeEstadoReserva(reserva)">
+                  {{ getTextoEstadoReserva(reserva) }}
+                </span>
+                <span class="badge bg-info">#{{ reserva.idReserva }}</span>
+              </div>
+            </button>
+          </div>
+          <nav *ngIf="totalPaginas() > 1" aria-label="Paginación de reservas">
+            <ul class="pagination justify-content-center mb-0">
+              <li class="page-item" [class.disabled]="paginaActual === 1">
+                <button class="page-link" (click)="cambiarPagina(-1)">&laquo;</button>
+              </li>
+              <li class="page-item disabled">
+                <span class="page-link">Página {{ paginaActual }} de {{ totalPaginas() }}</span>
+              </li>
+              <li class="page-item" [class.disabled]="paginaActual === totalPaginas()">
+                <button class="page-link" (click)="cambiarPagina(1)">&raquo;</button>
+              </li>
+            </ul>
+          </nav>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row" *ngIf="reservaSeleccionada && !cargando">
+    <div class="col-12 col-md-10 col-lg-12 mx-auto">
+      <div class="card shadow-sm">
+        <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+          <h5 class="mb-0"><i class="fas fa-book me-2"></i>Entrega de Libros</h5>
+          <button class="btn btn-sm btn-light" (click)="limpiarSeleccion()" title="Volver a reservas"><i class="fas fa-arrow-left"></i></button>
+        </div>
+        <div class="card-body">
+          <div class="mb-3">
+            <strong>Alumno:</strong> {{ reservaSeleccionada.nombreAlumno }} {{ reservaSeleccionada.apellidosAlumno }}<br>
+            <strong>Correo:</strong> {{ reservaSeleccionada.correo }}<br>
+            <strong>Fecha de reserva:</strong> {{ reservaSeleccionada.fecha }}<br>
+            <strong>Curso:</strong> {{ reservaSeleccionada.curso.nombreCurso }}
+          </div>
+          <div class="d-flex justify-content-between align-items-center mb-2 flex-wrap gap-2">
+            <span class="badge bg-success">Entregados: {{ getTotalEntregados() }}</span>
+            <span class="badge bg-warning text-dark">Pendientes: {{ getTotalPendientes() }}</span>
+          </div>
+          <div class="table-responsive">
+            <table class="table table-hover table-striped align-middle">
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>Libro</th>
+                  <th>Precio</th>
+                  <th>Estado</th>
+                  <th>Entregar</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let item of librosEntrega; let i = index" [ngClass]="{'table-success': item.entregado || item.libro.fechaRecogida !== null}">
+                  <td>{{ i + 1 }}</td>
+                  <td>{{ item.libro.nombre }}</td>
+                  <td>{{ item.libro.precio }}€</td>
+                  <td>
+                    <span class="badge" [ngClass]="{'bg-success': item.libro.fechaRecogida !== null, 'bg-warning': item.libro.fechaRecogida === null}">
+                      <i *ngIf="item.libro.fechaRecogida !== null || item.entregado" class="fas fa-check-circle me-1"></i>
+                      {{ item.libro.fechaRecogida !== null ? 'Entregado' : (item.entregado ? 'A entregar' : item.libro.nombreEstado) }}
+                    </span>
+                  </td>
+                  <td>
+                    <input type="checkbox" class="form-check-input" [checked]="item.entregado" (change)="marcarEntrega(i)" [disabled]="item.libro.fechaRecogida !== null">
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="mt-3 d-flex flex-wrap gap-2">
+            <button class="btn btn-success" 
+                    (click)="abrirModalConfirmacion()" 
+                    [disabled]="todosEntregados() || !hayLibrosSeleccionados() || procesandoEntrega">
+              <span *ngIf="procesandoEntrega" class="spinner-border spinner-border-sm me-2" role="status"></span>
+              <i *ngIf="!procesandoEntrega" class="fas fa-check me-2"></i>
+              {{ procesandoEntrega ? 'Procesando...' : 'Confirmar Entrega' }}
+            </button>
+          </div>
+          <div *ngIf="mensajeExito" class="alert alert-info mt-3">{{ mensajeExito }}</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal de confirmación -->
+  <div class="modal fade show" tabindex="-1" [ngStyle]="{display: mostrarModalConfirmacion ? 'block' : 'none', background: 'rgba(0,0,0,0.3)'}" *ngIf="mostrarModalConfirmacion">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Confirmar entrega</h5>
+          <button type="button" class="btn-close" (click)="cerrarModalConfirmacion()"></button>
+        </div>
+        <div class="modal-body">
+          <p>¿Estás seguro de que quieres registrar la entrega de los libros seleccionados?</p>
+          <div class="alert alert-info small mb-0">
+            <strong>Libros a entregar:</strong>
+            <ul class="mb-0 mt-2">
+              <ng-container *ngFor="let item of librosEntrega">
+                <li *ngIf="item.entregado">
+                  {{ item.libro.nombre }}
+                </li>
+              </ng-container>
+            </ul>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" (click)="cerrarModalConfirmacion()">Cancelar</button>
+          <button type="button" class="btn btn-success" (click)="confirmarEntrega()" [disabled]="procesandoEntrega">
+            <span *ngIf="procesandoEntrega" class="spinner-border spinner-border-sm me-2" role="status"></span>
+            {{ procesandoEntrega ? 'Procesando...' : 'Confirmar' }}
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

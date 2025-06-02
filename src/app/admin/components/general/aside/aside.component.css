@@ -4,3 +4,14 @@
     color: #007bff;
     transition: background-color 0.3s;
 }
+
+/* Estilo para destacar la opción activa del menú */
+.nav-link.active {
+    border-left: 3px solid #28a745;
+    padding-left: calc(1.5rem - 3px) !important;
+    background-color: rgba(40, 167, 69, 0.1);
+    color: #28a745;
+    font-weight: 500;
+}
+
+/* Los estilos específicos del enlace "asignar-libros-cursos" se han eliminado */

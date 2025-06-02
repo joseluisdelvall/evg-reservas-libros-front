@@ -8,6 +8,7 @@ export interface ModalOptions {
         class?: string;
         iconClass?: string;
         action?: () => void;
+        disabled?: boolean;
     };
     cancelButton?: {
         text: string;

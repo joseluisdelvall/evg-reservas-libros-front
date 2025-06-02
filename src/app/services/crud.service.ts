@@ -203,3 +203,103 @@ export class CrudService {
     );
   }
 }
+
+
+  // ========== Métodos para gestionar asignaciones de libros a cursos ==========
+
+  /**
+   * Obtiene todas las asignaciones libro-curso
+   */
+  getLibrosCursos(): Observable<any[]> {
+    return this.http.get<{ status: string; data: any[] }>(this.endpoint + '/libros-cursos').pipe(
+      map(response => {
+        if (response.status === 'warning') {
+          return []; // Si no hay asignaciones, devolver array vacío
+        }
+        return response.data || [];
+      })
+    );
+  }
+
+  /**
+   * Obtiene los libros asignados a un curso específico
+   */
+  getLibrosByCurso(cursoId: string): Observable<{ status: string; data: any[] }> {
+    return this.http.get<{ status: string; data: any[] }>(`/libros/curso/${cursoId}`);
+  }
+
+  /**
+   * Asigna un libro a un curso
+   */
+  asignarLibroACurso(idLibro: number, idCurso: number): Observable<any> {
+    // Convertir idCurso a number si viene como string
+    const cursoId = typeof idCurso === 'string' ? parseInt(idCurso, 10) : idCurso;
+    
+    // Usar POST a /crud/libros-cursos/add con los parámetros en el body
+    return this.http.post<{ status: string; data: any }>(
+      '/crud/libros-cursos/add',
+      { 
+        idLibro: idLibro, 
+        idCurso: cursoId  // Asegurar que sea number
+      }
+    ).pipe(
+      map(response => response.data)
+    );
+  }
+
+  /**
+   * Elimina una asignación libro-curso
+   */
+  eliminarAsignacionLibroCurso(idLibro: number, idCurso: number): Observable<any> {
+    // Convertir idCurso a number si viene como string
+    const cursoId = typeof idCurso === 'string' ? parseInt(idCurso, 10) : idCurso;
+    
+    // Usar POST a /crud/libros-cursos/delete con los parámetros en el body
+    return this.http.post<{ status: string; message: string }>(
+      '/crud/libros-cursos/delete',
+      { 
+        idLibro: idLibro, 
+        idCurso: idCurso  // Asegurar que sea number
+      }
+    );
+  }
+
+  /**
+   * Obtiene las editoriales que tienen libros reservados pendientes de pedir
+   */
+  getEditorialesConLibrosPendientes(): Observable<Editorial[]> {
+    return this.http.get<{ status: string; message: string; data: Editorial[] }>(
+      '/pedidos/editoriales-con-libros-pendientes'
+    ).pipe(
+      map(response => {
+        if (response.status === 'error') {
+          throw new Error(response.message);
+        }
+        return response.data || [];
+      })
+    );
+  }
+
+  /**
+   * Obtiene los libros pendientes de pedir para una editorial específica
+   */
+  getLibrosPendientesPorEditorial(idEditorial: string): Observable<Libro[]> {
+    return this.http.get<{ status: string; message: string; data: Libro[] }>(
+      `/pedidos/editoriales/${idEditorial}/libros-pendientes`
+    ).pipe(
+      map(response => {
+        if (response.status === 'error') {
+          throw new Error(response.message);
+        }
+        return response.data || [];
+      })
+    );
+  }
+
+  /**
+   * Obtiene los libros de una etapa específica
+   */
+  getLibrosByEtapa(etapaId: string): Observable<{ status: string; data: any[] }> {
+    return this.http.get<{ status: string; data: any[] }>(`/libros/etapa/${etapaId}`);
+  }
+}

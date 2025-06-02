@@ -12,8 +12,14 @@
                 <li class="nav-item">
                     <a class="nav-link" routerLink="reservas" routerLinkActive="active">Reservas</a>
                 </li>
-                <li class="nav-item">
-                    <a class="nav-link" routerLink="pedidos" routerLinkActive="active">Pedidos</a>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" id="navbarDropdownPedidos" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        Pedidos
+                    </a>
+                    <ul class="dropdown-menu" aria-labelledby="navbarDropdownPedidos">
+                        <li><a class="dropdown-item" routerLink="pedidos-pendientes" routerLinkActive="active">Pedidos Pendientes</a></li>
+                        <li><a class="dropdown-item" routerLink="pedidos-realizados" routerLinkActive="active">Pedidos Realizados</a></li>
+                    </ul>
                 </li>
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
@@ -22,7 +28,14 @@
                     <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
                         <li><a class="dropdown-item" routerLink="crud/libros" routerLinkActive="active">Libros</a></li>
                         <li><a class="dropdown-item" routerLink="crud/editoriales" routerLinkActive="active">Editoriales</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item" routerLink="asignar-libros-cursos" routerLinkActive="active">Asignar Libros a Cursos</a></li>
                     </ul>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" routerLink="entrega-libros" routerLinkActive="active">
+                        Entrega de Libros
+                    </a>
                 </li>
             </ul>
             <div *ngIf="!isLoggedIn; else loggedInTemplate" class="d-flex">

@@ -5,7 +5,8 @@ import { CrudService } from 'src/app/services/crud.service';
 import { Libro } from 'src/app/models/libro.model';
 import { Editorial } from 'src/app/models/editorial.model';
 import { ToastrService } from 'ngx-toastr';
-
+import { Etapa } from 'src/app/models/etapa.model';
+import { EtapaService } from 'src/app/services/etapa.service';
 @Component({
   selector: 'app-modal-nuevo',
   templateUrl: './modal-nuevo.component.html',
@@ -23,17 +24,20 @@ export class ModalNuevoComponent implements OnInit, OnChanges {
   formE!: FormGroup;
   formR!: FormGroup;
   editoriales: Editorial[] = [];
+  etapas: Etapa[] = [];
   mostrandoErrores: boolean = false;
 
   constructor(
     private formBuilder: FormBuilder,
     private crudService: CrudService,
+    private etapaService: EtapaService,
     private toastr: ToastrService
   ) { }
 
   ngOnInit(): void {
     this.crearFormularios();
     this.cargarEditoriales();
+    this.cargarEtapas();
     this.configurarModalCierreCondicional();
     this.configurarReseteoFormularioAlCerrar();
   }
@@ -183,6 +187,33 @@ export class ModalNuevoComponent implements OnInit, OnChanges {
     this.formR = this.formBuilder.group({
       // Aquí puedes agregar los campos necesarios para el formulario de reservas
     });
+    if (this.modo === 'libros') {
+      this.formL = this.formBuilder.group({
+        nombre: ['', [Validators.required, Validators.minLength(3)]],
+        isbn: ['', [Validators.required, Validators.pattern('^[0-9-]{10,20}$')]],
+        editorial: [null, Validators.required],
+        precio: [null, [
+          Validators.required, 
+          Validators.min(1),
+          Validators.pattern('^[0-9]+(\\.[0-9]{1,2})?$')
+        ]],
+        etapa: [null, Validators.required]
+      }); 
+    } else if (this.modo === 'editoriales') {
+      this.formE = this.formBuilder.group({
+        nombre: ['', [Validators.required, Validators.minLength(3)]],
+        correos: this.formBuilder.array([
+          this.formBuilder.control('', [Validators.email]),
+          this.formBuilder.control('', [Validators.email]),
+          this.formBuilder.control('', [Validators.email])
+        ]),
+        telefonos: this.formBuilder.array([
+          this.formBuilder.control('', [Validators.pattern('^[6-9]\\d{8}$')]),
+          this.formBuilder.control('', [Validators.pattern('^[6-9]\\d{8}$')]),
+          this.formBuilder.control('', [Validators.pattern('^[6-9]\\d{8}$')])
+        ])
+      }); 
+    }
   }
 
   // Método para bloquear la entrada de caracteres no numéricos en el campo de precio
@@ -267,6 +298,19 @@ export class ModalNuevoComponent implements OnInit, OnChanges {
     });
   }
 
+  cargarEtapas(): void {
+    this.etapaService.getEtapas().subscribe({
+      next: (data: Etapa[]) => {
+        this.etapas = data;
+      },
+      error: (error) => {
+        console.error('Error al cargar las etapas:', error);
+        this.toastr.error('Error al cargar las etapas', 'Error');
+      }
+    });
+  }
+  
+
   onSubmit(): void {
     if (this.modo === 'libros') {
       if (this.formL.valid) {
@@ -276,7 +320,10 @@ export class ModalNuevoComponent implements OnInit, OnChanges {
           editorial: {
             idEditorial: this.formL.value.editorial
           } as Editorial,
-          precio: this.formL.value.precio
+          precio: this.formL.value.precio,
+          etapa: {
+            id: this.formL.value.etapa
+          } as Etapa
         };
 
         this.crudService.addLibro(libroData).subscribe({

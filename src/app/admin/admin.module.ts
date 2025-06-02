@@ -1,6 +1,6 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ReactiveFormsModule } from '@angular/forms';
+import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { DataTablesModule } from 'angular-datatables';
 import { ToastrModule } from 'ngx-toastr';
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
@@ -14,13 +14,16 @@ import { ModalFiltroComponent } from './components/gestion/crud/components/modal
 import { ModalNuevoComponent } from './components/gestion/crud/components/modales/modal-nuevo/modal-nuevo.component';
 import { CrudComponent } from './components/gestion/crud/crud.component';
 import { LoginComponent } from './components/login/login.component';
-import { PedidosComponent } from './components/pedidos/pedidos.component';
 import { ModalPeriodoReservasComponent } from './components/reservas/modales/modal-periodo-reservas/modal-periodo-reservas.component';
 import { ReservasComponent } from './components/reservas/reservas.component';
 import { ModalContentComponent } from './components/shared/modal-content/modal-content.component';
 import { AdminLayoutComponent } from './components/admin-layout/admin-layout.component';
 import { ModalVerComponent } from './components/gestion/crud/components/modales/modal-ver/modal-ver.component';
 import { LoadingSpinnerComponent } from '../shared/loading-spinner/loading-spinner.component';
+import { AsignarLibrosCursosComponent } from './components/gestion/asignar-libros-cursos/asignar-libros-cursos.component';
+import { PedidosPendientesComponent } from './components/pedidos/pedidos-pendientes/pedidos-pendientes.component';
+import { PedidosRealizadosComponent } from './components/pedidos/pedidos-realizados/pedidos-realizados.component';
+import { EntregaLibrosComponent } from './components/entrega-libros/entrega-libros.component';
 
 @NgModule({
   declarations: [
@@ -28,7 +31,6 @@ import { LoadingSpinnerComponent } from '../shared/loading-spinner/loading-spinn
     AdminComponent,
     HeaderComponent,
     ReservasComponent,
-    PedidosComponent,
     LoginComponent,
     CrudComponent,
     AsideComponent,
@@ -37,12 +39,17 @@ import { LoadingSpinnerComponent } from '../shared/loading-spinner/loading-spinn
     ModalPeriodoReservasComponent,
     ModalEditarComponent,
     ModalFiltroComponent,
+    AsignarLibrosCursosComponent,
     ModalVerComponent,
-    LoadingSpinnerComponent
+    LoadingSpinnerComponent,
+    PedidosPendientesComponent,
+    PedidosRealizadosComponent,
+    EntregaLibrosComponent
   ],
   imports: [
     CommonModule,
     ReactiveFormsModule,
+    FormsModule,
     AdminRoutingModule,
     DataTablesModule,
     ToastrModule

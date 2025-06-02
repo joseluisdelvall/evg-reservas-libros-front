@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators, AbstractControl, ValidationErrors } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators, AbstractControl, ValidationErrors, FormArray } from '@angular/forms';
 import { CursoService } from '../../services/curso.service';
 import { LibroService } from '../../services/libro.service';
 import { ReservaService } from '../../services/reserva.service';
@@ -18,6 +18,8 @@ export class FormReservaComponent implements OnInit {
   reservaForm!: FormGroup;
   cursos: Curso[] = [];
   libros: Libro[] = [];
+  librosSeleccionados: number[] = []; // Para guardar los IDs de los libros seleccionados
+  totalAPagar: number = 0; // Para mostrar el total
   mostrarLibros = false;
   loading = false;
   justificanteFile: File | null = null;
@@ -109,24 +111,23 @@ export class FormReservaComponent implements OnInit {
 
   loadLibrosByCurso(cursoId: string) {
     this.libroService.getLibrosByCurso(cursoId).subscribe({
-      next: (libros) => {
-        this.libros = libros;
+      next: (librosRespuesta) => {
+        this.libros = librosRespuesta || []; // Asegurar que this.libros sea siempre un array
+        this.librosSeleccionados = []; // Limpiar selección previa
+        this.reservaForm.get('librosSeleccionados')?.setValue([]); // Actualizar valor del control
+        this.reservaForm.get('librosSeleccionados')?.markAsUntouched(); // Marcar como no tocado
+        this.calcularTotalAPagar(); // Recalcular total
         
-        const libroControl = this.reservaForm.get('libro');
         if (this.libros.length > 0) {
-          libroControl?.enable();
-          
-          // Agregar validadores pero sin disparar errores
-          libroControl?.setValidators(Validators.required);
-          libroControl?.updateValueAndValidity({onlySelf: true, emitEvent: false});
-          
+          this.reservaForm.get('librosSeleccionados')?.enable();
+          this.reservaForm.get('librosSeleccionados')?.setValidators(this.minLibroSeleccionado(1));
           this.mostrarLibros = true;
         } else {
-          libroControl?.disable();
-          libroControl?.clearValidators();
+          this.reservaForm.get('librosSeleccionados')?.disable();
+          this.reservaForm.get('librosSeleccionados')?.clearValidators();
           this.mostrarLibros = false;
         }
-        libroControl?.updateValueAndValidity({onlySelf: true, emitEvent: false});
+        this.reservaForm.get('librosSeleccionados')?.updateValueAndValidity();
       },
       error: (error) => {
         console.error('Error al cargar los libros:', error);
@@ -183,37 +184,100 @@ export class FormReservaComponent implements OnInit {
       ]],
       telefono: ['', [Validators.required, Validators.pattern('^[6-9]\\d{8}$')]],
       curso: [null, Validators.required],
-      libro: [{ value: '', disabled: true }, Validators.required],
+      librosSeleccionados: [{ value: [], disabled: true }, this.minLibroSeleccionado(1)],
       justificante: ['', Validators.required]
     });
   }  
 
   listenCursoChanges() {
-    this.reservaForm.get('curso')?.valueChanges.subscribe(curso => {
-      const libroControl = this.reservaForm.get('libro');
-      
-      // Temporalmente quitar validadores antes de resetear
-      libroControl?.clearValidators();
-      libroControl?.updateValueAndValidity();
-      
-      // Resetear valor
-      libroControl?.setValue(null);
-      
-      // Resetear estados
-      libroControl?.markAsPristine();
-      libroControl?.markAsUntouched();
-      
-      if (!curso) {
+    this.reservaForm.get('curso')?.valueChanges.subscribe(cursoId => {
+      const librosControl = this.reservaForm.get('librosSeleccionados');
+      const nombreTutorControl = this.reservaForm.get('nombreTutor');
+      const apellidosTutorControl = this.reservaForm.get('apellidosTutor');
+  
+      librosControl?.clearValidators();
+      librosControl?.setValue([]);
+      this.librosSeleccionados = [];
+      this.calcularTotalAPagar();
+  
+      if (cursoId) {
+        const cursoSeleccionado = this.cursos.find(c => c.id === cursoId);
+        const esInfantil = cursoSeleccionado?.nombre.toLowerCase().includes('infantil');
+  
+        // Validación condicional para los tutores
+        if (esInfantil) {
+          nombreTutorControl?.setValidators([Validators.required, Validators.minLength(3)]);
+          apellidosTutorControl?.setValidators([Validators.required, Validators.minLength(3)]);
+        } else {
+          nombreTutorControl?.clearValidators();
+          apellidosTutorControl?.clearValidators();
+        }
+  
+        nombreTutorControl?.updateValueAndValidity();
+        apellidosTutorControl?.updateValueAndValidity();
+  
+        this.loadLibrosByCurso(cursoId.toString());
+        librosControl?.enable();
+        librosControl?.setValidators(this.minLibroSeleccionado(1));
+      } else {
+        this.libros = [];
         this.mostrarLibros = false;
-        return;
+        librosControl?.disable();
+  
+        // Limpiar validadores del tutor si no hay curso seleccionado
+        nombreTutorControl?.clearValidators();
+        apellidosTutorControl?.clearValidators();
+        nombreTutorControl?.updateValueAndValidity();
+        apellidosTutorControl?.updateValueAndValidity();
       }
-      
-      // Si curso es un objeto, obtenemos su id
-      const cursoId = curso && typeof curso === 'object' ? curso.id : curso;
-      
-      // Cargar los libros desde el backend
-      this.loadLibrosByCurso(cursoId);
+  
+      librosControl?.updateValueAndValidity();
     });
+  }
+  
+
+  // Validador personalizado para asegurar que al menos X libros estén seleccionados
+  minLibroSeleccionado(min: number) {
+    return (control: AbstractControl): ValidationErrors | null => {
+      if (this.mostrarLibros && control.value && control.value.length < min) {
+        return { 'minLibros': { requiredCount: min, actualCount: control.value.length } };
+      }
+      return null;
+    };
+  }
+
+  onLibroCheckboxChange(event: any, libroId: number) {
+    const isChecked = event.target.checked;
+    if (isChecked) {
+      if (!this.librosSeleccionados.includes(libroId)) {
+        this.librosSeleccionados.push(libroId);
+      }
+    } else {
+      const index = this.librosSeleccionados.indexOf(libroId);
+      if (index > -1) {
+        this.librosSeleccionados.splice(index, 1);
+      }
+    }
+    // Actualizar el valor del FormControl para que la validación funcione
+    this.reservaForm.get('librosSeleccionados')?.setValue(this.librosSeleccionados);
+    this.reservaForm.get('librosSeleccionados')?.markAsTouched(); // Marcar como tocado para mostrar errores si es necesario
+    this.calcularTotalAPagar(); // Recalcular el total cada vez que cambia la selección
+  }
+
+  isLibroSeleccionado(libroId: number): boolean {
+    return this.librosSeleccionados.includes(libroId);
+  }
+
+  calcularTotalAPagar(): void {
+    this.totalAPagar = 0;
+    if (this.librosSeleccionados && this.libros) {
+      this.librosSeleccionados.forEach(libroId => {
+        const libroEncontrado = this.libros.find(l => l.id === libroId);
+        if (libroEncontrado && typeof libroEncontrado.precio === 'number') {
+          this.totalAPagar += libroEncontrado.precio;
+        }
+      });
+    }
   }
 
   onFileChange(event: any) {
@@ -232,16 +296,28 @@ export class FormReservaComponent implements OnInit {
 
   getError(controlName: string): string {
     const control = this.reservaForm.get(controlName);
-    if (control?.hasError('required')) return 'Este campo es obligatorio.';
-    if (controlName === 'correo' && control?.hasError('email')) return 'Ingrese un correo electrónico válido.';
-    if (controlName === 'correo' && control?.hasError('pattern')) return 'Formato de correo inválido. Debe incluir @ y un dominio válido.';
-    if (controlName === 'dni' && control?.hasError('pattern')) return 'Formato de DNI inválido. Debe ser 8 dígitos seguidos de una letra.';
-    if (controlName === 'dni' && control?.hasError('formatoInvalido')) return 'Formato de DNI inválido. Debe ser 8 dígitos seguidos de una letra.';
-    if (controlName === 'dni' && control?.hasError('letraInvalida')) return 'La letra del DNI no es correcta para esos dígitos.';
-    if (controlName === 'telefono' && control?.hasError('pattern')) return 'Ingrese un teléfono válido (9 dígitos, comenzando por 6, 7, 8 o 9).';
-    if (control?.hasError('minlength')) {
-      const requiredLength = control.errors?.['minlength'].requiredLength;
-      return `Debe tener al menos ${requiredLength} caracteres.`;
+    if (control?.errors) {
+      if (control.errors['required']) {
+        return 'Este campo es obligatorio.';
+      }
+      if (control.errors['minlength']) {
+        return `Debe tener al menos ${control.errors['minlength'].requiredLength} caracteres.`;
+      }
+      if (control.errors['pattern']) {
+        if (controlName === 'dni') return 'El formato del DNI no es válido (8 números y 1 letra).';
+        if (controlName === 'correo') return 'El formato del correo no es válido.';
+        if (controlName === 'telefono') return 'El formato del teléfono no es válido (debe empezar por 6, 7, 8 o 9 y tener 9 dígitos).';
+        return 'Formato incorrecto.';
+      }
+      if (control.errors['formatoInvalido']) {
+        return 'El formato del DNI no es válido (8 números y 1 letra).';
+      }
+      if (control.errors['letraInvalida']) {
+        return 'La letra del DNI no es correcta.';
+      }
+      if (controlName === 'librosSeleccionados' && control.errors['minLibros']) {
+        return 'Debe seleccionar al menos un libro.';
+      }
     }
     return '';
   }
@@ -288,34 +364,21 @@ export class FormReservaComponent implements OnInit {
     const formValues = this.reservaForm.value;
     
     try {
-      // Extraer los IDs de los libros seleccionados
-      let librosIds: number[] = [];
-      
-      if (Array.isArray(formValues.libro)) {
-        librosIds = formValues.libro.map((libro: Libro | number) => {
-          // Si es un objeto Libro, obtenemos su ID, si es un número lo usamos directamente
-          return typeof libro === 'object' ? libro.id : Number(libro);
-        });
-      } else if (formValues.libro) {
-        // Si es un único valor
-        librosIds = [typeof formValues.libro === 'object' ? formValues.libro.id : Number(formValues.libro)];
-      }
-      
       // Verificar si hay libros seleccionados
-      if (librosIds.length === 0) {
+      if (this.librosSeleccionados.length === 0) {
         throw new Error('Debe seleccionar al menos un libro');
       }
 
       const reservaData: ReservaRequest = {
         nombreAlumno: formValues.nombreAlumno,
         apellidosAlumno: formValues.apellidosAlumno,
-        nombreTutorLegal: formValues.nombreTutor || undefined,
-        apellidosTutorLegal: formValues.apellidosTutor || undefined,
+        nombreTutorLegal: formValues.nombreTutor || null,
+        apellidosTutorLegal: formValues.apellidosTutor || null,
         correo: formValues.correo,
         dni: formValues.dni,
         telefono: formValues.telefono,
         idCurso: formValues.curso,
-        libros: librosIds
+        libros: this.librosSeleccionados
       };
 
       // Log para depuración
@@ -344,6 +407,26 @@ export class FormReservaComponent implements OnInit {
             
             // Verificar si la respuesta tiene la estructura esperada
             if (response && response.id) {
+              // Convertir la respuesta del servicio al formato del modelo
+              const reservaCompletada: ReservaResponse = {
+                idReserva: response.id,
+                nombreAlumno: response.nombreAlumno,
+                apellidosAlumno: response.apellidosAlumno,
+                correo: response.correo,
+                dni: response.dni,
+                telefono: response.telefono,
+                justificante: response.justificante,
+                fecha: response.fecha,
+                verificado: response.verificado === 1,
+                totalPagado: response.totalPagado,
+                curso: {
+                  idCurso: response.curso,
+                  nombreCurso: this.getCursoNombre(response.curso),
+                  nombreEtapa: ''
+                },
+                libros: response.libros || []
+              };
+
               // Si el id es mayor a 1000, sabemos que es una respuesta simulada
               // debido a un problema de comunicación con el servidor de correo
               if (response.id >= 1000) {
@@ -355,7 +438,7 @@ export class FormReservaComponent implements OnInit {
               }
               
               // Guardar la respuesta y resetear el formulario
-              this.reservaCompletada = response;
+              this.reservaCompletada = reservaCompletada;
               this.resetForm();
             } else {
               // Si la respuesta no tiene la estructura esperada
@@ -381,12 +464,28 @@ export class FormReservaComponent implements OnInit {
 
   resetForm() {
     this.reservaForm.reset();
-    this.mostrarLibros = false;
     this.justificanteFile = null;
-    this.mensajeExito = '';
-    this.mensajeError = '';
-    this.mostrandoErrores = false; // Resetear el flag de mostrar errores
-    // No reseteamos this.reservaCompletada aquí para mantener el resumen visible
+    // Limpiar específicamente el campo de archivo si existe un input con id 'justificante'
+    const fileInput = document.getElementById('justificante') as HTMLInputElement;
+    if (fileInput) {
+      fileInput.value = '';
+    }
+    this.libros = [];
+    this.librosSeleccionados = []; // También limpiar la selección de libros
+    this.totalAPagar = 0; // Resetear total
+    this.mostrarLibros = false;
+    
+    // Re-deshabilitar y limpiar validadores del control de libros
+    const librosControl = this.reservaForm.get('librosSeleccionados');
+    librosControl?.disable();
+    librosControl?.clearValidators();
+    librosControl?.setValue([]);
+    librosControl?.updateValueAndValidity();
+    
+    // Si el formulario tiene un control llamado 'curso', resetearlo también.
+    if (this.reservaForm.get('curso')) {
+      this.reservaForm.get('curso')?.setValue(null);
+    }
   }
 
   // Obtener el nombre del curso por su ID

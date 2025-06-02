@@ -41,6 +41,20 @@
                 <div *ngIf="isInvalid('precio')" class="text-danger small">{{ getError('precio') }}</div>
             </div>
         </div>
+        <div class="row my-2">
+            <div class="col-12">
+                <label for="etapa" class="fw-bold">Etapa*</label>
+                <select id="etapa" class="form-select" 
+                        [ngClass]="{'is-invalid': isInvalid('etapa')}"
+                        formControlName="etapa">
+                    <option [ngValue]="null">Seleccione una etapa</option>
+                    <option *ngFor="let etapa of etapas" [value]="etapa.id">
+                        {{ etapa.nombre }}
+                    </option>
+                </select>
+                <div *ngIf="isInvalid('etapa')" class="text-danger small">{{ getError('etapa') }}</div>
+            </div>
+        </div>
     </form>
     <!-- Editoriales -->
     <form *ngIf="modo === 'editoriales'" [formGroup]="formE">
