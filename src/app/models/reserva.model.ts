@@ -41,6 +41,7 @@ export interface ReservaResponse {
     fecha: string;
     verificado: boolean;
     totalPagado: number;
-    curso: CursoReserva;
+    curso: CursoReserva | number;
+    nombreCurso?: string;
     libros: LibroReserva[];
 }

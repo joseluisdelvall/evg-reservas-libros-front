@@ -14,7 +14,7 @@ import { EtapaService } from 'src/app/services/etapa.service';
 })
 export class ModalNuevoComponent implements OnInit, OnChanges {
 
-  @Input() modo: 'libros' | 'editoriales' | null = null;
+  @Input() modo: 'libros' | 'editoriales' | 'reservas' | null = null;
   @Output() entidadCreada = new EventEmitter<any>(); // Emitir el evento cuando se crea una entidad
 
   // nuevoModalOptions
@@ -22,6 +22,7 @@ export class ModalNuevoComponent implements OnInit, OnChanges {
 
   formL!: FormGroup;
   formE!: FormGroup;
+  formR!: FormGroup;
   editoriales: Editorial[] = [];
   etapas: Etapa[] = [];
   mostrandoErrores: boolean = false;
@@ -34,6 +35,7 @@ export class ModalNuevoComponent implements OnInit, OnChanges {
   ) { }
 
   ngOnInit(): void {
+    this.crearFormularios();
     this.cargarEditoriales();
     this.cargarEtapas();
     this.configurarModalCierreCondicional();

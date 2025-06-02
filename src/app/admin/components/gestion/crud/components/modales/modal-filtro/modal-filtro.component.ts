@@ -8,7 +8,7 @@ import { ModalOptions } from 'src/app/admin/components/shared/modal-content/mode
 })
 export class ModalFiltroComponent implements OnInit, OnChanges {
 
-  @Input() modo: 'libros' | 'editoriales' | null = null;
+  @Input() modo: 'libros' | 'editoriales' | 'reservas' | null = null;
 
   filtroModalOptions!: ModalOptions;
 

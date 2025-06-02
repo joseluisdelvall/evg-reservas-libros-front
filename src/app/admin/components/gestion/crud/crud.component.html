@@ -1,9 +1,9 @@
+<app-modal-periodo-reservas (periodoActualizado)="obtenerPeriodoActual()"></app-modal-periodo-reservas>
+
 <app-modal-nuevo [modo]="modo" (entidadCreada)="reloadTable()"></app-modal-nuevo>
 <app-modal-editar [modo]="modo" [idEntidad]="getIdEntidadSeleccionada()" (entidadActualizada)="reloadTable()"></app-modal-editar>
 <app-modal-filtro [modo]="modo"></app-modal-filtro>
 <app-modal-ver [modo]="modo" [idEntidad]="getIdEntidadSeleccionada()" (estadoActualizado)="reloadTable()"></app-modal-ver>
-
-<!--<app-loading-spinner [isLoading]="isLoadingTable"></app-loading-spinner>-->
 
 <div class="d-flex">
   <div class="content w-100 p-5">
@@ -14,11 +14,43 @@
           <span class="visually-hidden">Cargando...</span>
         </div>
       </h2>
-      <div class="d-flex justify-content-end align-items-center gap-2 mb-2">
+      <!-- Mini-card para período de reservas -->
+      <div *ngIf="modo === 'reservas'" class="periodo-mini-card d-flex align-items-center">
+        <div class="me-3">
+          <span class="badge me-2" [ngClass]="{
+            'bg-success': esPeriodoActivo(),
+            'bg-warning': !esPeriodoActivo() && esPeriodoFuturo(),
+            'bg-danger': !esPeriodoActivo() && !esPeriodoFuturo()
+          }">
+            <i class="fas" [ngClass]="{
+              'fa-check-circle': esPeriodoActivo(),
+              'fa-clock': !esPeriodoActivo() && esPeriodoFuturo(),
+              'fa-times-circle': !esPeriodoActivo() && !esPeriodoFuturo()
+            }"></i>
+            {{ getEstadoPeriodo() }}
+          </span>
+          <span class="text-muted" *ngIf="periodoActual">
+            <i class="fas fa-calendar-alt me-1"></i>
+            {{ periodoActual.fechaInicio | date:'dd/MM/yyyy' }} - {{ periodoActual.fechaFin | date:'dd/MM/yyyy' }}
+          </span>
+          <span class="text-muted" *ngIf="!periodoActual">
+            <i class="fas fa-info-circle me-1"></i>
+            No hay período configurado
+          </span>
+        </div>
+        <button type="button" class="btn btn-outline-primary btn-sm rounded-pill d-flex align-items-center justify-content-center" 
+          data-bs-toggle="modal" 
+          data-bs-target="#gestionReservas"
+          title="Editar período de reservas"
+          style="min-width: 36px; height: 36px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); transition: all 0.2s ease;">
+           <i class="fas fa-edit" style="font-size: 14px;"></i>
+        </button>
+      </div>  
+      <div *ngIf="modo !== 'reservas'" class="d-flex justify-content-end align-items-center gap-2 mb-2">
         <button class="btn btn-sm" data-bs-toggle="modal" [attr.data-bs-target]="'#filtro' + modo">
           <i class="fas fa-search" style="font-size: 24px; color: blue;"></i>
         </button>
-        <button class="btn btn-primary btn-sm" data-bs-toggle="modal" [attr.data-bs-target]="'#nuevo' + modo">
+        <button class="btn btn-primary btn-sm" *ngIf="modo === 'libros' || modo === 'editoriales'" data-bs-toggle="modal" [attr.data-bs-target]="'#nuevo' + modo">
           + Añadir {{ modo === 'libros' ? 'libro' : 'editorial' }}
         </button>
       </div>
@@ -26,7 +58,7 @@
 
     <div class="table-container">
       <!-- Switch para filtrar activos/todos -->
-      <div class="filtro-estado-container mb-3 d-flex align-items-center">
+      <div *ngIf="modo !== 'reservas'" class="filtro-estado-container mb-3 d-flex align-items-center">
         <span class="me-2">Mostrar:</span>
         
         <div class="filtro-switch-group">
@@ -43,8 +75,8 @@
         </small>
       </div>
       
-      <!-- Tabla Libros con DataTable -->
-      <table datatable [dtOptions]="dtOptions" *ngIf="modo === 'libros'; else editoriales" 
+      <!-- Tabla Libros -->
+      <table datatable [dtOptions]="dtOptions" *ngIf="modo === 'libros'" 
             id="tablaLibros"
             class="table table-bordered table-hover table-striped" 
             style="border: 2px solid #6C8EBF;">
@@ -61,25 +93,44 @@
         <tbody></tbody>
       </table>
 
-      <!-- Tabla editoriales con DataTable -->
-      <ng-template #editoriales>
-        <table datatable [dtOptions]="dtOptions" id="tablaEditoriales"
-              class="table table-bordered table-hover table-striped" 
-              style="border: 2px solid #6C8EBF;">
-          <thead>
-            <tr class="table-primary">
-              <th></th>
-              <th class="text-center">Nombre</th>
-              <th class="text-center">Correo</th>
-              <th class="text-center">Teléfono</th>
-              <th class="text-center">Estado</th>
-            </tr>
-          </thead>
-          <tbody></tbody>
-        </table>
-      </ng-template>
+      <!-- Tabla Editoriales -->
+      <table datatable [dtOptions]="dtOptions" *ngIf="modo === 'editoriales'" 
+            id="tablaEditoriales"
+            class="table table-bordered table-hover table-striped" 
+            style="border: 2px solid #6C8EBF;">
+        <thead>
+          <tr class="table-primary">
+            <th></th>
+            <th class="text-center">Nombre</th>
+            <th class="text-center">Correo</th>
+            <th class="text-center">Teléfono</th>
+            <th class="text-center">Estado</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
 
-      <!-- Se elimina la paginación manual ya que DataTables lo hace automáticamente -->
+      <!-- Tabla Reservas -->
+      <table datatable [dtOptions]="dtOptions" *ngIf="modo === 'reservas'" 
+        id="tablaReservas"
+        class="table table-bordered table-hover table-striped" 
+        style="border: 2px solid #6C8EBF;">
+        <thead>
+          <tr class="table-primary">
+            <th></th>
+            <th class="text-center" title="Nombre del alumno">Nombre</th>
+            <th class="text-center" title="Apellidos del alumno">Apellidos</th>
+            <th class="text-center" title="Correo de contacto">Correo</th>
+            <th class="text-center" title="Fecha de realización">Registrada</th>
+            <th class="text-center" title="Estado">Verificación</th>
+            <th class="text-center" title="Curso del alumno">Curso</th>
+            <th class="text-center" title="Importe total de la reserva">Importe</th>
+            <th class="text-center" title="Libros reservados">Libros</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+
     </div>
   </div>
 </div>
