@@ -7,7 +7,7 @@ import { Editorial } from 'src/app/models/editorial.model';
 import { CrudService } from 'src/app/services/crud.service';
 import Swal from 'sweetalert2';
 import { LoadingSpinnerComponent } from 'src/app/shared/loading-spinner/loading-spinner.component';
-import { ReservaResponse } from 'src/app/models/reserva.model';
+import { ReservaResponseR as ReservaResponse } from 'src/app/models/reserva.model';
 import { PeriodoReservasService, PeriodoReservas } from 'src/app/services/periodo-reservas.service';
 import { ReservaService } from 'src/app/services/reserva.service';
 

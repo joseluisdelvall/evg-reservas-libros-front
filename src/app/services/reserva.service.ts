@@ -134,36 +134,30 @@ export class ReservaService {
       libros: []
     };
   }
-}
-
 
   /**
    * Obtiene el justificante de una reserva específica
    * @param idReserva ID de la reserva
    * @returns Observable con los datos del justificante en formato Base64
    */
-  obtenerJustificante(idReserva: number): Observable<any> {
-  return this.http.get(`${this.apiBaseUrl}${this.endpoint}/${idReserva}/justificante`, { 
-    responseType: 'text' 
-  }).pipe(
-    map(responseText => {
-      try {
-        const response = JSON.parse(responseText) as ApiResponse<string>;
-        if (response.status === 'success' && response.data) {
-          return response.data; // Devuelve el justificante en Base64
+  obtenerJustificante(idReserva: number): Observable<string> {
+    const endpoint = `${this.endpoint}/${idReserva}/justificante`;
+    
+    return this.http.postWithTextResponse<string>(endpoint, {}).pipe(
+      map(responseText => {
+        try {
+          return this.http.handleApiResponse<string>(responseText, '');
+        } catch (error) {
+          console.error('Error al procesar la respuesta del justificante:', error);
+          throw error;
         }
-        throw new Error('No se pudo obtener el justificante');
-      } catch (error) {
-        console.error('Error al procesar la respuesta del justificante:', error);
-        throw error;
-      }
-    }),
-    catchError(error => {
-      console.error('Error al obtener el justificante:', error);
-      return this.handleError('obtenerJustificante', '');
-    })
-  );
-}
+      }),
+      catchError(error => {
+        console.error('Error al obtener el justificante:', error);
+        return this.http.handleError<string>(error, '');
+      })
+    );
+  }
 
   /**
    * Muestra el justificante en una nueva ventana del navegador

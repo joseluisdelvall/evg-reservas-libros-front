@@ -5,7 +5,7 @@ import { Editorial } from '../models/editorial.model';
 import { HttpClient } from '@angular/common/http';
 import { BaseService } from './base.service';
 import { Response } from '../models/response.model';
-import { ReservaResponse } from '../models/reserva.model';
+import { ReservaResponseR as ReservaResponse } from '../models/reserva.model';
 
 @Injectable({
   providedIn: 'root'
@@ -202,8 +202,6 @@ export class CrudService {
       map(response => response.data)
     );
   }
-}
-
 
   // ========== Métodos para gestionar asignaciones de libros a cursos ==========
 
