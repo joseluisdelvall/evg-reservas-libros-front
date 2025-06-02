@@ -273,7 +273,10 @@ export class CrudComponent implements OnInit, OnDestroy, AfterViewInit {
         },
         { 
           data: 'precio',
-          width: '15%'
+          width: '15%',
+          render: (data: any, type: any, row: Libro) => {
+            return data ? `${parseFloat(data).toFixed(2)}€` : '';
+          }
         },
         { 
           data: 'estado',
