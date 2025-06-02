@@ -7,7 +7,7 @@ import { Editorial } from 'src/app/models/editorial.model';
 import { CrudService } from 'src/app/services/crud.service';
 import Swal from 'sweetalert2';
 import { LoadingSpinnerComponent } from 'src/app/shared/loading-spinner/loading-spinner.component';
-import { ReservaResponseR as ReservaResponse } from 'src/app/models/reserva.model';
+import { ReservaRequest, ReservaResponseR as ReservaResponse } from 'src/app/models/reserva.model';
 import { PeriodoReservasService, PeriodoReservas } from 'src/app/services/periodo-reservas.service';
 import { ReservaService } from 'src/app/services/reserva.service';
 
@@ -499,7 +499,7 @@ export class CrudComponent implements OnInit, OnDestroy, AfterViewInit {
 
     this.currentTable = tableElement.DataTable({
       data: this.reservas,
-      columns: [
+      columns: [       
         { 
           data: null,
           render: (data: any, type: any, row: ReservaResponse) => {
@@ -507,10 +507,11 @@ export class CrudComponent implements OnInit, OnDestroy, AfterViewInit {
               <div class="text-center">
                 <i class="fas fa-edit puntero" style="color: blue;" data-bs-toggle="modal" data-bs-target="#editarreservas"></i>
                 <i class="fas fa-trash-alt ms-2 puntero" style="color: red;" data-id="${row.id}"></i>
+                <i class="fas fa-phone ms-2 puntero mostrar-contacto" style="color: #007bff;" data-id="${row.id}"></i>
               </div>
             `;
           },
-          width: '12%'
+          width: '90px'
         },
         { 
           data: 'nombreAlumno',
@@ -519,10 +520,6 @@ export class CrudComponent implements OnInit, OnDestroy, AfterViewInit {
         { 
           data: 'apellidosAlumno',
           width: '17%',
-        },
-        { 
-          data: 'correo',
-          width: '22%',
         },
         { 
           data: 'fecha',
@@ -552,7 +549,7 @@ export class CrudComponent implements OnInit, OnDestroy, AfterViewInit {
         },
         { 
           data: null,
-          width: '10%',
+          width: '20%',
           render: (data: any, type: any, row: ReservaResponse) => {
             return row.curso ? row.curso : row.nombreCurso;
           }
@@ -631,12 +628,19 @@ export class CrudComponent implements OnInit, OnDestroy, AfterViewInit {
         $('.toggle-estado').off('click').on('click', (event: any) => {
           const rowData = this.currentTable.row($(event.currentTarget).closest('tr')).data();
           this.toggleReservaEstado(rowData, event);
-        });
-
+        });        
+        
         $('.ver-justificante').off('click').on('click', (event: any) => {
           event.stopPropagation();
           const rowData = this.currentTable.row($(event.currentTarget).closest('tr')).data();
           this.verJustificante(rowData.id, `Justificante_${rowData.nombreAlumno}_${rowData.apellidosAlumno}.pdf`);
+        });
+        
+        // Agregar evento para mostrar la información de contacto
+        $('.mostrar-contacto').off('click').on('click', (event: any) => {
+          event.stopPropagation();
+          const rowData = this.currentTable.row($(event.currentTarget).closest('tr')).data();
+          this.mostrarContactoReserva(rowData);
         });
       }
     });
@@ -1070,6 +1074,55 @@ export class CrudComponent implements OnInit, OnDestroy, AfterViewInit {
       error: (error) => {
         console.error('Error al obtener el justificante:', error);
         this.toastr.error('No se pudo cargar el justificante. Por favor, inténtelo de nuevo.');
+      }
+    });
+  }
+
+  /**
+   * Método para mostrar los datos de contacto de una reserva sin cambiar el modo
+   */
+  mostrarContactoReserva(reserva: ReservaRequest): void {
+    Swal.fire({
+      title: 'Información de Contacto',
+      html: `
+      <div class="text-start mt-4 p-3 border-start border-4 border-primary bg-light rounded">
+        <div class="mb-3">
+        <h6 class="fw-bold mb-2 text-primary">
+          <i class="fas fa-user me-2"></i>Alumno/a:
+        </h6>
+        <p class="ms-4 mb-0">${reserva.nombreAlumno} ${reserva.apellidosAlumno}</p>
+        </div>
+        
+        <div class="mb-3">
+        <h6 class="fw-bold mb-2 text-primary">
+          <i class="fas fa-envelope me-2"></i>Correo Electrónico:
+        </h6>
+        <p class="ms-4 mb-0">
+          <a href="mailto:${reserva.correo}" class="text-decoration-none">
+          ${reserva.correo}
+          </a>
+        </p>
+        </div>
+        
+        <div>
+        <h6 class="fw-bold mb-2 text-primary">
+          <i class="fas fa-phone me-2"></i>Teléfono:
+        </h6>
+        <p class="ms-4 mb-0">
+          <a href="tel:${reserva.telefono}" class="text-decoration-none">
+          ${reserva.telefono}
+          </a>
+        </p>
+        </div>
+      </div>
+      `,
+      confirmButtonText: 'Cerrar',
+      confirmButtonColor: '#3085d6',
+      width: '32rem',
+      customClass: {
+      confirmButton: 'btn btn-primary px-4',
+      popup: 'rounded shadow border-0',
+      title: 'text-primary'
       }
     });
   }
