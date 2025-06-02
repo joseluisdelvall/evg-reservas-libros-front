@@ -131,9 +131,20 @@ export class EntregaLibrosComponent implements OnInit {
     return this.reservaSeleccionada?.idReserva === reserva.idReserva;
   }
 
-  // Feedback inmediato al marcar entregado
+  // Feedback inmediato al marcar entrega
   marcarEntrega(index: number) {
+    // Verificar si el libro puede ser entregado (idEstado = 4)
+    if (!this.puedeEntregarLibro(this.librosEntrega[index].libro)) {
+      this.toastr.warning('Este libro no está disponible para entrega.', 'Aviso');
+      return;
+    }
+    
     this.librosEntrega[index].entregado = !this.librosEntrega[index].entregado;
+  }
+
+  // Verificar si un libro puede ser entregado (debe tener idEstado = 4)
+  puedeEntregarLibro(libro: LibroReserva): boolean {
+    return libro.idEstado === 4 && libro.fechaRecogida === null;
   }
 
   // Totales de entregados y pendientes - adaptado al nuevo formato
@@ -152,9 +163,13 @@ export class EntregaLibrosComponent implements OnInit {
     this.mostrarModalConfirmacion = false;
   }
   confirmarEntrega() {
-    const entregados = this.librosEntrega.filter(l => l.entregado).length;
-    if (entregados === 0) {
-      this.toastr.warning('Selecciona al menos un libro para entregar.', 'Aviso');
+    // Filtrar solo los libros que pueden ser entregados
+    const librosValidosParaEntregar = this.librosEntrega.filter(l => 
+      l.entregado && this.puedeEntregarLibro(l.libro)
+    );
+    
+    if (librosValidosParaEntregar.length === 0) {
+      this.toastr.warning('No hay libros válidos seleccionados para entregar. Solo se pueden entregar libros en estado disponible.', 'Aviso');
       return;
     }
 
@@ -163,10 +178,8 @@ export class EntregaLibrosComponent implements OnInit {
       return;
     }
 
-    // Obtener los IDs de los libros a entregar
-    const librosAEntregar = this.librosEntrega
-      .filter(l => l.entregado)
-      .map(l => l.libro.idLibro);
+    // Obtener los IDs de los libros válidos a entregar
+    const librosAEntregar = librosValidosParaEntregar.map(l => l.libro.idLibro);
 
     this.procesandoEntrega = true;
     this.cerrarModalConfirmacion();
@@ -179,7 +192,7 @@ export class EntregaLibrosComponent implements OnInit {
           
           // Actualizar el estado local de los libros entregados
           this.librosEntrega.forEach(l => {
-            if (l.entregado) {
+            if (l.entregado && this.puedeEntregarLibro(l.libro)) {
               l.libro.fechaRecogida = new Date().toISOString().split('T')[0];
               l.entregado = false; // Reset selection
             }
@@ -194,7 +207,7 @@ export class EntregaLibrosComponent implements OnInit {
             });
           }
 
-          this.toastr.success(`¡Entrega registrada correctamente! Se han entregado ${entregados} libro(s).`, 'Éxito');
+          this.toastr.success(`¡Entrega registrada correctamente! Se han entregado ${librosValidosParaEntregar.length} libro(s).`, 'Éxito');
         },
         error: (error) => {
           this.procesandoEntrega = false;
@@ -223,7 +236,7 @@ export class EntregaLibrosComponent implements OnInit {
 
   // Verificar si hay libros seleccionados para entregar
   hayLibrosSeleccionados(): boolean {
-    return this.librosEntrega.some(l => l.entregado);
+    return this.librosEntrega.some(l => l.entregado && this.puedeEntregarLibro(l.libro));
   }
 
   getNombreCurso(idCurso: string | number): string {
