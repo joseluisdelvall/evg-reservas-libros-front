@@ -109,18 +109,28 @@
                 </tr>
               </thead>
               <tbody>
-                <tr *ngFor="let item of librosEntrega; let i = index" [ngClass]="{'table-success': item.entregado || item.libro.fechaRecogida !== null}">
+                <tr *ngFor="let item of librosEntrega; let i = index" [ngClass]="{'table-success': item.entregado || item.libro.fechaRecogida !== null, 'table-warning': !puedeEntregarLibro(item.libro) && item.libro.fechaRecogida === null}">
                   <td>{{ i + 1 }}</td>
                   <td>{{ item.libro.nombre }}</td>
                   <td>{{ item.libro.precio }}€</td>
                   <td>
-                    <span class="badge" [ngClass]="{'bg-success': item.libro.fechaRecogida !== null, 'bg-warning': item.libro.fechaRecogida === null}">
+                    <span class="badge" [ngClass]="{
+                      'bg-success': item.libro.fechaRecogida !== null, 
+                      'bg-warning': item.libro.fechaRecogida === null && puedeEntregarLibro(item.libro), 
+                      'bg-danger': item.libro.fechaRecogida === null && !puedeEntregarLibro(item.libro)
+                    }">
                       <i *ngIf="item.libro.fechaRecogida !== null || item.entregado" class="fas fa-check-circle me-1"></i>
+                      <i *ngIf="item.libro.fechaRecogida === null && !puedeEntregarLibro(item.libro)" class="fas fa-times-circle me-1"></i>
                       {{ item.libro.fechaRecogida !== null ? 'Entregado' : (item.entregado ? 'A entregar' : item.libro.nombreEstado) }}
                     </span>
                   </td>
                   <td>
-                    <input type="checkbox" class="form-check-input" [checked]="item.entregado" (change)="marcarEntrega(i)" [disabled]="item.libro.fechaRecogida !== null">
+                    <input type="checkbox" 
+                           class="form-check-input" 
+                           [checked]="item.entregado" 
+                           (change)="marcarEntrega(i)" 
+                           [disabled]="item.libro.fechaRecogida !== null || !puedeEntregarLibro(item.libro)"
+                           [title]="!puedeEntregarLibro(item.libro) && item.libro.fechaRecogida === null ? 'Este libro no está disponible para entrega (Estado: ' + item.libro.nombreEstado + ')' : ''">
                   </td>
                 </tr>
               </tbody>
