@@ -35,6 +35,7 @@ interface LibroPedido {
 export class PedidosRealizadosComponent implements OnInit {
   isLoading: boolean = false;
   isLoadingDetalles: boolean = false;
+  isProcesandoRecepcion: boolean = false;
 
   pedidos: Pedido[] = [];
   pedidosFiltrados: Pedido[] = [];
@@ -302,6 +303,8 @@ export class PedidosRealizadosComponent implements OnInit {
       })) || []
     };
 
+    this.isProcesandoRecepcion = true;
+
     // Hacer llamada al endpoint
     this.pedidoService.confirmarUnidadesRecibidas(datosParaLog).subscribe({
       next: (response) => {
@@ -316,10 +319,12 @@ export class PedidosRealizadosComponent implements OnInit {
         } else {
           this.toastr.error('Error al confirmar la recepción del pedido', 'Error');
         }
+        this.isProcesandoRecepcion = false;
       },
       error: (error) => {
         console.error('Error al enviar datos al servidor:', error);
         this.toastr.error('Error al conectar con el servidor', 'Error');
+        this.isProcesandoRecepcion = false;
       }
     });
   }

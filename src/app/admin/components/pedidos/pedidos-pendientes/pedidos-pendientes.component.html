@@ -1,8 +1,20 @@
 <div class="container-fluid p-4">
-  <!-- Spinner de carga -->
+  <!-- Spinner de carga global -->
   <div *ngIf="isLoading" class="d-flex justify-content-center my-5">
     <div class="spinner-border text-primary" role="status">
       <span class="visually-hidden">Cargando...</span>
+    </div>
+  </div>
+
+  <!-- Spinner de procesamiento de pedido -->
+  <div *ngIf="isProcesandoPedido" class="position-fixed top-0 start-0 w-100 h-100 d-flex justify-content-center align-items-center" style="background-color: rgba(0,0,0,0.5); z-index: 9999;">
+    <div class="bg-white p-4 rounded shadow">
+      <div class="d-flex flex-column align-items-center">
+        <div class="spinner-border text-primary mb-3" role="status">
+          <span class="visually-hidden">Procesando pedido...</span>
+        </div>
+        <p class="mb-0">Procesando pedido...</p>
+      </div>
     </div>
   </div>
 

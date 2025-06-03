@@ -20,6 +20,7 @@ export class PedidosPendientesComponent implements OnInit {
   // Estados de carga
   isLoading: boolean = false;
   isLoadingLibros: boolean = false;
+  isProcesandoPedido: boolean = false;
 
   // Datos principales
   editoriales: Editorial[] = [];
@@ -326,6 +327,8 @@ export class PedidosPendientesComponent implements OnInit {
       libros: librosParaEnviar
     };
 
+    this.isProcesandoPedido = true;
+
     this.pedidoService.addPedido(pedidoParaEnviar).subscribe({
       next: (respuesta) => {
         this.toastr.success('¡Pedido realizado correctamente!', 'Éxito');
@@ -334,10 +337,12 @@ export class PedidosPendientesComponent implements OnInit {
         this.editorialSeleccionada = null;
         // Refrescar la lista de editoriales automáticamente
         this.cargarDatos();
+        this.isProcesandoPedido = false;
       },
       error: (error) => {
         this.toastr.error('Error al realizar el pedido', 'Error');
         console.error('Error al realizar el pedido:', error);
+        this.isProcesandoPedido = false;
       }
     });
   }
