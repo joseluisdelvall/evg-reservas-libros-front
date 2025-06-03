@@ -229,15 +229,21 @@ export class PedidosPendientesComponent implements OnInit {
 
     const librosInfo = this.librosPedido.map(libroPedido => {
       const libro = this.librosPendientesEditorial.find(l => l.id === libroPedido.id);
-      return `<div class="libro-pedido-item">${libro?.nombre} (${libro?.isbn}) - ${libroPedido.cantidad} unidades</div>`;
+      return `
+        <tr>
+          <td>${libro?.nombre || 'N/A'}</td>
+          <td>${libro?.isbn || 'N/A'}</td>
+          <td class="text-center">${libroPedido.cantidad}</td>
+        </tr>
+      `;
     }).join('');
 
     const correosHtml = this.editorialSeleccionada.correos && this.editorialSeleccionada.correos.length > 0
-      ? `<p><strong>Correos:</strong><br>${this.editorialSeleccionada.correos.map(correo => `<span class='ms-3'>• ${correo}</span>`).join('<br>')}</p>`
+      ? `<p class="small"><strong>Correos:</strong><br>${this.editorialSeleccionada.correos.map(correo => `<span class='ms-3'>• ${correo}</span>`).join('<br>')}</p>`
       : '';
 
     const telefonosHtml = this.editorialSeleccionada.telefonos && this.editorialSeleccionada.telefonos.length > 0
-      ? `<p><strong>Teléfonos:</strong><br>${this.editorialSeleccionada.telefonos.map(telefono => `<span class='ms-3'>• ${telefono}</span>`).join('<br>')}</p>`
+      ? `<p class="small"><strong>Teléfonos:</strong><br>${this.editorialSeleccionada.telefonos.map(telefono => `<span class='ms-3'>• ${telefono}</span>`).join('<br>')}</p>`
       : '';
 
     Swal.fire({
@@ -245,26 +251,41 @@ export class PedidosPendientesComponent implements OnInit {
       html: `
         <div class="text-start">
           <h6 class="mb-3">Datos de la Editorial</h6>
-          <p><strong>Nombre:</strong> ${this.editorialSeleccionada.nombre}</p>
+          <p class="small"><strong>Nombre:</strong> ${this.editorialSeleccionada.nombre}</p>
           ${correosHtml}
           ${telefonosHtml}
           <h6 class="mt-4 mb-3">Libros a Pedir</h6>
-          <div style="max-height: 200px; overflow-y: auto; text-align: left; font-size: 14px;">
-            ${librosInfo}
+          <div style="max-height: 300px; overflow-y: auto;">
+            <table class="table table-striped table-sm">
+              <thead class="table-primary">
+                <tr>
+                  <th>Libro</th>
+                  <th>ISBN</th>
+                  <th class="text-center">Cantidad</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${librosInfo}
+              </tbody>
+            </table>
           </div>
           <style>
-            .libro-pedido-item {
-              margin-bottom: 8px;
-              line-height: 1.4;
-              padding-left: 1rem;
-            }
-            .libro-pedido-item:before {
-              content: "•";
-              position: absolute;
-              margin-left: -1rem;
-            }
-            .libro-pedido-item:last-child {
+            .table {
               margin-bottom: 0;
+              font-size: 14px;
+            }
+            .table th {
+              background-color: #0d6efd !important;
+              color: white !important;
+              border: none !important;
+              padding: 8px;
+            }
+            .table td {
+              padding: 8px;
+              border-bottom: 1px solid #dee2e6;
+            }
+            .table tbody tr:last-child td {
+              border-bottom: none;
             }
             h6 {
               color: #0d6efd;
@@ -283,7 +304,7 @@ export class PedidosPendientesComponent implements OnInit {
       cancelButtonColor: '#dc3545',
       confirmButtonText: 'Confirmar Pedido',
       cancelButtonText: 'Cancelar',
-      width: '600px'
+      width: '700px'
     }).then((result) => {
       if (result.isConfirmed) {
         this.procesarPedido();
