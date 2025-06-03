@@ -162,10 +162,10 @@ export class PedidosPendientesComponent implements OnInit {
     
     const index = this.librosPedido.findIndex(l => l.id === Number(libro.id));
     if (index === -1) {
-      // Si no está en el pedido, lo añadimos con cantidad 1 o el máximo disponible
-      const cantidadInicial = libro.unidadesPendientes && libro.unidadesPendientes > 0 ? 1 : 0;
-      if (cantidadInicial > 0) {
-        this.librosPedido.push({ id: Number(libro.id), cantidad: cantidadInicial });
+      // Si no está en el pedido, lo añadimos con la cantidad máxima disponible
+      const cantidadMaxima = libro.unidadesPendientes && libro.unidadesPendientes > 0 ? libro.unidadesPendientes : 0;
+      if (cantidadMaxima > 0) {
+        this.librosPedido.push({ id: Number(libro.id), cantidad: cantidadMaxima });
       }
     } else {
       // Si ya está en el pedido, lo quitamos
