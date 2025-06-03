@@ -1,0 +1,71 @@
+<div class="stock-container">
+  <div class="header">
+    <h2><i class="fas fa-boxes"></i> Gestión de Stock</h2>
+    <div class="actions">
+      <div class="search-box">
+        <input 
+          type="text" 
+          [(ngModel)]="filtroBusqueda" 
+          (input)="filtrarLibros()"
+          placeholder="Buscar por ISBN, título, editorial, etapa o stock..."
+          class="form-control"
+          [disabled]="cargando"
+        >
+        <i class="fas fa-search search-icon"></i>
+      </div>
+    </div>
+  </div>
+  <div class="stock-toggle-bar">
+    <div class="stock-toggle-bar-left">
+      <span class="toggle-title">Mostrar:</span>
+      <span class="toggle-label" [class.active]="!mostrarSoloConStock">Todos</span>
+      <label class="switch">
+        <input type="checkbox" [(ngModel)]="mostrarSoloConStock" (change)="aplicarFiltros()" [disabled]="cargando">
+        <span class="slider round"></span>
+      </label>
+      <span class="toggle-label" [class.active]="mostrarSoloConStock">Con stock</span>
+    </div>
+    <span class="info-text">
+      <i class="fas fa-info-circle"></i>
+      <b>"Con stock":</b> solo libros disponibles. <b>"Todos":</b> incluye libros sin unidades.
+    </span>
+  </div>
+
+  <div class="table-container">
+    <div *ngIf="cargando" class="loading-container">
+      <div class="spinner"></div>
+      <p>Cargando libros...</p>
+    </div>
+
+    <table class="table" *ngIf="!cargando">
+      <thead>
+        <tr>
+          <th><i class="fas fa-barcode"></i> ISBN</th>
+          <th><i class="fas fa-book"></i> Título</th>
+          <th><i class="fas fa-building"></i> Editorial</th>
+          <th><i class="fas fa-graduation-cap"></i> Etapa</th>
+          <th><i class="fas fa-boxes"></i> Stock</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let libro of librosFiltrados">
+          <td>{{libro.isbn}}</td>
+          <td>{{libro.titulo}}</td>
+          <td>{{libro.editorial}}</td>
+          <td>{{libro.etapa}}</td>
+          <td>
+            <span [ngClass]="getStockClass(libro)">
+              <i class="fas" [ngClass]="getStockIcon(libro)"></i>
+              {{libro.stock}}
+            </span>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div *ngIf="!cargando && librosFiltrados.length === 0" class="no-results">
+      <i class="fas fa-search"></i>
+      <p>No se encontraron libros que coincidan con la búsqueda</p>
+    </div>
+  </div>
+</div> 
