@@ -59,7 +59,6 @@ export class AsignarLibrosCursosComponent implements OnInit {
     this.crudService.getLibrosCursos().subscribe({
       next: (data) => {
         this.asignaciones = data;
-        console.log('Asignaciones cargadas:', this.asignaciones);
         this.isLoading = false;
       },
       error: (error) => {
@@ -99,7 +98,6 @@ export class AsignarLibrosCursosComponent implements OnInit {
             isbn: libro.isbn || 'Sin ISBN',
             precio: libro.precio || 0
           }));
-        console.log('Libros cargados:', this.libros);
         this.librosFiltrados = [...this.libros];
         this.isLoading = false;
       },
@@ -353,13 +351,10 @@ export class AsignarLibrosCursosComponent implements OnInit {
       return;
     }
 
-    console.log('Eliminando asignación:', { idLibro, idCurso });
-
     this.isLoading = true;
     
     this.crudService.eliminarAsignacionLibroCurso(idLibro, idCurso).subscribe({
       next: (response) => {
-        console.log('Respuesta del servidor:', response);
         if (response.status === 'success') {
           // Remover la asignación de la lista local
           this.asignaciones = this.asignaciones.filter(a => 
@@ -404,13 +399,10 @@ export class AsignarLibrosCursosComponent implements OnInit {
       return;
     }
 
-    console.log('Asignando libro a curso:', { idLibro, idCurso });
-
     this.isLoading = true;
 
     this.crudService.asignarLibroACurso(idLibro, idCurso).subscribe({
       next: (response) => {
-        console.log('Respuesta del servidor:', response);
         // Agregar el libro a la lista de seleccionados solo si no está ya
         if (!this.librosSeleccionados.find(l => l.id === idLibro)) {
           this.librosSeleccionados.push(libro);

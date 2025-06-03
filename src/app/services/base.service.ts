@@ -46,7 +46,6 @@ export class BaseService {
    * Maneja las respuestas del servidor que pueden contener advertencias de PHP
    */
   public handleApiResponse<T>(responseText: string, fallbackResponse?: T): T {
-    console.log('Respuesta recibida del servidor (texto):', responseText);
     
     // Verificar si la respuesta parece HTML (contiene tags)
     if (responseText.includes('<br />') || responseText.includes('<b>')) {
@@ -57,7 +56,6 @@ export class BaseService {
       if (jsonMatch) {
         try {
           const jsonData = JSON.parse(jsonMatch[0]);
-          console.log('JSON extraído de la respuesta HTML:', jsonData);
           
           if (jsonData && jsonData.status === 'success' && jsonData.data) {
             return jsonData.data as T;
