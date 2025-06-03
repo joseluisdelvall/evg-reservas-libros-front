@@ -18,12 +18,10 @@ export class ModalContentComponent implements OnInit {
   }
 
   onOkButtonClick(): void {
-    console.log('✅ | ModalContentComponent | onOkButtonClick');
     this.okButtonClicked.emit();
   }
 
   onCancelButtonClick(): void {
-    console.log('❌ | ModalContentComponent | onCancelButtonClick');
     this.cancelButtonClicked.emit();
   }
 

@@ -54,7 +54,6 @@ export class PedidosPendientesComponent implements OnInit {
       next: (data) => {
         this.editoriales = data;
         this.editorialesFiltradas = [...this.editoriales];
-        console.log('Editoriales cargadas:', this.editoriales.length);
         this.isLoading = false;
       },
       error: (error) => {
@@ -153,8 +152,6 @@ export class PedidosPendientesComponent implements OnInit {
    * Alterna la selección de un libro para el pedido
    */
   toggleLibroPedido(libro: Libro): void {
-    console.log('Libro a seleccionar:', libro); // Para debug
-    
     if (!libro.id) {
       this.toastr.warning('El libro no tiene un ID válido' + libro.id);
       return;

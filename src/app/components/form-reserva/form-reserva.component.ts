@@ -381,13 +381,8 @@ export class FormReservaComponent implements OnInit {
         libros: this.librosSeleccionados
       };
 
-      // Log para depuración
-      console.log('Datos del formulario a enviar:', reservaData);
-      console.log('Archivo justificante:', this.justificanteFile);
-
       // Comprobación de tamaño del archivo (opcional)
       const fileSizeMB = this.justificanteFile.size / (1024 * 1024);
-      console.log(`Tamaño del archivo: ${fileSizeMB.toFixed(2)} MB`);
       
       if (fileSizeMB > 5) {
         this.mensajeError = 'El archivo es demasiado grande. El tamaño máximo permitido es 5MB.';
@@ -401,9 +396,6 @@ export class FormReservaComponent implements OnInit {
         .subscribe({
           next: (response) => {
             this.loading = false;
-            
-            // Log para depuración
-            console.log('Respuesta procesada del servidor:', response);
             
             // Verificar si la respuesta tiene la estructura esperada
             if (response && response.id) {
@@ -533,13 +525,7 @@ export class FormReservaComponent implements OnInit {
           valid: control?.valid,
           touched: control?.touched
         };
-      });
-
-    console.log('Estado del formulario:', {
-      valid: this.reservaForm.valid,
-      touched: this.reservaForm.touched,
-      dirty: this.reservaForm.dirty,
-      controlsWithErrors
-    });
+      }
+    );
   }
 }

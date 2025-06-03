@@ -301,12 +301,10 @@ export class PedidosRealizadosComponent implements OnInit {
         cantidadRecibida: item.cantidadNuevaRecibida || 0
       })) || []
     };
-    console.log('Datos de recepción de pedido:', datosParaLog);
 
     // Hacer llamada al endpoint
     this.pedidoService.confirmarUnidadesRecibidas(datosParaLog).subscribe({
       next: (response) => {
-        console.log('Respuesta del servidor:', response);
         if (response.status === 'success') {
           this.toastr.success(`Pedido #${this.pedidoSeleccionado!.idPedido} actualizado correctamente.`, 'Recepción Confirmada');
           

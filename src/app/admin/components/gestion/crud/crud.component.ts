@@ -140,7 +140,6 @@ export class CrudComponent implements OnInit, OnDestroy, AfterViewInit {
         this.cargarEditoriales();
         break;
       case 'reservas':
-        console.log('reservas');
         $('#tablaReservas tbody').hide();
         this.reservas = []; // Limpiar los datos actuales
         this.cargarReservas();
@@ -200,13 +199,9 @@ export class CrudComponent implements OnInit, OnDestroy, AfterViewInit {
 
   cargarReservas(): void {
     this.isLoadingTable = true;
-    console.log('Cargando reservas...');
     this.crudService.getReservas().subscribe({
       next: (data: ReservaResponse[]) => {
         this.reservas = data;
-        console.log(this.reservas);
-        
-
         if (this.currentTable) {
           this.currentTable.clear();
           this.currentTable.rows.add(this.reservas);
@@ -653,7 +648,6 @@ export class CrudComponent implements OnInit, OnDestroy, AfterViewInit {
   seleccionarLibro(libro: Libro): void {
     if (libro.id !== undefined) {
       this.libroSeleccionadoId = libro.id.toString();
-      console.log('Libro seleccionado ID:', this.libroSeleccionadoId);
     } else {
       this.libroSeleccionadoId = null;
       console.error('El libro seleccionado no tiene ID');
@@ -663,7 +657,6 @@ export class CrudComponent implements OnInit, OnDestroy, AfterViewInit {
   seleccionarReserva(reserva: ReservaResponse): void {
     if (reserva.id !== undefined) {
       this.reservaSeleccionadaId = reserva.id.toString();
-      console.log('Reserva seleccionada ID:', this.reservaSeleccionadaId);
     } else {
       this.reservaSeleccionadaId = null;
       console.error('La reserva seleccionada no tiene ID');

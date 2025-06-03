@@ -50,8 +50,6 @@ export class CrudService {
 
   // Método para actualizar un libro
   updateLibro(id: string, libro: Libro): Observable<Libro> {
-    console.log(`Sending book update to endpoint: ${this.endpoint}/libros/${id}`);
-    console.log('Book data:', JSON.stringify(libro, null, 2));
     return this.http.put<{ status: string; data: Libro }>(this.endpoint + '/libros/' + id, libro).pipe(
       map(response => response.data)
     );
@@ -114,7 +112,6 @@ export class CrudService {
 
   // Método para obtener todas las reservas
   getReservas(): Observable<ReservaResponse[]> {
-    console.log(`${this.endpoint}/reservas`);
     
     return this.http.get<Response>(`${this.endpoint}/reservas`).pipe(
       map(response => response.data)
@@ -123,9 +120,6 @@ export class CrudService {
 
   // Método para actualizar una reserva
   updateReserva(id: string, reserva: any): Observable<ReservaResponse> {
-    console.log('✅ | 1 - crud.service.ts | updateReserva');
-    console.log(reserva);
-    console.log(this.endpoint + '/reservas/' + id);
     return this.http.put<{ status: string; data: ReservaResponse }>(this.endpoint + '/reservas/' + id, reserva).pipe(
       map(response => response.data)
     );
@@ -133,8 +127,6 @@ export class CrudService {
 
   // Obtener reserva por id
   getReservaById(id: string): Observable<ReservaResponse> {
-    console.log('✅ | 1 - crud.service.ts | getReservaById');
-    console.log(this.endpoint + '/reservas/' + id);
     return this.http.get<{ status: string; data: ReservaResponse }>(this.endpoint + '/reservas/' + id).pipe(
       map(response => response.data)
     );
@@ -149,10 +141,8 @@ export class CrudService {
 
   // Método para cambiar el estado de una editorial
   toggleEditorialEstado(id: string): Observable<Editorial> {
-    console.log(`Toggling editorial estado for ID: ${id}`);
     return this.http.put<{ status: string; data: Editorial }>(this.endpoint + '/editoriales/' + id + '/estado', {}).pipe(
       map(response => {
-        console.log('Response from toggleEditorialEstado:', response);
         
         // Check if response.data is null or undefined
         if (!response || !response.data) {
@@ -172,10 +162,8 @@ export class CrudService {
 
   // Método para cambiar el estado de un libro
   toggleLibroEstado(id: string): Observable<Libro> {
-    console.log(`Toggling libro estado for ID: ${id}`);
     return this.http.put<{ status: string; data: Libro }>(this.endpoint + '/libros/' + id + '/estado', {}).pipe(
       map(response => {
-        console.log('Response from toggleLibroEstado:', response);
         
         // Check if response.data is null or undefined
         if (!response || !response.data) {
@@ -195,9 +183,6 @@ export class CrudService {
 
   // Método para cambiar el estado de una reserva
   toggleReservaEstado(id: string): Observable<ReservaResponse> {
-    console.log(`Toggling reserva estado for ID: ${id}`);
-    console.log('✅ | 1 - crud.service.ts | toggleReservaEstado');
-    console.log(this.endpoint + '/reservas/' + id + '/estado');
     return this.http.put<{ status: string; data: ReservaResponse }>(this.endpoint + '/reservas/' + id + '/estado', {}).pipe(
       map(response => response.data)
     );

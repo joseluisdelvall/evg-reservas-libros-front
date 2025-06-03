@@ -34,7 +34,6 @@ export class HeaderComponent implements OnInit, OnDestroy {
     this.userDataSubscription = this.authService.userDataChange.subscribe((userData) => {
       if (userData) {
         this.userName = userData.nombre || 'Usuario';
-        console.log('Nombre de usuario actualizado en el header:', this.userName);
       }
     });
   }

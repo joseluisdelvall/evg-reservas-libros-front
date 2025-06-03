@@ -49,7 +49,6 @@ export class LoginComponent implements OnInit, AfterViewInit {
   }
 
   handleCredentialResponse(response: any) {
-    console.log("Encoded JWT ID token: " + response.credential);
     // Ejecutar en la zona de Angular
     this.ngZone.run(() => {
       this.sendTokenToBackend(response.credential);
@@ -62,16 +61,13 @@ export class LoginComponent implements OnInit, AfterViewInit {
     
     this.authService.sendTokenToBackend(token).subscribe({
       next: (response) => {
-        console.log('Login successful:', response);
         if (response.success) {
           // Guardar información del usuario ANTES del token
           // para que esté disponible cuando se emita el evento de cambio de estado
-          console.log('User data:', response.user);
           this.authService.setUserData(response.user);
           this.authService.notifyUserDataChange(response.user);
           
           // Guardar el token JWT en localStorage y emitir evento de cambio de estado
-          console.log('Token:', response.token);
           this.loginService.login(response.token);
           
           // Toastr success 
