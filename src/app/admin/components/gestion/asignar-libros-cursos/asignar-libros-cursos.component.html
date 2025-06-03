@@ -120,6 +120,7 @@
                   <div class="card-body d-flex flex-column">
                     <h6 class="card-title mb-1">{{ libro.nombre || 'Sin nombre' }}</h6>
                     <p class="card-text small text-muted mb-1">ISBN: {{ libro.isbn || 'Sin ISBN' }}</p>
+                    <p class="card-text small text-muted mb-1">Editorial: {{ libro.editorial?.nombre || 'Sin editorial' }}</p>
                     <p class="card-text small">
                       Precio: 
                       <ng-container *ngIf="libro.precio !== undefined && libro.precio !== null">
