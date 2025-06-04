@@ -830,7 +830,7 @@ export class CrudComponent implements OnInit, OnDestroy, AfterViewInit {
 
     Swal.fire({
       title: 'Confirmar cambio de estado',
-      html: `¿Estás seguro de cambiar el estado de <strong>${reserva.nombreAlumno}</strong> a <strong>${nuevoEstado ? 'ACTIVO' : 'INACTIVO'}</strong>?`,
+      html: `¿Estás seguro de cambiar el estado de la reserva de <strong>${reserva.nombreAlumno}</strong> a <strong>${nuevoEstado ? 'VERIFICADO' : 'NO VERIFICADO'}</strong>?`,
       icon: 'question',
       showCancelButton: true,
       confirmButtonColor: '#3085d6',
