@@ -235,3 +235,39 @@ input:checked + .slider:before {
 .slider.round:before {
   border-radius: 50%;
 }
+
+/* Filtro Reservas */
+.filter-pills .btn-pill {
+  border: 1px solid #dee2e6;
+  background: white;
+  color: #6c757d;
+  padding: 0.5rem 1rem;
+  font-size: 0.9rem;
+  transition: all 0.2s ease;
+  border-radius: 50rem;
+  margin: 0 0.2rem;
+}
+
+.filter-pills .btn-check:checked + .btn-pill {
+  background: #0d6efd;
+  color: white;
+  border-color: #0d6efd;
+  box-shadow: 0 2px 4px rgba(13, 110, 253, 0.2);
+}
+
+.filter-pills .btn-pill:hover {
+  background: #f8f9fa;
+  border-color: #ced4da;
+}
+
+.filter-pills .btn-check:checked + .btn-pill:hover {
+  background: #0b5ed7;
+  border-color: #0a58ca;
+}
+
+.filtro-estado-container {
+  background: #f8f9fa;
+  padding: 1rem;
+  border-radius: 0.5rem;
+  border: 1px solid #dee2e6;
+}

@@ -47,9 +47,6 @@
         </button>
       </div>  
       <div *ngIf="modo !== 'reservas'" class="d-flex justify-content-end align-items-center gap-2 mb-2">
-        <button class="btn btn-sm" data-bs-toggle="modal" [attr.data-bs-target]="'#filtro' + modo">
-          <i class="fas fa-search" style="font-size: 24px; color: blue;"></i>
-        </button>
         <button class="btn btn-primary btn-sm" *ngIf="modo === 'libros' || modo === 'editoriales'" data-bs-toggle="modal" [attr.data-bs-target]="'#nuevo' + modo">
           + Añadir {{ modo === 'libros' ? 'libro' : 'editorial' }}
         </button>
@@ -73,6 +70,45 @@
         <small class="text-muted ms-auto">
           <i class="fas fa-info-circle me-1"></i> También puedes escribir <strong>"activo"</strong> o <strong>"inactivo"</strong> en el buscador.
         </small>
+      </div>
+      
+      <!-- Filtro de reservas con diseño mejorado -->
+      <div *ngIf="modo === 'reservas'" class="filtro-estado-container mb-4">
+        <div class="d-flex align-items-center justify-content-between">
+          <div class="d-flex align-items-center gap-3">
+            <h6 class="mb-0 text-muted">
+              <i class="fas fa-filter me-2"></i>Mostrar:
+            </h6>
+            
+            <div class="btn-group filter-pills" role="group" aria-label="Filtro de reservas">
+              <input type="radio" class="btn-check" name="filtroReservas" id="todas" 
+                     [checked]="filtroReservas === 'todas'"
+                     (change)="cambiarFiltroReservas('todas')">
+              <label class="btn btn-pill" for="todas">
+                <i class="fas fa-list-ul me-2"></i>Todas
+              </label>
+
+              <input type="radio" class="btn-check" name="filtroReservas" id="verificadas" 
+                     [checked]="filtroReservas === 'verificadas'"
+                     (change)="cambiarFiltroReservas('verificadas')">
+              <label class="btn btn-pill" for="verificadas">
+                <i class="fas fa-check-circle me-2"></i>Verificadas
+              </label>
+
+              <input type="radio" class="btn-check" name="filtroReservas" id="no-verificadas" 
+                     [checked]="filtroReservas === 'no-verificadas'"
+                     (change)="cambiarFiltroReservas('no-verificadas')">
+              <label class="btn btn-pill" for="no-verificadas">
+                <i class="fas fa-clock me-2"></i>Pendientes
+              </label>
+            </div>
+          </div>
+
+          <small class="text-muted d-flex align-items-center">
+            <i class="fas fa-search me-2"></i>
+            Puedes filtrar por "Todas" / "Verificadas" / "Pendientes" [No Verificadas]
+          </small>
+        </div>
       </div>
       
       <!-- Tabla Libros -->

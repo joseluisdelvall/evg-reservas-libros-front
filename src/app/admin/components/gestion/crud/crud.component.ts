@@ -41,6 +41,9 @@ export class CrudComponent implements OnInit, OnDestroy, AfterViewInit {
   reservas: ReservaResponse[] = [];
   periodoActual: PeriodoReservas | null = null;
 
+  // Estado del filtro de reservas
+  filtroReservas: 'todas' | 'verificadas' | 'no-verificadas' = 'no-verificadas';
+
   constructor(
     private route: ActivatedRoute,
     private crudService: CrudService,
@@ -123,9 +126,18 @@ export class CrudComponent implements OnInit, OnDestroy, AfterViewInit {
       this.currentTable.destroy();
       this.currentTable = null;
     }
+
+    // Limpiar los filtros al cambiar de vista
+    if ($.fn.dataTable.ext.search.length > 0) {
+      $.fn.dataTable.ext.search = [];
+    }
     
-    // Restablecer el filtro a "activo" al cambiar de vista
-    this.filtroEstado = 'activo';
+    // Restablecer el filtro según el modo
+    if (this.modo === 'reservas') {
+      this.filtroReservas = 'no-verificadas';
+    } else {
+      this.filtroEstado = 'activo';
+    }
 
     // Ocultar el cuerpo de la tabla correspondiente durante la carga
     switch (this.modo) {
@@ -588,8 +600,17 @@ export class CrudComponent implements OnInit, OnDestroy, AfterViewInit {
       dom: '<"top d-flex justify-content-between mb-3"lf>rt<"bottom d-flex justify-content-between"ip>',
       initComplete: (settings: any, json: any) => {
         this.currentTable.columns.adjust();
-        // Mostrar el cuerpo de la tabla cuando esté completamente inicializada
         $('#tablaReservas tbody').show();
+        
+        // Aplicar el filtro inicial después de que la tabla esté completamente inicializada
+        setTimeout(() => {
+          try {
+            this.filtroReservas = 'no-verificadas';
+            this.filtrarReservas('no-verificadas');
+          } catch (error) {
+            console.error('Error al aplicar filtro inicial:', error);
+          }
+        }, 200);
         
         // Añadir clases para mejorar el estilo
         $('.dataTables_paginate').addClass('pagination-container');
@@ -903,15 +924,14 @@ export class CrudComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   filtrarPorEstado(estado: 'todos' | 'activo' | 'inactivo'): void {
-    if (!this.currentTable) return;
+    if (!this.currentTable || this.modo === 'reservas') return;
     
     // Limpiar filtros anteriores pero mantener la búsqueda personalizada
     this.currentTable.search('').columns().search('').draw();
     
     // Limpiar filtros de estado previos
-    if ($.fn.dataTable.ext.search.length > 1) {
-      // Mantener solo el primer filtro (búsqueda personalizada)
-      $.fn.dataTable.ext.search.splice(1);
+    if ($.fn.dataTable.ext.search.length > 0) {
+      $.fn.dataTable.ext.search = [];
     }
     
     if (estado === 'todos') {
@@ -923,14 +943,12 @@ export class CrudComponent implements OnInit, OnDestroy, AfterViewInit {
     // Aplicar filtro personalizado
     $.fn.dataTable.ext.search.push((settings: any, data: any, dataIndex: any) => {
       const rowData = this.currentTable.row(dataIndex).data();
-      
       if (estado === 'activo') {
         return rowData.estado === true;
       } else if (estado === 'inactivo') {
         return rowData.estado === false;
       }
-      
-      return true; // Por defecto mostrar todas las filas
+      return true;
     });
     
     this.currentTable.draw();
@@ -1120,5 +1138,60 @@ export class CrudComponent implements OnInit, OnDestroy, AfterViewInit {
       title: 'text-primary'
       }
     });
+  }
+
+  /**
+   * Filtra las reservas según su estado de verificación
+   */
+  filtrarReservas(estado: 'todas' | 'verificadas' | 'no-verificadas'): void {
+    if (!this.currentTable || this.modo !== 'reservas') return;
+    
+    // Limpiar la búsqueda actual
+    this.currentTable.search('').draw();
+    
+    // Limpiar filtros anteriores
+    if ($.fn.dataTable.ext.search.length > 0) {
+      $.fn.dataTable.ext.search = [];
+    }
+    
+    if (estado === 'todas') {
+      // No aplicar filtro, mostrar todas
+      this.currentTable.draw();
+      return;
+    }
+    
+    // Aplicar filtro personalizado
+    $.fn.dataTable.ext.search.push((settings: any, searchData: any[], index: number) => {
+      try {
+        const row = this.currentTable.row(index);
+        if (!row) return true;
+        
+        const rowData = row.data();
+        if (!rowData) return true;
+        
+        if (estado === 'verificadas') {
+          return rowData.verificado === true || rowData.verificado === 1;
+        } else {
+          return rowData.verificado === false || rowData.verificado === 0;
+        }
+      } catch (error) {
+        console.error('Error al filtrar:', error);
+        return true; // En caso de error, mostrar la fila
+      }
+    });
+    
+    try {
+      this.currentTable.draw();
+    } catch (error) {
+      console.error('Error al redibujar la tabla:', error);
+    }
+  }
+
+  /**
+   * Cambia el estado del filtro de reservas
+   */
+  cambiarFiltroReservas(estado: 'todas' | 'verificadas' | 'no-verificadas'): void {
+    this.filtroReservas = estado;
+    this.filtrarReservas(estado);
   }
 }
