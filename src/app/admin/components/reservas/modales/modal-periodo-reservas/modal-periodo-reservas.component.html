@@ -1,22 +1,80 @@
 <app-modal-content [options]="modalGestionReservasOption" (okButtonClicked)="onOkButtonClick()">
     <form [formGroup]="form" class="px-3">
-        <div class="row">
-            <div class="col-12 py-2">
+        <div class="row g-3">
+            <div class="col-12">
                 <div class="form-group">
-                    <label for="fechaInicio">Fecha de Inicio</label>
-                    <input type="date" class="form-control"
-                        id="fechaInicio"
-                        formControlName="fechaInicio"
+                    <label for="fechaInicio" class="form-label fw-bold">
+                        <i class="fas fa-calendar-alt me-2 text-primary"></i>
+                        Fecha de Inicio
+                    </label>
+                    <input type="date" 
+                           class="form-control" 
+                           id="fechaInicio"
+                           formControlName="fechaInicio"
+                           [ngClass]="{
+                               'is-invalid': form.get('fechaInicio')?.invalid && form.get('fechaInicio')?.touched,
+                               'is-valid': form.get('fechaInicio')?.valid && form.get('fechaInicio')?.touched
+                           }"
+                           [min]="minDate"
+                           [max]="form.get('fechaFin')?.value || maxDate"
                     >
+                    <div class="invalid-feedback" *ngIf="form.get('fechaInicio')?.errors?.['required'] && form.get('fechaInicio')?.touched">
+                        La fecha de inicio es obligatoria
+                    </div>
+                    <div class="invalid-feedback" *ngIf="form.get('fechaInicio')?.errors?.['fechaMinima'] && form.get('fechaInicio')?.touched">
+                        La fecha de inicio no puede ser anterior a hoy
+                    </div>
+                    <div class="invalid-feedback" *ngIf="form.get('fechaInicio')?.errors?.['fechaAnterior'] && form.get('fechaInicio')?.touched">
+                        La fecha de inicio no puede ser posterior a la fecha de fin
+                    </div>
                 </div>
             </div>
-            <div class="col-12 py-2">
+            <div class="col-12">
                 <div class="form-group">
-                    <label for="fechaFin">Fecha de Fin</label>
-                    <input type="date" class="form-control"
-                        id="fechaFin"
-                        formControlName="fechaFin"
+                    <label for="fechaFin" class="form-label fw-bold">
+                        <i class="fas fa-calendar-alt me-2 text-primary"></i>
+                        Fecha de Fin
+                    </label>
+                    <input type="date" 
+                           class="form-control" 
+                           id="fechaFin"
+                           formControlName="fechaFin"
+                           [ngClass]="{
+                               'is-invalid': form.get('fechaFin')?.invalid && form.get('fechaFin')?.touched,
+                               'is-valid': form.get('fechaFin')?.valid && form.get('fechaFin')?.touched
+                           }"
+                           [min]="form.get('fechaInicio')?.value || minDate"
+                           [max]="maxDate"
                     >
+                    <div class="invalid-feedback" *ngIf="form.get('fechaFin')?.errors?.['required'] && form.get('fechaFin')?.touched">
+                        La fecha de fin es obligatoria
+                    </div>
+                    <div class="invalid-feedback" *ngIf="form.get('fechaFin')?.errors?.['fechaMaxima'] && form.get('fechaFin')?.touched">
+                        La fecha de fin no puede ser posterior a un año desde hoy
+                    </div>
+                    <div class="invalid-feedback" *ngIf="form.get('fechaFin')?.errors?.['fechaAnterior'] && form.get('fechaFin')?.touched">
+                        La fecha de fin no puede ser anterior a la fecha de inicio
+                    </div>
+                    <div class="invalid-feedback" *ngIf="form.get('fechaFin')?.errors?.['rangoExcedido'] && form.get('fechaFin')?.touched">
+                        El período no puede exceder un año
+                    </div>
+                </div>
+            </div>
+            <div class="col-12 mt-3">
+                <div class="alert" [ngClass]="{
+                    'alert-danger': form.invalid,
+                    'alert-info': form.valid
+                }">
+                    <i class="fas" [ngClass]="{
+                        'fa-exclamation-circle': form.invalid,
+                        'fa-info-circle': form.valid
+                    }"></i>
+                    <span *ngIf="form.invalid">
+                        Por favor, corrija los errores en las fechas antes de continuar
+                    </span>
+                    <span *ngIf="form.valid">
+                        Período seleccionado: {{ form.get('fechaInicio')?.value | date:'dd/MM/yyyy' }} - {{ form.get('fechaFin')?.value | date:'dd/MM/yyyy' }}
+                    </span>
                 </div>
             </div>
         </div>
