@@ -1058,7 +1058,9 @@ export class CrudComponent implements OnInit, OnDestroy, AfterViewInit {
     this.reservaService.obtenerJustificante(idReserva).subscribe({
       next: (justificante) => {
         if (justificante) {
-          this.reservaService.visualizarJustificante(justificante, nombreArchivo);
+          const reserva = this.reservas.find(r => r.id === idReserva);
+          const nombreAlumno = reserva ? `${reserva.nombreAlumno} ${reserva.apellidosAlumno}` : undefined;
+          this.reservaService.visualizarJustificante(justificante, nombreArchivo, nombreAlumno);
         } else {
           // Manejo del caso cuando no hay justificante
           alert('No se encontró el justificante para esta reserva.');

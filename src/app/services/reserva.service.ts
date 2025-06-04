@@ -157,12 +157,13 @@ export class ReservaService {
     );
   }
 
-    /**
+  /**
    * Muestra el justificante en una nueva ventana del navegador
    * @param base64Data Datos del justificante en Base64
    * @param nombreArchivo Nombre opcional para el archivo
+   * @param nombreAlumno Nombre del alumno para el título
    */
-  visualizarJustificante(base64Data: string, nombreArchivo: string = 'justificante'): void {
+  visualizarJustificante(base64Data: string, nombreArchivo: string = 'justificante', nombreAlumno?: string): void {
     // Verificar si los datos base64 están vacíos
     if (!base64Data || base64Data.trim() === '') {
       console.error('No se recibieron datos para visualizar el justificante');
@@ -199,48 +200,74 @@ export class ReservaService {
       ? base64Data 
       : `data:${tipoArchivo};base64,${base64Data}`;
     
-    // Abrir en una nueva ventana
-    const newWindow = window.open('', '_blank', 'width=1000,height=800');
+    const width = 1000;
+    const height = 800;
+    const left = (window.screen.width - width) / 2;
+    const top = (window.screen.height - height) / 2;
+    const newWindow = window.open('', '_blank', `width=${width},height=${height},left=${left},top=${top}`);
     if (newWindow) {
       newWindow.document.write(`
         <html>
           <head>
-            <title>Justificante: ${nombreArchivo}</title>
+            <title>${nombreAlumno ? `Justificante de ${nombreAlumno}` : 'Justificante'}</title>
             <style>
               body { 
                 margin: 0; 
                 padding: 0; 
                 display: flex; 
-                justify-content: center; 
-                align-items: center; 
+                flex-direction: column;
                 height: 100vh; 
                 width: 100vw; 
-                background-color: #f0f0f0; 
+                background-color: #f8f9fa; 
                 overflow: hidden; 
+                font-family: Arial, sans-serif;
+              }
+              .header {
+                background-color: #0d6efd;
+                color: white;
+                padding: 15px 20px;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+              }
+              .header h1 {
+                margin: 0;
+                font-size: 1.5rem;
+                font-weight: 500;
               }
               .container { 
-                width: 100%; 
-                height: 100%; 
+                flex: 1;
                 display: flex;
                 flex-direction: column;
+                background-color: white;
+                margin: 20px;
+                border-radius: 8px;
+                box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+                overflow: hidden;
               }
               .toolbar {
                 display: flex;
-                padding: 10px;
-                background-color: #f8f8f8;
-                border-bottom: 1px solid #ddd;
+                padding: 12px;
+                background-color: #f8f9fa;
+                border-bottom: 1px solid #dee2e6;
                 justify-content: center;
+                gap: 10px;
               }
               .toolbar button {
-                margin: 0 5px;
-                padding: 5px 10px;
-                background-color: #fff;
-                border: 1px solid #ccc;
-                border-radius: 3px;
+                margin: 0;
+                padding: 8px 16px;
+                background-color: white;
+                border: 1px solid #dee2e6;
+                border-radius: 4px;
                 cursor: pointer;
+                font-size: 0.9rem;
+                color: #495057;
+                transition: all 0.2s;
               }
               .toolbar button:hover {
-                background-color: #f0f0f0;
+                background-color: #e9ecef;
+                border-color: #ced4da;
               }
               .content {
                 flex: 1;
@@ -248,38 +275,57 @@ export class ReservaService {
                 justify-content: center;
                 align-items: center;
                 overflow: auto;
+                padding: 20px;
+                background-color: #f8f9fa;
               }
               img { 
                 max-width: 100%; 
                 max-height: 100%; 
-                object-fit: contain; 
+                object-fit: contain;
+                box-shadow: 0 2px 4px rgba(0,0,0,0.1);
               }
               iframe { 
                 width: 100%; 
                 height: 100%; 
-                border: none; 
+                border: none;
+                box-shadow: 0 2px 4px rgba(0,0,0,0.1);
               }
               .pdf-container {
                 width: 100%;
                 height: 100%;
                 overflow: auto;
+                background-color: white;
+                border-radius: 4px;
               }
               .error-message { 
-                color: red; 
+                color: #dc3545; 
                 font-weight: bold; 
                 text-align: center; 
-                padding: 20px; 
+                padding: 20px;
+                background-color: #f8d7da;
+                border: 1px solid #f5c6cb;
+                border-radius: 4px;
+                margin: 20px;
               }
             </style>
           </head>
           <body>
+            <div class="header">
+              <h1>${nombreAlumno ? `Justificante de ${nombreAlumno}` : 'Justificante'}</h1>
+              <button onclick="window.close();" style="background: none; border: none; color: white; cursor: pointer; font-size: 1.2rem;">×</button>
+            </div>
             <div class="container">
               ${tipoArchivo === 'application/pdf' ? `
                 <div class="toolbar">
-                  <button onclick="document.getElementById('pdf-viewer').style.width = '100%';">Ajustar a ancho</button>
-                  <button onclick="document.getElementById('pdf-viewer').style.width = 'auto';">Tamaño original</button>
-                  <button onclick="window.print();">Imprimir</button>
-                  <button onclick="window.close();">Cerrar</button>
+                  <button onclick="document.getElementById('pdf-viewer').style.width = '100%';">
+                    <i class="fas fa-expand"></i> Ajustar a ancho
+                  </button>
+                  <button onclick="document.getElementById('pdf-viewer').style.width = 'auto';">
+                    <i class="fas fa-compress"></i> Tamaño original
+                  </button>
+                  <button onclick="window.print();">
+                    <i class="fas fa-print"></i> Imprimir
+                  </button>
                 </div>
               ` : ''}
               <div class="content">
