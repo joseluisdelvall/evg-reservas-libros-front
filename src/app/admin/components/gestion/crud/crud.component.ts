@@ -903,6 +903,11 @@ export class CrudComponent implements OnInit, OnDestroy, AfterViewInit {
   anularReserva(reserva: ReservaResponse, event: Event): void {
     event.stopPropagation(); // Prevent other click events
 
+    if (reserva.verificado) {
+      this.toastr.info('La reserva ya está verificada, por lo que no se puede anular. Puedes anular sus libros en el apartado correspondiente.', 'Información');
+      return;
+    }
+
     Swal.fire({
       title: 'Confirmar anulación',
       html: `¿Estás seguro de anular la reserva de <strong>${reserva.nombreAlumno}</strong>?`,
