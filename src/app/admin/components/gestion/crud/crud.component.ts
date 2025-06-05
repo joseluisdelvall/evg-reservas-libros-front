@@ -846,6 +846,11 @@ export class CrudComponent implements OnInit, OnDestroy, AfterViewInit {
       return;
     }
 
+    if (reserva.verificado) {
+      this.toastr.info('La reserva ya está verificada', 'Información');
+      return;
+    }
+
     const nuevoEstado = !reserva.verificado;
     const reservaId = reserva.id.toString();
 

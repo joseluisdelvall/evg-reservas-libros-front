@@ -25,7 +25,7 @@ export class StockComponent implements OnInit {
   librosFiltrados: LibroStock[] = [];
   filtroBusqueda: string = '';
   cargando: boolean = true;
-  mostrarSoloConStock: boolean = false;
+  mostrarSoloConStock: boolean = true;
 
   constructor(
     private crudService: CrudService,
