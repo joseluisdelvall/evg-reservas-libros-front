@@ -179,7 +179,8 @@
                       <div class="form-check mt-auto">
                         <input class="form-check-input" type="checkbox"
                             [checked]="isLibroSeleccionadoPedido(libro.id)"
-                            (click)="$event.stopPropagation()">
+                            (click)="$event.stopPropagation()"
+                            (change)="toggleLibroPedido(libro)">
                         <label class="form-check-label">
                           {{ isLibroSeleccionadoPedido(libro.id) ? 'Seleccionado' : 'Seleccionar' }}
                         </label>
