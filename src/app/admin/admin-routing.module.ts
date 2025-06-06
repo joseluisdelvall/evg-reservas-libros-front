@@ -20,7 +20,7 @@ const routes: Routes = [
     // Las siguientes rutas se cargarán DENTRO del <router-outlet> de AdminLayoutComponent
     children: [
       { path: 'login', component: LoginComponent },
-      { path: 'reservas', component: ReservasComponent, canActivate: [AuthGuard] },
+      //{ path: 'reservas', component: ReservasComponent, canActivate: [AuthGuard] },
       { path: 'pedidos-pendientes', component: PedidosPendientesComponent, canActivate: [AuthGuard] },
       { path: 'pedidos-realizados', component: PedidosRealizadosComponent, canActivate: [AuthGuard] },
       { path: 'crud/:modo', component: CrudComponent, canActivate: [AuthGuard] },

@@ -26,7 +26,7 @@ export class LoginComponent implements OnInit, AfterViewInit {
   ngOnInit(): void {
       if (this.loginService.isLoggedIn()) {
         this.ngZone.run(() => {
-          this.router.navigate(['/admin/reservas']);
+          this.router.navigate(['/admin/crud/reservas']);
         });
       }
   }
