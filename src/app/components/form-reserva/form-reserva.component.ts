@@ -166,12 +166,54 @@ export class FormReservaComponent implements OnInit {
     return null;
   }
 
+  // Validador personalizado para prevenir caracteres especiales peligrosos (SQLi)
+  validarCaracteresEspeciales(control: AbstractControl): ValidationErrors | null {
+    const valor = control.value;
+    
+    if (!valor) return null;
+    
+    // Caracteres peligrosos para SQL injection y XSS
+    const caracteresProhibidos = /['"`;><\/\\{}[\]()=&|]/;
+    
+    if (caracteresProhibidos.test(valor)) {
+      return { caracteresProhibidos: true };
+    }
+    
+    return null;
+  }
+
+  // Validador para archivos permitidos (PDF e imágenes)
+  validarTipoArchivo(file: File): boolean {
+    const tiposPermitidos = [
+      'application/pdf',
+      'image/jpeg',
+      'image/jpg', 
+      'image/png'
+    ];
+    
+    return tiposPermitidos.includes(file.type);
+  }
+
   initForm() {
     this.reservaForm = this.fb.group({
-      nombreAlumno: ['', [Validators.required, Validators.minLength(3)]],
-      apellidosAlumno: ['', [Validators.required, Validators.minLength(3)]],
-      nombreTutor: ['', Validators.minLength(3)],
-      apellidosTutor: ['', Validators.minLength(3)],
+      nombreAlumno: ['', [
+        Validators.required, 
+        Validators.minLength(3),
+        this.validarCaracteresEspeciales.bind(this)
+      ]],
+      apellidosAlumno: ['', [
+        Validators.required, 
+        Validators.minLength(3),
+        this.validarCaracteresEspeciales.bind(this)
+      ]],
+      nombreTutor: ['', [
+        Validators.minLength(3),
+        this.validarCaracteresEspeciales.bind(this)
+      ]],
+      apellidosTutor: ['', [
+        Validators.minLength(3),
+        this.validarCaracteresEspeciales.bind(this)
+      ]],
       dni: ['', [
         Validators.required, 
         Validators.pattern('^[0-9]{8}[A-Za-z]$'),
@@ -206,11 +248,25 @@ export class FormReservaComponent implements OnInit {
   
         // Validación condicional para los tutores
         if (esInfantil) {
-          nombreTutorControl?.setValidators([Validators.required, Validators.minLength(3)]);
-          apellidosTutorControl?.setValidators([Validators.required, Validators.minLength(3)]);
+          nombreTutorControl?.setValidators([
+            Validators.required, 
+            Validators.minLength(3),
+            this.validarCaracteresEspeciales.bind(this)
+          ]);
+          apellidosTutorControl?.setValidators([
+            Validators.required, 
+            Validators.minLength(3),
+            this.validarCaracteresEspeciales.bind(this)
+          ]);
         } else {
-          nombreTutorControl?.clearValidators();
-          apellidosTutorControl?.clearValidators();
+          nombreTutorControl?.setValidators([
+            Validators.minLength(3),
+            this.validarCaracteresEspeciales.bind(this)
+          ]);
+          apellidosTutorControl?.setValidators([
+            Validators.minLength(3),
+            this.validarCaracteresEspeciales.bind(this)
+          ]);
         }
   
         nombreTutorControl?.updateValueAndValidity();
@@ -224,9 +280,15 @@ export class FormReservaComponent implements OnInit {
         this.mostrarLibros = false;
         librosControl?.disable();
   
-        // Limpiar validadores del tutor si no hay curso seleccionado
-        nombreTutorControl?.clearValidators();
-        apellidosTutorControl?.clearValidators();
+        // Establecer validadores básicos del tutor si no hay curso seleccionado
+        nombreTutorControl?.setValidators([
+          Validators.minLength(3),
+          this.validarCaracteresEspeciales.bind(this)
+        ]);
+        apellidosTutorControl?.setValidators([
+          Validators.minLength(3),
+          this.validarCaracteresEspeciales.bind(this)
+        ]);
         nombreTutorControl?.updateValueAndValidity();
         apellidosTutorControl?.updateValueAndValidity();
       }
@@ -283,9 +345,37 @@ export class FormReservaComponent implements OnInit {
   onFileChange(event: any) {
     const file = event.target.files[0];
     if (file) {
+      // Validar tipo de archivo
+      if (!this.validarTipoArchivo(file)) {
+        this.toastr.error(
+          'Solo se permiten archivos PDF e imágenes (JPG, JPEG, PNG)', 
+          'Tipo de archivo no válido'
+        );
+        // Limpiar el input
+        event.target.value = '';
+        this.justificanteFile = null;
+        this.reservaForm.patchValue({ justificante: '' });
+        return;
+      }
+
+      // Validar tamaño del archivo (máximo 5MB)
+      const fileSizeMB = file.size / (1024 * 1024);
+      if (fileSizeMB > 5) {
+        this.toastr.error(
+          'El archivo es demasiado grande. El tamaño máximo permitido es 5MB.', 
+          'Archivo demasiado grande'
+        );
+        // Limpiar el input
+        event.target.value = '';
+        this.justificanteFile = null;
+        this.reservaForm.patchValue({ justificante: '' });
+        return;
+      }
+
       this.justificanteFile = file;
       this.reservaForm.patchValue({ justificante: file.name });
       this.reservaForm.get('justificante')?.updateValueAndValidity();
+      this.toastr.success('Archivo adjuntado correctamente', 'Éxito');
     }
   }
 
@@ -314,6 +404,9 @@ export class FormReservaComponent implements OnInit {
       }
       if (control.errors['letraInvalida']) {
         return 'La letra del DNI no es correcta.';
+      }
+      if (control.errors['caracteresProhibidos']) {
+        return 'No se permiten caracteres especiales como comillas, punto y coma, mayor que, menor que, etc.';
       }
       if (controlName === 'librosSeleccionados' && control.errors['minLibros']) {
         return 'Debe seleccionar al menos un libro.';

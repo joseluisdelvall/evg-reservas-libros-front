@@ -221,7 +221,11 @@
                         </div>
                         <div class="mb-3">
                             <label for="justificante" class="form-label fw-semibold small text-muted">Subir Justificante*</label>
-                            <input type="file" id="justificante" class="form-control form-control-sm" (change)="onFileChange($event)">
+                            <input type="file" id="justificante" class="form-control form-control-sm" (change)="onFileChange($event)" accept=".pdf,.jpg,.jpeg,.png">
+                            <div class="form-text small text-muted mt-1">
+                                <i class="fas fa-info-circle me-1"></i>
+                                Solo se permiten archivos PDF e imágenes (JPG, PNG). Tamaño máximo: 5MB
+                            </div>
                             <div *ngIf="!justificanteFile && reservaForm.get('justificante')?.touched" class="text-danger small">Este campo es obligatorio.</div>
                         </div>
 
