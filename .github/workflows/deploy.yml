@@ -1,3 +1,8 @@
+# Despliegue automático de las aplicaciones al hacer commits en las ramas main y demo
+# La rama MAIN se despliega en produccion (aplicacion que se usa en el centro)
+# La rama DEMO es una rama espejo para hacer pruebas de nuevas funcionalidades
+# PRIMERO SE MERGEA EN DEMO Y LUEGO DEMO SE PASA A MAIN, NUNCA AL REVÉS (puedes cargarte la app de producción)
+
 name: Deploy Frontend via FTP (main & demo)
 
 on:
@@ -37,8 +42,8 @@ jobs:
           export const environment = {
             production: true,
             api: {
-              baseUrl: 'https://11.proyectos.esvirgua.com/evg-reservas-libros-back/api',
-              loginUrl: 'https://11.proyectos.esvirgua.com/evg-reservas-libros-back/api/login',
+              baseUrl: 'https://aplicaciones.esvirgua.com/reservas-libros/evg-reservas-libros-back/api',
+              loginUrl: 'https://aplicaciones.esvirgua.com/reservas-libros/evg-reservas-libros-back/api/login',
             },
             auth: {
               cookieTokenName: 'RDLEVGTKN',
@@ -53,8 +58,8 @@ jobs:
           export const environment = {
             production: true,
             api: {
-              baseUrl: 'https://11.proyectos.esvirgua.com/evg-reservas-libros-back-demo/api',
-              loginUrl: 'https://11.proyectos.esvirgua.com/evg-reservas-libros-back-demo/api/login',
+              baseUrl: 'https://aplicaciones.esvirgua.com/reservas-libros/evg-reservas-libros-back-demo/api',
+              loginUrl: 'https://aplicaciones.esvirgua.com/reservas-libros/evg-reservas-libros-back-demo/api/login',
             },
             auth: {
               cookieTokenName: 'RDLEVGTKN',
@@ -75,9 +80,9 @@ jobs:
       - name: Build Angular
         run: |
           if [[ "${GITHUB_REF}" == "refs/heads/main" ]]; then
-            ng build --configuration=production --base-href=/evg-reservas-libros-front/
+            ng build --configuration=production --base-href=/reservas-libros/evg-reservas-libros/
           else
-            ng build --configuration=production --base-href=/evg-reservas-libros-front-demo/
+            ng build --configuration=production --base-href=/reservas-libros/evg-reservas-libros-demo/
           fi
 
       - name: Crear archivo .htaccess
@@ -99,5 +104,5 @@ jobs:
           server: ${{ secrets.FTP_SERVER }}
           username: ${{ secrets.FTP_USERNAME }}
           password: ${{ secrets.FTP_PASSWORD }}
-          server-dir: ${{ github.ref == 'refs/heads/main' && '/evg-reservas-libros-front/' || '/evg-reservas-libros-front-demo/' }}
+          server-dir: ${{ github.ref == 'refs/heads/main' && '/public_html/reservas-libros/evg-reservas-libros/' || '/public_html/reservas-libros/evg-reservas-libros-demo/' }}
           local-dir: ./dist/evg-reservas-libros-front/
