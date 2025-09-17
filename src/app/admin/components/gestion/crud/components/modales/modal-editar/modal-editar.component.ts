@@ -79,6 +79,9 @@ export class ModalEditarComponent implements OnInit, OnChanges {
     }
     
     if (changes['idEntidad'] && changes['idEntidad'].currentValue) {
+      // Limpiar formularios antes de cargar nuevos datos
+      this.limpiarFormularioCompleto();
+      
       if (this.modo === 'editoriales') {
         this.cargarDatosEditorial(changes['idEntidad'].currentValue);
       } else if (this.modo === 'libros') {
@@ -109,6 +112,8 @@ export class ModalEditarComponent implements OnInit, OnChanges {
   // Método para resetear los formularios y limpiar validaciones visuales
   resetFormularios(): void {
     if (this.modo === 'libros' && this.formL) {
+      // Resetear completamente el formulario de libros
+      this.formL.reset();
       // Desmarcar todos los campos como tocados para quitar los errores visuales
       Object.keys(this.formL.controls).forEach(key => {
         const control = this.formL.get(key);
@@ -116,25 +121,42 @@ export class ModalEditarComponent implements OnInit, OnChanges {
         control?.markAsPristine();
       });
     } else if (this.modo === 'editoriales' && this.formE) {
+      // Resetear completamente el formulario de editoriales
+      this.formE.reset();
+      
+      // Limpiar específicamente los campos de correos y teléfonos
+      const correosGroup = this.formE.get('correosGroup') as FormGroup;
+      const telefonosGroup = this.formE.get('telefonosGroup') as FormGroup;
+      
+      // Limpiar todos los correos
+      correosGroup.get('correo1')?.setValue('');
+      correosGroup.get('correo2')?.setValue('');
+      correosGroup.get('correo3')?.setValue('');
+      
+      // Limpiar todos los teléfonos
+      telefonosGroup.get('telefono1')?.setValue('');
+      telefonosGroup.get('telefono2')?.setValue('');
+      telefonosGroup.get('telefono3')?.setValue('');
+      
       // Desmarcar el campo nombre como tocado
       this.formE.get('nombre')?.markAsUntouched();
       this.formE.get('nombre')?.markAsPristine();
       
       // Desmarcar los controles de los grupos como tocados
-      const correosGroup = this.formE.get('correosGroup') as FormGroup;
       Object.keys(correosGroup.controls).forEach(key => {
         const control = correosGroup.get(key);
         control?.markAsUntouched();
         control?.markAsPristine();
       });
       
-      const telefonosGroup = this.formE.get('telefonosGroup') as FormGroup;
       Object.keys(telefonosGroup.controls).forEach(key => {
         const control = telefonosGroup.get(key);
         control?.markAsUntouched();
         control?.markAsPristine();
       });
     } else if (this.modo === 'reservas' && this.formR) {
+      // Resetear completamente el formulario de reservas
+      this.formR.reset();
       // Desmarcar todos los campos como tocados para quitar los errores visuales
       Object.keys(this.formR.controls).forEach(key => {
         const control = this.formR.get(key);
@@ -144,6 +166,33 @@ export class ModalEditarComponent implements OnInit, OnChanges {
     }
     
     this.mostrandoErrores = false;
+  }
+  
+  // Método para limpiar completamente el formulario antes de cargar nuevos datos
+  limpiarFormularioCompleto(): void {
+    if (this.modo === 'libros' && this.formL) {
+      this.formL.reset();
+    } else if (this.modo === 'editoriales' && this.formE) {
+      this.formE.reset();
+      
+      // Limpiar específicamente los campos de correos y teléfonos
+      const correosGroup = this.formE.get('correosGroup') as FormGroup;
+      const telefonosGroup = this.formE.get('telefonosGroup') as FormGroup;
+      
+      if (correosGroup) {
+        correosGroup.get('correo1')?.setValue('');
+        correosGroup.get('correo2')?.setValue('');
+        correosGroup.get('correo3')?.setValue('');
+      }
+      
+      if (telefonosGroup) {
+        telefonosGroup.get('telefono1')?.setValue('');
+        telefonosGroup.get('telefono2')?.setValue('');
+        telefonosGroup.get('telefono3')?.setValue('');
+      }
+    } else if (this.modo === 'reservas' && this.formR) {
+      this.formR.reset();
+    }
   }
   
   // Método para prevenir que se cierre el modal si el formulario no es válido
@@ -354,25 +403,38 @@ export class ModalEditarComponent implements OnInit, OnChanges {
       next: (editorial: Editorial) => {
         this.editorial = editorial;
         
-        // Resetear el formulario con los datos cargados
+        // Resetear completamente el formulario primero
+        this.formE.reset();
+        
+        // Establecer el nombre
         this.formE.patchValue({
           nombre: editorial.nombre
         });
         
-        // Cargar correos
+        // Limpiar todos los campos de correos y teléfonos primero
+        const correosGroup = this.formE.get('correosGroup') as FormGroup;
+        const telefonosGroup = this.formE.get('telefonosGroup') as FormGroup;
+        
+        // Limpiar todos los correos
+        correosGroup.get('correo1')?.setValue('');
+        correosGroup.get('correo2')?.setValue('');
+        correosGroup.get('correo3')?.setValue('');
+        
+        // Limpiar todos los teléfonos
+        telefonosGroup.get('telefono1')?.setValue('');
+        telefonosGroup.get('telefono2')?.setValue('');
+        telefonosGroup.get('telefono3')?.setValue('');
+        
+        // Cargar correos existentes
         if (editorial.correos && editorial.correos.length > 0) {
-          const correosGroup = this.formE.get('correosGroup') as FormGroup;
-          
           // Asignar hasta 3 correos a los campos correspondientes
           for (let i = 0; i < Math.min(editorial.correos.length, 3); i++) {
             correosGroup.get(`correo${i+1}`)?.setValue(editorial.correos[i]);
           }
         }
         
-        // Cargar teléfonos
+        // Cargar teléfonos existentes
         if (editorial.telefonos && editorial.telefonos.length > 0) {
-          const telefonosGroup = this.formE.get('telefonosGroup') as FormGroup;
-          
           // Asignar hasta 3 teléfonos a los campos correspondientes
           for (let i = 0; i < Math.min(editorial.telefonos.length, 3); i++) {
             telefonosGroup.get(`telefono${i+1}`)?.setValue(editorial.telefonos[i]);
