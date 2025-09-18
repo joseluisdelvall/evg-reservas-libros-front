@@ -216,13 +216,13 @@ export class FormReservaComponent implements OnInit {
       ]],
       dni: ['', [
         Validators.required, 
-        Validators.pattern('^[0-9]{8}[A-Za-z]$'),
-        this.validarDNI.bind(this)
+        // Validators.pattern('^[0-9]{8}[A-Za-z]$'),
+        // this.validarDNI.bind(this)
       ]],
       correo: ['', [
         Validators.required, 
         Validators.email,
-        Validators.pattern('^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$')
+        Validators.pattern('^[a-zA-ZñÑ0-9._%+-]+@[a-zA-ZñÑ0-9.-]+\\.[a-zA-ZñÑ]{2,}$')
       ]],
       telefono: ['', [Validators.required, Validators.pattern('^[6-9]\\d{8}$')]],
       curso: [null, Validators.required],
