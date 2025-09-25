@@ -172,9 +172,9 @@ export class ModalNuevoComponent implements OnInit, OnChanges {
     this.formE = this.formBuilder.group({
       nombre: ['', [Validators.required, Validators.minLength(3)]],
       correos: this.formBuilder.array([
-        this.formBuilder.control('', [Validators.email]),
-        this.formBuilder.control('', [Validators.email]),
-        this.formBuilder.control('', [Validators.email])
+        this.formBuilder.control('', [Validators.email, Validators.pattern('^[a-zA-ZñÑ0-9._%+-]+@[a-zA-ZñÑ0-9.-]+\\.[a-zA-ZñÑ]{2,}$')]),
+        this.formBuilder.control('', [Validators.email, Validators.pattern('^[a-zA-ZñÑ0-9._%+-]+@[a-zA-ZñÑ0-9.-]+\\.[a-zA-ZñÑ]{2,}$')]),
+        this.formBuilder.control('', [Validators.email, Validators.pattern('^[a-zA-ZñÑ0-9._%+-]+@[a-zA-ZñÑ0-9.-]+\\.[a-zA-ZñÑ]{2,}$')])
       ]),
       telefonos: this.formBuilder.array([
         this.formBuilder.control('', [Validators.pattern('^[6-9]\\d{8}$')]),
@@ -203,9 +203,9 @@ export class ModalNuevoComponent implements OnInit, OnChanges {
       this.formE = this.formBuilder.group({
         nombre: ['', [Validators.required, Validators.minLength(3)]],
         correos: this.formBuilder.array([
-          this.formBuilder.control('', [Validators.email]),
-          this.formBuilder.control('', [Validators.email]),
-          this.formBuilder.control('', [Validators.email])
+          this.formBuilder.control('', [Validators.email, Validators.pattern('^[a-zA-ZñÑ0-9._%+-]+@[a-zA-ZñÑ0-9.-]+\\.[a-zA-ZñÑ]{2,}$')]),
+          this.formBuilder.control('', [Validators.email, Validators.pattern('^[a-zA-ZñÑ0-9._%+-]+@[a-zA-ZñÑ0-9.-]+\\.[a-zA-ZñÑ]{2,}$')]),
+          this.formBuilder.control('', [Validators.email, Validators.pattern('^[a-zA-ZñÑ0-9._%+-]+@[a-zA-ZñÑ0-9.-]+\\.[a-zA-ZñÑ]{2,}$')])
         ]),
         telefonos: this.formBuilder.array([
           this.formBuilder.control('', [Validators.pattern('^[6-9]\\d{8}$')]),

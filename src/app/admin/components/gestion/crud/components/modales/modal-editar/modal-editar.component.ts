@@ -243,9 +243,9 @@ export class ModalEditarComponent implements OnInit, OnChanges {
     this.formE = this.fb.group({
       nombre: ['', [Validators.required, Validators.minLength(3)]],
       correosGroup: this.fb.group({
-        correo1: ['', [Validators.email]],
-        correo2: ['', [Validators.email]],
-        correo3: ['', [Validators.email]]
+        correo1: ['', [Validators.email, Validators.pattern('^[a-zA-ZñÑ0-9._%+-]+@[a-zA-ZñÑ0-9.-]+\\.[a-zA-ZñÑ]{2,}$')]],
+        correo2: ['', [Validators.email, Validators.pattern('^[a-zA-ZñÑ0-9._%+-]+@[a-zA-ZñÑ0-9.-]+\\.[a-zA-ZñÑ]{2,}$')]],
+        correo3: ['', [Validators.email, Validators.pattern('^[a-zA-ZñÑ0-9._%+-]+@[a-zA-ZñÑ0-9.-]+\\.[a-zA-ZñÑ]{2,}$')]]
       }),
       telefonosGroup: this.fb.group({
         telefono1: ['', [Validators.pattern('^[6-9]\\d{8}$')]],
@@ -270,7 +270,7 @@ export class ModalEditarComponent implements OnInit, OnChanges {
       id: [''],
       nombreAlumno: ['', [Validators.required, Validators.minLength(3)]],
       apellidosAlumno: ['', [Validators.required, Validators.minLength(3)]],
-      correo: ['', [Validators.required, Validators.email]],
+      correo: ['', [Validators.required, Validators.email, Validators.pattern('^[a-zA-ZñÑ0-9._%+-]+@[a-zA-ZñÑ0-9.-]+\\.[a-zA-ZñÑ]{2,}$')]],
       telefono: ['', [Validators.required, Validators.pattern('^[6-9]\\d{8}$')]],
       fecha: ['', [Validators.required]],
       curso: ['', [Validators.required]],
