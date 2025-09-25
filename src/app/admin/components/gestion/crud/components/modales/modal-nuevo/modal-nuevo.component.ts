@@ -281,7 +281,10 @@ export class ModalNuevoComponent implements OnInit, OnChanges {
     if (!control) return '';
     
     if (control.hasError('email')) return 'Ingrese un correo electrónico válido.';
-    if (control.hasError('pattern')) return 'Ingrese un teléfono válido (9 dígitos, comenzando por 6, 7, 8 o 9).';
+    if (control.hasError('pattern')) {
+      if (arrayName === 'correos') return 'Ingrese un correo electrónico válido.';
+      if (arrayName === 'telefonos') return 'Ingrese un teléfono válido (9 dígitos, comenzando por 6, 7, 8 o 9).';
+    }
     
     return '';
   }
